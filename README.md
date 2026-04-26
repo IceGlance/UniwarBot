@@ -77,3 +77,27 @@ Recommended stack:
 - `React + TypeScript` for the GUI
 
 This is still a planning and data-foundation repository. The next practical milestone is to turn the rules data into a working engine skeleton and a golden-scenario test harness.
+
+## Running Tests
+
+The current Python tests use the standard library `unittest` runner.
+
+If Python is available on your `PATH`:
+
+```powershell
+$env:PYTHONPATH="src"
+python -m unittest discover -s tests -v
+```
+
+If local Python is not available on `PATH`, use the bundled workspace runtime:
+
+```powershell
+$env:PYTHONPATH="src"
+& "C:\Users\Pavlo\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe" -m unittest discover -s tests -v
+```
+
+Recommended workflow:
+
+- run the full test suite after almost any change to `src/uniwarbot/`,
+- fix failing tests before adding more features,
+- keep tests focused on state transitions and deterministic behavior.

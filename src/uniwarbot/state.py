@@ -3,12 +3,28 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from enum import Enum, IntEnum
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 
 def _drop_none(mapping: dict[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in mapping.items() if value is not None}
+
+
+@lru_cache(maxsize=1)
+def _cached_game_dictionary() -> dict[str, Any]:
+    return load_game_dictionary()
+
+
+def _unit_repair_points(unit_id: str) -> int:
+    unit_data = _cached_game_dictionary()["units"].get(unit_id, {})
+    return int(unit_data.get("repair_points", 0))
+
+
+def _terrain_repair_multiplier(terrain_id: str) -> int:
+    terrain_data = _cached_game_dictionary()["terrains"].get(terrain_id, {})
+    return int(terrain_data.get("repair_multiplier", 1))
 
 
 class VeterancyLevel(IntEnum):
@@ -333,6 +349,25 @@ class UnitActionState:
         if current is None:
             return False
         return current.is_atomic and current.in_progress and not current.completed
+
+    def reset_for_new_turn(self) -> None:
+        self.is_available = True
+        self.actions_remaining = self.configured_action_count
+        self.move_points_remaining = None
+        self.attacks_remaining = 1
+        self.special_actions_remaining = None
+        self.action_phase_index = 0
+        self.current_action_index = 0
+        self.has_moved_this_turn = False
+        self.has_attacked_this_turn = False
+        self.has_used_special_this_turn = False
+        for action_window in self.action_windows:
+            action_window.in_progress = False
+            action_window.attack_occurred = False
+            action_window.completed = False
+            for segment in action_window.segments:
+                segment.completed = False
+                segment.unlocked = not segment.requires_attack_before_use
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -669,6 +704,10 @@ class GameState:
     fight_context: FightContext = field(default_factory=FightContext)
     metadata: dict[str, Any] = field(default_factory=dict)
 
+    @property
+    def income_per_base(self) -> int:
+        return int(self.metadata.get("income_per_base", 100))
+
     def add_player(self, player: PlayerState) -> None:
         self.players[player.player_id] = player
 
@@ -677,6 +716,15 @@ class GameState:
         tile = self.game_map.get_tile(unit.position)
         if tile is not None:
             tile.occupying_unit_id = unit.instance_id
+
+    def remove_unit(self, instance_id: str) -> UnitState | None:
+        unit = self.units.pop(instance_id, None)
+        if unit is None:
+            return None
+        tile = self.game_map.get_tile(unit.position)
+        if tile is not None and tile.occupying_unit_id == instance_id:
+            tile.occupying_unit_id = None
+        return unit
 
     def get_unit(self, instance_id: str) -> UnitState | None:
         return self.units.get(instance_id)
@@ -691,6 +739,204 @@ class GameState:
         if player_id not in self.players:
             raise KeyError(f"Unknown player_id: {player_id}")
         self.active_player_id = player_id
+
+    def _require_active_player_unit(self, instance_id: str) -> UnitState:
+        unit = self.get_unit(instance_id)
+        if unit is None:
+            raise KeyError(f"Unknown unit_id: {instance_id}")
+        if unit.owner_id != self.active_player_id:
+            raise ValueError("Only the active player's units may act")
+        return unit
+
+    def move_unit(self, instance_id: str, destination: HexCoord) -> None:
+        unit = self._require_active_player_unit(instance_id)
+        destination_tile = self.game_map.get_tile(destination)
+        if destination_tile is None:
+            raise ValueError("Destination tile does not exist")
+        if destination_tile.occupying_unit_id is not None:
+            raise ValueError("Destination tile is already occupied")
+
+        source_tile = self.game_map.get_tile(unit.position)
+        if source_tile is not None and source_tile.occupying_unit_id == instance_id:
+            source_tile.occupying_unit_id = None
+
+        unit.position = destination
+        destination_tile.occupying_unit_id = instance_id
+        unit.action.has_moved_this_turn = True
+        unit.action.current_action_window and setattr(
+            unit.action.current_action_window, "in_progress", True
+        )
+
+        current_window = unit.action.current_action_window
+        if current_window is not None:
+            for segment in current_window.segments:
+                if (
+                    segment.kind == ActionSegmentKind.MOVE
+                    and segment.unlocked
+                    and not segment.completed
+                ):
+                    segment.completed = True
+                    segment.mobility_points_remaining = 0
+                    break
+
+    def attack_unit(
+        self,
+        attacker_id: str,
+        defender_id: str,
+        *,
+        defender_damage: int = 0,
+        attacker_damage: int = 0,
+        was_melee: bool | None = None,
+    ) -> None:
+        attacker = self._require_active_player_unit(attacker_id)
+        defender = self.get_unit(defender_id)
+        if defender is None:
+            raise KeyError(f"Unknown defender_id: {defender_id}")
+
+        attacker.action.has_attacked_this_turn = True
+        attacker.action.current_action_window and setattr(
+            attacker.action.current_action_window, "in_progress", True
+        )
+        current_window = attacker.action.current_action_window
+        if current_window is not None:
+            current_window.attack_occurred = True
+            for segment in current_window.segments:
+                if (
+                    segment.kind == ActionSegmentKind.ATTACK
+                    and segment.unlocked
+                    and not segment.completed
+                ):
+                    segment.completed = True
+                    segment.uses_remaining = 0
+                if segment.requires_attack_before_use:
+                    segment.unlocked = True
+
+        if was_melee is None:
+            was_melee = self._hex_distance(attacker.position, defender.position) == 1
+
+        self.fight_context.last_attacked_unit_id = defender_id
+        self.fight_context.previous_attack_origin = attacker.position
+        self.fight_context.previous_attack_was_melee = was_melee
+        self.fight_context.acting_player_id = attacker.owner_id
+        self.fight_context.chain_index += 1
+
+        if defender_damage > 0:
+            defender.hp = max(0, defender.hp - defender_damage)
+            if defender.hp == 0:
+                self.remove_unit(defender.instance_id)
+        if attacker_damage > 0:
+            attacker.hp = max(0, attacker.hp - attacker_damage)
+            if attacker.hp == 0:
+                self.remove_unit(attacker.instance_id)
+
+    def begin_capture(self, unit_id: str, tile_coord: HexCoord) -> None:
+        unit = self._require_active_player_unit(unit_id)
+        tile = self.game_map.get_tile(tile_coord)
+        if tile is None:
+            raise ValueError("Capture tile does not exist")
+        if unit.position != tile_coord:
+            raise ValueError("Capturing unit must be on the target tile")
+        tile.capture_state = CaptureState(
+            tile=tile_coord,
+            structure_owner_id=tile.owner_id,
+            capturing_player_id=unit.owner_id,
+            capturing_unit_id=unit.instance_id,
+            rounds_remaining=1,
+            defense_penalty_applies=True,
+        )
+        unit.capture_target = tile_coord
+        unit.action.is_available = False
+
+    def end_turn(self) -> str:
+        outgoing_player_id = self.active_player_id
+        self._apply_end_of_turn_effects(outgoing_player_id)
+        next_player_id = self._next_player_id(outgoing_player_id)
+        self.active_player_id = next_player_id
+        self.round_number += 1
+        self.turn_number += 1
+        self.fight_context.clear()
+        self._apply_start_of_turn_effects(next_player_id)
+        return next_player_id
+
+    def _apply_end_of_turn_effects(self, player_id: str) -> None:
+        for unit in list(self.units.values()):
+            if unit.owner_id != player_id:
+                continue
+            if (
+                unit.action.is_available
+                and not unit.action.has_moved_this_turn
+                and not unit.action.has_attacked_this_turn
+                and not unit.action.has_used_special_this_turn
+            ):
+                self._auto_heal_unit(unit)
+        self.players[player_id].has_ended_turn = True
+
+    def _apply_start_of_turn_effects(self, player_id: str) -> None:
+        self.players[player_id].has_ended_turn = False
+        self.players[player_id].credits += self._income_for_player(player_id)
+        self._process_capture_progress(player_id)
+        for unit in list(self.units.values()):
+            if unit.owner_id != player_id:
+                continue
+            self._tick_unit_start_of_turn(unit)
+            if unit.instance_id in self.units:
+                unit.action.reset_for_new_turn()
+
+    def _tick_unit_start_of_turn(self, unit: UnitState) -> None:
+        if unit.status.plague_infected and unit.hp > 1:
+            unit.hp -= 1
+        unit.status.emp_disabled_rounds = max(0, unit.status.emp_disabled_rounds - 1)
+        unit.status.teleport_disabled_rounds = max(
+            0, unit.status.teleport_disabled_rounds - 1
+        )
+        unit.status.ability_cooldowns = {
+            key: max(0, value - 1)
+            for key, value in unit.status.ability_cooldowns.items()
+        }
+
+    def _auto_heal_unit(self, unit: UnitState) -> None:
+        repair_points = _unit_repair_points(unit.unit_id)
+        tile = self.game_map.get_tile(unit.position)
+        terrain_multiplier = (
+            _terrain_repair_multiplier(tile.terrain_id) if tile is not None else 1
+        )
+        heal_amount = repair_points * terrain_multiplier
+        if heal_amount <= 0:
+            return
+        unit.hp = min(self._unit_max_hp(unit), unit.hp + heal_amount)
+
+    def _income_for_player(self, player_id: str) -> int:
+        total = 0
+        for tile in self.game_map.tiles.values():
+            if tile.owner_id != player_id:
+                continue
+            terrain_data = _cached_game_dictionary()["terrains"].get(tile.terrain_id, {})
+            if bool(terrain_data.get("provides_income", False)):
+                total += self.income_per_base
+        return total
+
+    def _process_capture_progress(self, player_id: str) -> None:
+        for tile in self.game_map.tiles.values():
+            capture_state = tile.capture_state
+            if capture_state is None or capture_state.capturing_player_id != player_id:
+                continue
+            capture_state.rounds_remaining = max(0, capture_state.rounds_remaining - 1)
+            if capture_state.rounds_remaining == 0:
+                tile.owner_id = player_id
+                self.remove_unit(capture_state.capturing_unit_id)
+                tile.capture_state = None
+
+    def _next_player_id(self, current_player_id: str) -> str:
+        current_index = self.player_order.index(current_player_id)
+        return self.player_order[(current_index + 1) % len(self.player_order)]
+
+    @staticmethod
+    def _hex_distance(a: HexCoord, b: HexCoord) -> int:
+        return max(abs(a.q - b.q), abs(a.r - b.r), abs(a.s - b.s))
+
+    @staticmethod
+    def _unit_max_hp(unit: UnitState) -> int:
+        return 10 + int(unit.veterancy_level)
 
     def to_dict(self) -> dict[str, Any]:
         return {
