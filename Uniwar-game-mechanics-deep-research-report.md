@@ -46,7 +46,72 @@ flowchart TD
 
 That flow is directly consistent with the official rules page, the official gang-up description, official AP displays on unit pages, and the official calculator’s p-value framing. citeturn43search5turn33view0turn24search2turn24search0
 
-Gang-up is one of the game’s most important positional rules. Officially, attacking the same target multiple times in one turn grants an attack bonus; the larger the angular wrap-around of the follow-up attack relative to the previous attack, the larger the bonus. The long-standing community mapping gives `+1`, `+2`, or `+3` attack to the follow-up strike. If the previous attack was ranged, the next attack gets only `+1` regardless of geometry. Gang-up is **not cumulative** across a whole chain; each next attack is evaluated relative to the immediately previous attack. It persists across non-attack actions during the turn, but is lost if you end the turn or attack a different enemy. This is **high confidence** on existence and **medium confidence** on the exact positional map, because the geometry is community-documented rather than currently fetchable from the official forum archive. citeturn43search5turn33view0
+Gang-up is one of the game’s most important positional rules. Officially, attacking the same target multiple times in one turn grants an attack bonus; the larger the angular wrap-around of the follow-up attack relative to the previous attack, the larger the bonus. The long-standing community mapping gives `+1`, `+2`, or `+3` attack to the follow-up strike. If the previous attack was ranged, the next attack gets only `+1` regardless of geometry. If the previous attack was melee, the next attack’s bonus depends on the attacking hex relative to the previous attacker. Community references also document two operational edge cases that matter for an engine implementation: the follow-up attack itself may still be ranged and keep the melee-derived gang-up bonus from its hex, and a follow-up can sometimes come from the same hex as the previous attack if that hex becomes vacant because of move-after-attack or unit death. Gang-up is **not cumulative** across a whole chain; each next attack is evaluated relative to the immediately previous attack. It persists across non-attack actions during the turn, but is lost if you end the turn or attack a different enemy. This is **high confidence** on existence and reset behavior, and **medium confidence** on the exact positional map, because the geometry is community-documented rather than currently fetchable from the official forum archive. citeturn1view0turn1view1
+
+For bot and engine purposes, the gang-up rule can be written as a concrete state machine:
+
+- Maintain `last_attacked_target_id` for the current player turn.
+- Maintain `last_attack_origin_hex` for that target.
+- Maintain `last_attack_was_melee`, where melee means the attacker was on one of the six adjacent hexes of the defender when attacking.
+- A new attack gets gang-up **only if** it attacks the same target as `last_attacked_target_id`.
+- Any attack on a different target resets the chain to that new target.
+- Ending the turn clears the chain.
+- Non-attack actions in between, such as moving other units or producing units, do **not** clear the chain.
+
+The formal bonus rule for the next attack is:
+
+1. If there was no previous attack on this target during the current turn, `gang_up_bonus = 0`.
+2. If the immediately previous attack on this target was ranged, `gang_up_bonus = +1`.
+3. If the immediately previous attack on this target was melee:
+   - index the six adjacent hexes around the defender as directions `0..5` in clockwise order;
+   - let `p` be the direction of the previous attacker relative to the defender;
+   - let `s` be the direction of the current attacker relative to the defender;
+   - compute `d = (s - p) mod 6`;
+   - apply:
+     - `d in {1, 5}` -> `+1`
+     - `d in {0, 2, 4}` -> `+2`
+     - `d == 3` -> `+3`
+
+This is the exact community-preserved logic behind the color diagram:
+
+- `same hex as previous attacker` -> `+2`
+- `one step clockwise or counter-clockwise around the defender` -> `+1`
+- `two steps clockwise or counter-clockwise around the defender` -> `+2`
+- `opposite side of the defender` -> `+3`
+
+The highest-value implementation notes are:
+
+- The bonus is applied to the attacker’s attack stat before the damage roll.
+- The rule is based on the **previous** attack only, not on the first attack in the whole chain.
+- The second attack does not need to be melee; if the previous attack was melee, a ranged follow-up still uses its own firing hex to determine `s`.
+- If the previous attack was ranged, geometry is ignored and the follow-up gets only `+1`.
+- Because the same-origin case is `+2`, engines must not assume `s != p`; that hex can become available again through move-after-attack, multi-phase movement, or the previous attacker dying.
+
+An engine-friendly pseudocode version is:
+
+```text
+function gang_up_bonus(previous_attack, current_attack):
+    if previous_attack is null:
+        return 0
+
+    if previous_attack.target_id != current_attack.target_id:
+        return 0
+
+    if previous_attack.was_ranged:
+        return 1
+
+    p = hex_direction(previous_attack.origin_hex, current_attack.target_hex)
+    s = hex_direction(current_attack.origin_hex, current_attack.target_hex)
+    d = (s - p) mod 6
+
+    if d == 3:
+        return 3
+    if d == 1 or d == 5:
+        return 1
+    return 2
+```
+
+This is the most detailed gang-up logic I can defend from currently accessible sources: the official `SPECIALS` page confirms existence and the qualitative “small / better / best” wrap-around rule, while the Fandom Gang Up page preserves the exact `+1/+2/+3` mapping, the non-cumulative rule, the ranged-first `+1` rule, the same-hex `+2` case, and the fact that non-attack actions do not break the chain. citeturn1view0turn1view1
 
 The special-ability layer is numerically clearer. The Engineer’s EMP has radius 2, disables Titan units for one full round, and has a 10-round recharge; the Assimilator’s UV has radius 5, deals 1 damage to Sapiens and Khraleans, and has an 11-round recharge; the Infector’s plague infects nearby Sapiens, deals 1 damage at the start of each infected player turn, spreads to adjacent units, cannot kill by itself below 1 HP, and is cured by Medical or by repairing next to an Engineer. Engineers and Assimilators cannot move and use EMP or UV on the same turn, while Infectors can move and plague in the same turn. citeturn12view0turn17view2turn15view0turn31view0turn32search4
 
