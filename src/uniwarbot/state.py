@@ -78,6 +78,7 @@ class CompositeActionConfig:
     action_id: str
     label: str | None = None
     segments: list[ActionSegmentConfig] = field(default_factory=list)
+    is_atomic: bool = True
     move_and_attack_mutually_exclusive: bool = False
     metadata: dict[str, Any] = field(default_factory=dict)
 
@@ -86,6 +87,7 @@ class CompositeActionConfig:
             "action_id": self.action_id,
             "label": self.label,
             "segments": [segment.to_dict() for segment in self.segments],
+            "is_atomic": self.is_atomic,
             "move_and_attack_mutually_exclusive": self.move_and_attack_mutually_exclusive,
             "metadata": self.metadata,
         }
@@ -99,6 +101,7 @@ class CompositeActionConfig:
                 ActionSegmentConfig.from_dict(dict(segment))
                 for segment in data.get("segments", [])
             ],
+            is_atomic=bool(data.get("is_atomic", True)),
             move_and_attack_mutually_exclusive=bool(
                 data.get("move_and_attack_mutually_exclusive", False)
             ),
@@ -110,12 +113,14 @@ class CompositeActionConfig:
 class UnitActionConfig:
     action_count: int = 1
     actions: list[CompositeActionConfig] = field(default_factory=list)
+    can_interleave_between_action_windows: bool = True
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "action_count": self.action_count,
             "actions": [action.to_dict() for action in self.actions],
+            "can_interleave_between_action_windows": self.can_interleave_between_action_windows,
             "metadata": self.metadata,
         }
 
@@ -127,6 +132,9 @@ class UnitActionConfig:
                 CompositeActionConfig.from_dict(dict(action))
                 for action in data.get("actions", [])
             ],
+            can_interleave_between_action_windows=bool(
+                data.get("can_interleave_between_action_windows", True)
+            ),
             metadata=dict(data.get("metadata", {})),
         )
 
@@ -260,6 +268,8 @@ class ActionSegmentState:
 class CompositeActionState:
     action_id: str
     segments: list[ActionSegmentState] = field(default_factory=list)
+    is_atomic: bool = True
+    in_progress: bool = False
     attack_occurred: bool = False
     completed: bool = False
     metadata: dict[str, Any] = field(default_factory=dict)
@@ -268,6 +278,8 @@ class CompositeActionState:
         return {
             "action_id": self.action_id,
             "segments": [segment.to_dict() for segment in self.segments],
+            "is_atomic": self.is_atomic,
+            "in_progress": self.in_progress,
             "attack_occurred": self.attack_occurred,
             "completed": self.completed,
             "metadata": self.metadata,
@@ -281,6 +293,8 @@ class CompositeActionState:
                 ActionSegmentState.from_dict(dict(segment))
                 for segment in data.get("segments", [])
             ],
+            is_atomic=bool(data.get("is_atomic", True)),
+            in_progress=bool(data.get("in_progress", False)),
             attack_occurred=bool(data.get("attack_occurred", False)),
             completed=bool(data.get("completed", False)),
             metadata=dict(data.get("metadata", {})),
@@ -292,6 +306,7 @@ class UnitActionState:
     is_available: bool = True
     configured_action_count: int = 1
     actions_remaining: int = 1
+    can_interleave_between_action_windows: bool = True
     move_points_remaining: int | None = None
     attacks_remaining: int = 1
     special_actions_remaining: int | None = None
@@ -312,11 +327,19 @@ class UnitActionState:
             return None
         return self.action_windows[self.current_action_index]
 
+    @property
+    def has_atomic_window_lock(self) -> bool:
+        current = self.current_action_window
+        if current is None:
+            return False
+        return current.is_atomic and current.in_progress and not current.completed
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "is_available": self.is_available,
             "configured_action_count": self.configured_action_count,
             "actions_remaining": self.actions_remaining,
+            "can_interleave_between_action_windows": self.can_interleave_between_action_windows,
             "move_points_remaining": self.move_points_remaining,
             "attacks_remaining": self.attacks_remaining,
             "special_actions_remaining": self.special_actions_remaining,
@@ -334,6 +357,9 @@ class UnitActionState:
             is_available=bool(data.get("is_available", True)),
             configured_action_count=int(data.get("configured_action_count", 1)),
             actions_remaining=int(data.get("actions_remaining", 1)),
+            can_interleave_between_action_windows=bool(
+                data.get("can_interleave_between_action_windows", True)
+            ),
             move_points_remaining=(
                 None
                 if data.get("move_points_remaining") is None

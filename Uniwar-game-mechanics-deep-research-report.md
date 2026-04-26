@@ -47,6 +47,24 @@ and the illegal patterns are:
 - `4move` without a prior attack
 - `6move-special-second-move` unless a specific unit rule explicitly allows that bridge
 
+Just as important, this Wyrm-style activation should be treated as **one indivisible action window**. Once the unit starts a composite activation such as `move-attack-postmove`, control does not pass to another friendly unit in the middle of that same action. So the sequence
+
+- `Wyrm 6move-attack`
+- `some other friendly unit acts`
+- `Wyrm 4move`
+
+should be considered illegal under the bot-ready interpretation of the public rules. The `after attack` movement is not a separate free-standing action that can be resumed later; it is the trailing segment of the same activation that was unlocked by the attack. This follows from the official `ACTION` menu wording, the unit-page decomposition into `Moves per turn`, `after attack`, and `Attack after move`, and the general rules statement that once a unit has completed its available actions it becomes unavailable until the next turn. The public official text does not publish a fully formal temporal grammar for interruptions, so confidence is **medium**, but this atomic-action interpretation is the only one that makes the published action fields internally consistent for units with non-zero `after attack`. citeturn0search1turn0search5turn0search3turn0search0
+
+Multi-action units are different. Marauder’s page explicitly says it can “take two actions in one turn,” which is best modeled as two separate action windows rather than one giant indivisible combo. Under that interpretation, another friendly unit may act between Marauder action window 1 and action window 2, but not inside a single Wyrm-style composite window. So the correct abstraction is:
+
+- `single composite action window` -> atomic, not interruptible
+- `multiple action windows in one turn` -> interruptible **between** windows, but each window is atomic internally
+
+For bot and engine work this means the activation model needs two layers:
+
+- `action_count` or `action_windows_per_turn`
+- per-window `segments` such as `pre_move`, `attack`, `post_attack_move`, `toggle_state`, `special`
+
 So for bot and engine work, every unit definition should eventually carry at least:
 
 - `action_count`

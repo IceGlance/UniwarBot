@@ -9,6 +9,7 @@
   "profiles": {
     "standard_single_action_attack_after_move": {
       "action_count": 1,
+      "can_interleave_between_action_windows": false,
       "segments": [
         {
           "segment_id": "pre_move",
@@ -23,6 +24,7 @@
           "optional": true
         }
       ],
+      "is_atomic": true,
       "move_and_attack_mutually_exclusive": false,
       "examples_of_legal_sequences": [
         "move",
@@ -32,6 +34,7 @@
     },
     "single_action_move_attack_conditional_post_move": {
       "action_count": 1,
+      "can_interleave_between_action_windows": false,
       "segments": [
         {
           "segment_id": "pre_move",
@@ -53,6 +56,7 @@
           "requires_attack_before_use": true
         }
       ],
+      "is_atomic": true,
       "move_and_attack_mutually_exclusive": false,
       "examples_of_legal_sequences": [
         "move",
@@ -69,6 +73,7 @@
     },
     "single_action_move_or_attack_artillery": {
       "action_count": 1,
+      "can_interleave_between_action_windows": false,
       "segments": [
         {
           "segment_id": "move",
@@ -83,6 +88,7 @@
           "optional": true
         }
       ],
+      "is_atomic": true,
       "move_and_attack_mutually_exclusive": true,
       "examples_of_legal_sequences": [
         "move",
@@ -94,6 +100,7 @@
     },
     "single_action_state_toggle_and_attack": {
       "action_count": 1,
+      "can_interleave_between_action_windows": false,
       "segments": [
         {
           "segment_id": "toggle_hidden_state",
@@ -113,10 +120,12 @@
           "optional": true
         }
       ],
+      "is_atomic": true,
       "move_and_attack_mutually_exclusive": false
     },
     "single_action_support_or_special": {
       "action_count": 1,
+      "can_interleave_between_action_windows": false,
       "segments": [
         {
           "segment_id": "move",
@@ -131,10 +140,12 @@
           "optional": true
         }
       ],
+      "is_atomic": true,
       "move_and_attack_mutually_exclusive": false
     },
     "marauder_two_action_template": {
       "action_count": 2,
+      "can_interleave_between_action_windows": true,
       "segments_per_action": [
         {
           "segment_id": "move",
@@ -149,6 +160,7 @@
           "optional": true
         }
       ],
+      "is_atomic_per_action_window": true,
       "move_and_attack_mutually_exclusive": false,
       "confidence": "partial_public_description",
       "notes": [
