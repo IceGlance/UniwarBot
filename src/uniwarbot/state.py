@@ -22,6 +22,115 @@ class HiddenMode(str, Enum):
     SUBMERGED = "submerged"
 
 
+class ActionSegmentKind(str, Enum):
+    TOGGLE_STATE = "toggle_state"
+    MOVE = "move"
+    ATTACK = "attack"
+    SPECIAL = "special"
+
+
+@dataclass(slots=True)
+class ActionSegmentConfig:
+    segment_id: str
+    kind: ActionSegmentKind
+    max_uses: int = 1
+    mobility_points: int | None = None
+    optional: bool = True
+    requires_attack_before_use: bool = False
+    requires_state_mode: HiddenMode | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "segment_id": self.segment_id,
+            "kind": self.kind.value,
+            "max_uses": self.max_uses,
+            "mobility_points": self.mobility_points,
+            "optional": self.optional,
+            "requires_attack_before_use": self.requires_attack_before_use,
+            "requires_state_mode": (
+                self.requires_state_mode.value if self.requires_state_mode else None
+            ),
+            "metadata": self.metadata,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ActionSegmentConfig":
+        state_mode = data.get("requires_state_mode")
+        return cls(
+            segment_id=str(data["segment_id"]),
+            kind=ActionSegmentKind(str(data["kind"])),
+            max_uses=int(data.get("max_uses", 1)),
+            mobility_points=(
+                None if data.get("mobility_points") is None else int(data["mobility_points"])
+            ),
+            optional=bool(data.get("optional", True)),
+            requires_attack_before_use=bool(
+                data.get("requires_attack_before_use", False)
+            ),
+            requires_state_mode=HiddenMode(state_mode) if state_mode else None,
+            metadata=dict(data.get("metadata", {})),
+        )
+
+
+@dataclass(slots=True)
+class CompositeActionConfig:
+    action_id: str
+    label: str | None = None
+    segments: list[ActionSegmentConfig] = field(default_factory=list)
+    move_and_attack_mutually_exclusive: bool = False
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "action_id": self.action_id,
+            "label": self.label,
+            "segments": [segment.to_dict() for segment in self.segments],
+            "move_and_attack_mutually_exclusive": self.move_and_attack_mutually_exclusive,
+            "metadata": self.metadata,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "CompositeActionConfig":
+        return cls(
+            action_id=str(data["action_id"]),
+            label=None if data.get("label") is None else str(data["label"]),
+            segments=[
+                ActionSegmentConfig.from_dict(dict(segment))
+                for segment in data.get("segments", [])
+            ],
+            move_and_attack_mutually_exclusive=bool(
+                data.get("move_and_attack_mutually_exclusive", False)
+            ),
+            metadata=dict(data.get("metadata", {})),
+        )
+
+
+@dataclass(slots=True)
+class UnitActionConfig:
+    action_count: int = 1
+    actions: list[CompositeActionConfig] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "action_count": self.action_count,
+            "actions": [action.to_dict() for action in self.actions],
+            "metadata": self.metadata,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "UnitActionConfig":
+        return cls(
+            action_count=int(data.get("action_count", 1)),
+            actions=[
+                CompositeActionConfig.from_dict(dict(action))
+                for action in data.get("actions", [])
+            ],
+            metadata=dict(data.get("metadata", {})),
+        )
+
+
 @dataclass(slots=True, frozen=True)
 class HexCoord:
     q: int
@@ -105,23 +214,115 @@ class UnitStatusState:
 
 
 @dataclass(slots=True)
+class ActionSegmentState:
+    segment_id: str
+    kind: ActionSegmentKind
+    uses_remaining: int = 1
+    mobility_points_remaining: int | None = None
+    unlocked: bool = True
+    completed: bool = False
+    requires_attack_before_use: bool = False
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "segment_id": self.segment_id,
+            "kind": self.kind.value,
+            "uses_remaining": self.uses_remaining,
+            "mobility_points_remaining": self.mobility_points_remaining,
+            "unlocked": self.unlocked,
+            "completed": self.completed,
+            "requires_attack_before_use": self.requires_attack_before_use,
+            "metadata": self.metadata,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ActionSegmentState":
+        return cls(
+            segment_id=str(data["segment_id"]),
+            kind=ActionSegmentKind(str(data["kind"])),
+            uses_remaining=int(data.get("uses_remaining", 1)),
+            mobility_points_remaining=(
+                None
+                if data.get("mobility_points_remaining") is None
+                else int(data["mobility_points_remaining"])
+            ),
+            unlocked=bool(data.get("unlocked", True)),
+            completed=bool(data.get("completed", False)),
+            requires_attack_before_use=bool(
+                data.get("requires_attack_before_use", False)
+            ),
+            metadata=dict(data.get("metadata", {})),
+        )
+
+
+@dataclass(slots=True)
+class CompositeActionState:
+    action_id: str
+    segments: list[ActionSegmentState] = field(default_factory=list)
+    attack_occurred: bool = False
+    completed: bool = False
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "action_id": self.action_id,
+            "segments": [segment.to_dict() for segment in self.segments],
+            "attack_occurred": self.attack_occurred,
+            "completed": self.completed,
+            "metadata": self.metadata,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "CompositeActionState":
+        return cls(
+            action_id=str(data["action_id"]),
+            segments=[
+                ActionSegmentState.from_dict(dict(segment))
+                for segment in data.get("segments", [])
+            ],
+            attack_occurred=bool(data.get("attack_occurred", False)),
+            completed=bool(data.get("completed", False)),
+            metadata=dict(data.get("metadata", {})),
+        )
+
+
+@dataclass(slots=True)
 class UnitActionState:
     is_available: bool = True
+    configured_action_count: int = 1
+    actions_remaining: int = 1
     move_points_remaining: int | None = None
     attacks_remaining: int = 1
     special_actions_remaining: int | None = None
     action_phase_index: int = 0
+    current_action_index: int = 0
+    action_windows: list[CompositeActionState] = field(default_factory=list)
     has_moved_this_turn: bool = False
     has_attacked_this_turn: bool = False
     has_used_special_this_turn: bool = False
 
+    @property
+    def current_action_window(self) -> CompositeActionState | None:
+        if not self.action_windows:
+            return None
+        if self.current_action_index < 0 or self.current_action_index >= len(
+            self.action_windows
+        ):
+            return None
+        return self.action_windows[self.current_action_index]
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "is_available": self.is_available,
+            "configured_action_count": self.configured_action_count,
+            "actions_remaining": self.actions_remaining,
             "move_points_remaining": self.move_points_remaining,
             "attacks_remaining": self.attacks_remaining,
             "special_actions_remaining": self.special_actions_remaining,
             "action_phase_index": self.action_phase_index,
+            "current_action_index": self.current_action_index,
+            "action_windows": [action.to_dict() for action in self.action_windows],
             "has_moved_this_turn": self.has_moved_this_turn,
             "has_attacked_this_turn": self.has_attacked_this_turn,
             "has_used_special_this_turn": self.has_used_special_this_turn,
@@ -131,6 +332,8 @@ class UnitActionState:
     def from_dict(cls, data: dict[str, Any]) -> "UnitActionState":
         return cls(
             is_available=bool(data.get("is_available", True)),
+            configured_action_count=int(data.get("configured_action_count", 1)),
+            actions_remaining=int(data.get("actions_remaining", 1)),
             move_points_remaining=(
                 None
                 if data.get("move_points_remaining") is None
@@ -143,6 +346,11 @@ class UnitActionState:
                 else int(data["special_actions_remaining"])
             ),
             action_phase_index=int(data.get("action_phase_index", 0)),
+            current_action_index=int(data.get("current_action_index", 0)),
+            action_windows=[
+                CompositeActionState.from_dict(dict(action))
+                for action in data.get("action_windows", [])
+            ],
             has_moved_this_turn=bool(data.get("has_moved_this_turn", False)),
             has_attacked_this_turn=bool(data.get("has_attacked_this_turn", False)),
             has_used_special_this_turn=bool(
@@ -518,5 +726,16 @@ def load_game_dictionary(path: str | Path | None = None) -> dict[str, Any]:
             / "data"
             / "validated"
             / "game-dictionary.json"
+        )
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def load_action_economy_dictionary(path: str | Path | None = None) -> dict[str, Any]:
+    if path is None:
+        path = (
+            Path(__file__).resolve().parents[2]
+            / "data"
+            / "validated"
+            / "action-economy-dictionary.json"
         )
     return json.loads(Path(path).read_text(encoding="utf-8"))

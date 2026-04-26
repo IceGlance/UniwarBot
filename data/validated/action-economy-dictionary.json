@@ -1,0 +1,195 @@
+{
+  "schema_version": "2026-04-26.v1",
+  "purpose": "Machine-readable unit activation templates for UniWar engine and bot code.",
+  "notes": [
+    "Profiles describe activation structure, not combat resolution.",
+    "Numeric mobility values are usually taken from the unit definition file via fields like surface, underground, and after attack.",
+    "Some units still have unresolved public documentation quirks, especially Marauder action splitting and Battery move-field interpretation."
+  ],
+  "profiles": {
+    "standard_single_action_attack_after_move": {
+      "action_count": 1,
+      "segments": [
+        {
+          "segment_id": "pre_move",
+          "kind": "move",
+          "mobility_source": "surface",
+          "optional": true
+        },
+        {
+          "segment_id": "attack",
+          "kind": "attack",
+          "max_uses": 1,
+          "optional": true
+        }
+      ],
+      "move_and_attack_mutually_exclusive": false,
+      "examples_of_legal_sequences": [
+        "move",
+        "attack",
+        "move-attack"
+      ]
+    },
+    "single_action_move_attack_conditional_post_move": {
+      "action_count": 1,
+      "segments": [
+        {
+          "segment_id": "pre_move",
+          "kind": "move",
+          "mobility_source": "surface",
+          "optional": true
+        },
+        {
+          "segment_id": "attack",
+          "kind": "attack",
+          "max_uses": 1,
+          "optional": true
+        },
+        {
+          "segment_id": "post_attack_move",
+          "kind": "move",
+          "mobility_source": "after_attack",
+          "optional": true,
+          "requires_attack_before_use": true
+        }
+      ],
+      "move_and_attack_mutually_exclusive": false,
+      "examples_of_legal_sequences": [
+        "move",
+        "move-attack",
+        "attack",
+        "attack-postmove",
+        "move-attack-postmove"
+      ],
+      "examples_of_illegal_sequences": [
+        "move-postmove",
+        "move-move_without_attack",
+        "postmove_without_attack"
+      ]
+    },
+    "single_action_move_or_attack_artillery": {
+      "action_count": 1,
+      "segments": [
+        {
+          "segment_id": "move",
+          "kind": "move",
+          "mobility_source": "surface",
+          "optional": true
+        },
+        {
+          "segment_id": "attack",
+          "kind": "attack",
+          "max_uses": 1,
+          "optional": true
+        }
+      ],
+      "move_and_attack_mutually_exclusive": true,
+      "examples_of_legal_sequences": [
+        "move",
+        "attack"
+      ],
+      "examples_of_illegal_sequences": [
+        "move-attack"
+      ]
+    },
+    "single_action_state_toggle_and_attack": {
+      "action_count": 1,
+      "segments": [
+        {
+          "segment_id": "toggle_hidden_state",
+          "kind": "toggle_state",
+          "optional": true
+        },
+        {
+          "segment_id": "pre_move",
+          "kind": "move",
+          "mobility_source": "surface_or_hidden_mode",
+          "optional": true
+        },
+        {
+          "segment_id": "attack",
+          "kind": "attack",
+          "max_uses": 1,
+          "optional": true
+        }
+      ],
+      "move_and_attack_mutually_exclusive": false
+    },
+    "single_action_support_or_special": {
+      "action_count": 1,
+      "segments": [
+        {
+          "segment_id": "move",
+          "kind": "move",
+          "mobility_source": "surface",
+          "optional": true
+        },
+        {
+          "segment_id": "special",
+          "kind": "special",
+          "max_uses": 1,
+          "optional": true
+        }
+      ],
+      "move_and_attack_mutually_exclusive": false
+    },
+    "marauder_two_action_template": {
+      "action_count": 2,
+      "segments_per_action": [
+        {
+          "segment_id": "move",
+          "kind": "move",
+          "mobility_source": "surface_split_not_fully_published",
+          "optional": true
+        },
+        {
+          "segment_id": "attack",
+          "kind": "attack",
+          "max_uses": 1,
+          "optional": true
+        }
+      ],
+      "move_and_attack_mutually_exclusive": false,
+      "confidence": "partial_public_description",
+      "notes": [
+        "Official pages confirm Marauder takes two actions in one turn.",
+        "The exact public split of the listed surface mobility across those two actions is not fully explicit in the current official page text."
+      ]
+    }
+  },
+  "unit_bindings": {
+    "marine": "standard_single_action_attack_after_move",
+    "engineer": "single_action_support_or_special",
+    "mecha_ii": "standard_single_action_attack_after_move",
+    "marauder": "marauder_two_action_template",
+    "bopper": "standard_single_action_attack_after_move",
+    "tank": "standard_single_action_attack_after_move",
+    "helicopter": "single_action_move_attack_conditional_post_move",
+    "battery": "single_action_move_or_attack_artillery",
+    "destroyer": "standard_single_action_attack_after_move",
+    "fuze": "standard_single_action_attack_after_move",
+    "submarine": "single_action_state_toggle_and_attack",
+    "underling": "single_action_state_toggle_and_attack",
+    "infector": "single_action_support_or_special",
+    "infected_marine": "standard_single_action_attack_after_move",
+    "swarmer": "standard_single_action_attack_after_move",
+    "borfly": "single_action_move_attack_conditional_post_move",
+    "garuda": "standard_single_action_attack_after_move",
+    "pinzer": "standard_single_action_attack_after_move",
+    "wyrm": "single_action_move_attack_conditional_post_move",
+    "leviathan": "standard_single_action_attack_after_move",
+    "salamander": "single_action_support_or_special",
+    "kraken": "single_action_state_toggle_and_attack",
+    "mecha": "single_action_support_or_special",
+    "assimilator": "single_action_support_or_special",
+    "cyber_underling": "single_action_state_toggle_and_attack",
+    "speeder": "single_action_move_attack_conditional_post_move",
+    "guardian": "single_action_support_or_special",
+    "eclipse": "single_action_support_or_special",
+    "plasma_tank": "standard_single_action_attack_after_move",
+    "walker": "single_action_move_or_attack_artillery",
+    "hydronaut": "single_action_move_or_attack_artillery",
+    "mantisse": "standard_single_action_attack_after_move",
+    "skimmer": "single_action_state_toggle_and_attack"
+  }
+}

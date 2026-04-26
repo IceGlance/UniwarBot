@@ -1,8 +1,13 @@
 """Core state models for UniwarBot."""
 
 from .state import (
+    ActionSegmentConfig,
+    ActionSegmentKind,
+    ActionSegmentState,
     AbilityCooldownState,
     CaptureState,
+    CompositeActionConfig,
+    CompositeActionState,
     FightContext,
     GameMap,
     GameState,
@@ -11,16 +16,23 @@ from .state import (
     MapMetadata,
     PlayerState,
     TileState,
+    UnitActionConfig,
     UnitActionState,
     UnitState,
     UnitStatusState,
     VeterancyLevel,
+    load_action_economy_dictionary,
     load_game_dictionary,
 )
 
 __all__ = [
+    "ActionSegmentConfig",
+    "ActionSegmentKind",
+    "ActionSegmentState",
     "AbilityCooldownState",
     "CaptureState",
+    "CompositeActionConfig",
+    "CompositeActionState",
     "FightContext",
     "GameMap",
     "GameState",
@@ -29,9 +41,11 @@ __all__ = [
     "MapMetadata",
     "PlayerState",
     "TileState",
+    "UnitActionConfig",
     "UnitActionState",
     "UnitState",
     "UnitStatusState",
     "VeterancyLevel",
+    "load_action_economy_dictionary",
     "load_game_dictionary",
 ]

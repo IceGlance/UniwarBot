@@ -20,6 +20,44 @@ I therefore use three confidence tiers throughout this report. **High confidence
 
 A match proceeds by alternating player turns. At the start of your turn, you receive credits from captured bases, then spend those credits, move, attack, capture, repair, or use specials with available units. Once a unit has completed all available actions, it cannot be used again until your next turn. If a unit is still available at end of turn and damaged, it auto-repairs. Capturing a base or harbor takes one round to complete. Harbors are required to build aquatic units but do not generate credits; medical tiles cannot be captured and repair three times the normal amount. citeturn43search3turn43search2turn23search3
 
+For engine design, that “available actions” language is not enough by itself. The modern unit pages expose four fields that together define a unit’s action economy: `Moves per turn`, `surface` mobility, `after attack` mobility, and `Attack after move YES/NO`. Those fields imply that units do **not** all share the same simple template. At minimum, the public data supports four distinct action patterns:
+
+- `standard single-action attack-after-move unit`
+  Legal patterns are `move`, `attack`, and `move-attack`. This covers the common case where `Attack after move = YES` and `after attack = 0`.
+- `single-action move-attack-conditional-move unit`
+  Legal patterns are `move`, `move-attack`, `attack`, `attack-postmove`, and `move-attack-postmove`. The post-attack move is unlocked **only if an attack actually occurred**. Therefore `move-postmove` and `move-move` are illegal. This is the correct pattern for units such as Wyrm, Helicopter, Borfly, and Speeder, whose official pages show non-zero `after attack` mobility.
+- `single-action move-or-attack artillery unit`
+  Legal patterns are `move` or `attack`, but not `move-attack`. This is the pattern explicitly stated on units such as Battery, whose official text says it “cannot move and attack in the same turn,” even though the page also shows `Moves per turn 2`, which should therefore be treated as a page-field quirk rather than proof of a second full action.
+- `multi-action unit`
+  Marauder is the clearest official example because its page explicitly says it can “take two actions in one turn.” For bot purposes this must be modeled as more than one action slot during one activation, not merely as extra mobility. The exact split between its two action slots is not fully formalized in the public web text, so the safest representation is `action_count > 1` with a configurable per-action template rather than hard-coding a specific two-step script until that split is empirically verified.
+
+State-toggle actions such as bury, resurface, submerge, and similar specials should also be modeled as action segments rather than as passive flags. Underling and Cyber Underling do not merely “have a buried boolean”; they switch into a different movement/vision/defense mode, and resurface grants an attack bonus on the attack that follows. In other words, a bot-ready state model must represent both persistent state (`buried`, `submerged`, cooldowns, infection, disabled) and the **activation template** that determines which sequences are legal for the currently selected unit.
+
+The Wyrm example is the best canonical test of this distinction. Its page shows `surface 6`, `after attack 4`, and `Attack after move YES`. That means the legal single-activation patterns are:
+
+- `6move`
+- `6move-attack`
+- `attack`
+- `attack-4move`
+- `6move-attack-4move`
+
+and the illegal patterns are:
+
+- `6move-4move`
+- `4move` without a prior attack
+- `6move-special-second-move` unless a specific unit rule explicitly allows that bridge
+
+So for bot and engine work, every unit definition should eventually carry at least:
+
+- `action_count`
+- `pre_attack_mobility`
+- `attack_count`
+- `can_attack_after_move`
+- `post_attack_mobility`
+- `post_attack_mobility_requires_attack`
+- `move_and_attack_mutually_exclusive`
+- `state_toggle_actions` such as bury, resurface, or submerge
+
 The official rules also confirm that movement is terrain-limited and additionally constrained by Zone of Control, although no exact public formula for ZoC was found in the accessible official documentation. There is no separate “initiative” stat published on current unit pages; ordering is determined by player input during the turn, while retaliation depends on range and status rather than a speed-based initiative mechanic. This is an important distinction from some other tactics games: UniWar’s sequencing advantage comes from movement, position, and action economy, not hidden initiative rolls. citeturn31view0turn43search3turn11search11
 
 The official rules say damage depends on attack strength versus target type, defense, terrain, special bonuses, and chance. The calculator and best community explanations model this as a chance-to-hit per health point that starts at 50% and shifts by 5 percentage points per effective attack-defense difference. In measured play, that means the practical average damage is close to `current HP × p`, where `p` is the effective hit probability after terrain, gang-up, veterancy, resurface bonus, and armor piercing. Community reverse engineering further describes the damage roll as multiple internal trials per HP, which is why outcomes cluster tightly around the expected value rather than swinging wildly. Confidence on this exact internal implementation is **medium**. citeturn23search0turn24search2turn24search4turn35search1
