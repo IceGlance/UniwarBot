@@ -1,0 +1,2024 @@
+{
+  "schema_version": "2026-04-24.v1",
+  "generated_from": {
+    "report": "Uniwar-game-mechanics-deep-research-report.md",
+    "report_date_context": "2026-04-18",
+    "generation_date": "2026-04-24"
+  },
+  "purpose": "Machine-readable units and terrains dictionary for a UniWar engine, bot, and training pipeline.",
+  "null_policy": "null means unknown, unpublished, unresolved, or intentionally not guessed from incomplete public sources.",
+  "defaults": {
+    "base_max_hp": {
+      "value": 10,
+      "confidence": "community_consensus"
+    },
+    "armor_piercing_percent_if_omitted": 0
+  },
+  "confidence_levels": {
+    "official": "Current official unit cards or official public rules pages.",
+    "mixed": "Combined from official report content and stable secondary sources.",
+    "community_consensus": "Stable community-derived behavior noted in the research report, but not fully current official publication.",
+    "unpublished": "The report explicitly says the public web does not publish the numeric value."
+  },
+  "enums": {
+    "factions": [
+      "sapiens",
+      "khraleans",
+      "titans"
+    ],
+    "unit_types": [
+      "ground_light",
+      "ground_heavy",
+      "air",
+      "aquatic",
+      "amphibian"
+    ],
+    "target_classes": [
+      "ground_light",
+      "ground_heavy",
+      "air",
+      "aquatic",
+      "amphibian"
+    ],
+    "hidden_modes": [
+      "buried",
+      "submerged"
+    ]
+  },
+  "unit_type_rules": {
+    "ground_light": {
+      "favored_terrains": [
+        "base",
+        "forest",
+        "mountain"
+      ],
+      "notes": [
+        "The report says ground light units benefit most from base, forest, and mountain terrain."
+      ],
+      "confidence": "mixed"
+    },
+    "ground_heavy": {
+      "favored_terrains": [
+        "plain",
+        "desert"
+      ],
+      "blocked_terrains": [
+        "mountain"
+      ],
+      "notes": [
+        "The report says ground heavy units prefer open/plain/desert terrain and do not enter mountains."
+      ],
+      "confidence": "mixed"
+    },
+    "air": {
+      "uniform_terrain_mobility_logic": true,
+      "can_end_turn_on_occupied_tile": false,
+      "confidence": "community_consensus"
+    },
+    "aquatic": {
+      "allowed_terrains": [
+        "water",
+        "harbor"
+      ],
+      "notes": [
+        "This comes from older community summaries and remains directionally useful for pure aquatic units.",
+        "The report notes that amphibian units are modern official additions and old public how-to-play pages are outdated."
+      ],
+      "confidence": "community_consensus"
+    },
+    "amphibian": {
+      "allowed_terrains": null,
+      "notes": [
+        "Amphibian is an official modern unit type, but the public tutorial pages in the report do not fully publish its terrain matrix."
+      ],
+      "confidence": "unpublished"
+    }
+  },
+  "terrains": {
+    "plain": {
+      "display_name": "Plain",
+      "capturable": false,
+      "provides_income": false,
+      "income_amount": 0,
+      "supports_production": false,
+      "production_role": null,
+      "repair_multiplier": 1,
+      "numeric_combat_modifiers_published": false,
+      "numeric_movement_costs_published": false,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [],
+      "blocked_unit_types": [],
+      "notes": [
+        "Baseline neutral land terrain."
+      ]
+    },
+    "base": {
+      "display_name": "Base",
+      "capturable": true,
+      "provides_income": true,
+      "income_amount": null,
+      "supports_production": true,
+      "production_role": "land",
+      "repair_multiplier": 1,
+      "numeric_combat_modifiers_published": false,
+      "numeric_movement_costs_published": false,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [
+        "ground_light"
+      ],
+      "blocked_unit_types": [],
+      "community_examples": [
+        {
+          "unit_id": "marine",
+          "attack_modifier": 2,
+          "defense_modifier": 2,
+          "confidence": "community_consensus"
+        }
+      ],
+      "notes": [
+        "Provides credits.",
+        "Required for land production.",
+        "The exact numeric income per base is not stated in the report."
+      ]
+    },
+    "forest": {
+      "display_name": "Forest",
+      "capturable": false,
+      "provides_income": false,
+      "income_amount": 0,
+      "supports_production": false,
+      "production_role": null,
+      "repair_multiplier": 1,
+      "numeric_combat_modifiers_published": false,
+      "numeric_movement_costs_published": false,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [
+        "ground_light"
+      ],
+      "blocked_unit_types": [],
+      "community_examples": [
+        {
+          "unit_id": "marine",
+          "attack_modifier": 2,
+          "defense_modifier": 3,
+          "confidence": "community_consensus"
+        }
+      ],
+      "notes": [
+        "The report says forest terrain is strong for ground light units."
+      ]
+    },
+    "mountain": {
+      "display_name": "Mountain",
+      "capturable": false,
+      "provides_income": false,
+      "income_amount": 0,
+      "supports_production": false,
+      "production_role": null,
+      "repair_multiplier": 1,
+      "numeric_combat_modifiers_published": false,
+      "numeric_movement_costs_published": false,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [
+        "ground_light"
+      ],
+      "blocked_unit_types": [
+        "ground_heavy"
+      ],
+      "community_examples": [
+        {
+          "unit_id": "marine",
+          "attack_modifier": 2,
+          "defense_modifier": 4,
+          "confidence": "community_consensus"
+        }
+      ],
+      "notes": [
+        "The report says mountain terrain is strong for ground light units and blocked for ground heavy units."
+      ]
+    },
+    "swamp": {
+      "display_name": "Swamp",
+      "capturable": false,
+      "provides_income": false,
+      "income_amount": 0,
+      "supports_production": false,
+      "production_role": null,
+      "repair_multiplier": 1,
+      "numeric_combat_modifiers_published": false,
+      "numeric_movement_costs_published": false,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [],
+      "blocked_unit_types": [],
+      "notes": [
+        "The report calls swamp unfavorable terrain by community consensus."
+      ]
+    },
+    "desert": {
+      "display_name": "Desert",
+      "capturable": false,
+      "provides_income": false,
+      "income_amount": 0,
+      "supports_production": false,
+      "production_role": null,
+      "repair_multiplier": 1,
+      "numeric_combat_modifiers_published": false,
+      "numeric_movement_costs_published": false,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [
+        "ground_heavy"
+      ],
+      "blocked_unit_types": [],
+      "notes": [
+        "The report says desert is open terrain preferred by ground heavy units."
+      ]
+    },
+    "water": {
+      "display_name": "Water",
+      "capturable": false,
+      "provides_income": false,
+      "income_amount": 0,
+      "supports_production": false,
+      "production_role": null,
+      "repair_multiplier": 1,
+      "numeric_combat_modifiers_published": false,
+      "numeric_movement_costs_published": false,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [
+        "aquatic"
+      ],
+      "blocked_unit_types": [],
+      "notes": [
+        "Water is the sea domain terrain."
+      ]
+    },
+    "harbor": {
+      "display_name": "Harbor",
+      "capturable": true,
+      "provides_income": false,
+      "income_amount": 0,
+      "supports_production": true,
+      "production_role": "aquatic",
+      "repair_multiplier": 1,
+      "numeric_combat_modifiers_published": false,
+      "numeric_movement_costs_published": false,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [
+        "aquatic"
+      ],
+      "blocked_unit_types": [],
+      "notes": [
+        "Harbor is required for aquatic production.",
+        "Harbor does not generate credits."
+      ]
+    },
+    "medical": {
+      "display_name": "Medical",
+      "capturable": false,
+      "provides_income": false,
+      "income_amount": 0,
+      "supports_production": false,
+      "production_role": null,
+      "repair_multiplier": 3,
+      "numeric_combat_modifiers_published": false,
+      "numeric_movement_costs_published": false,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [],
+      "blocked_unit_types": [],
+      "notes": [
+        "Medical terrain cannot be captured.",
+        "Medical terrain increases repair rate by 3x."
+      ]
+    }
+  },
+  "units": {
+    "marine": {
+      "display_name": "Marine",
+      "faction": "sapiens",
+      "unit_type": "ground_light",
+      "cost": 100,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 9,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 4
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 6,
+        "ground_heavy": 3,
+        "air": 3,
+        "aquatic": 2,
+        "amphibian": 6
+      },
+      "surface_defense_strength": 5,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": -100,
+      "abilities": [
+        {
+          "id": "attack_after_move"
+        }
+      ],
+      "notes": [
+        "Baseline infantry."
+      ]
+    },
+    "engineer": {
+      "display_name": "Engineer",
+      "faction": "sapiens",
+      "unit_type": "ground_light",
+      "cost": 200,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 6,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 3
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "surface_defense_strength": 0,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "emp",
+          "radius": 2,
+          "recharge_rounds": 10,
+          "effect": "disable",
+          "effect_duration_rounds": 1,
+          "target_scope": "titans_plus_reprogrammed_mecha_ii",
+          "move_then_use_same_turn": null,
+          "move_then_use_same_turn_confidence": "unpublished"
+        },
+        {
+          "id": "repair_aura",
+          "multiplier": 2
+        },
+        {
+          "id": "re_program",
+          "target_unit_id": "mecha",
+          "result_unit_id": "mecha_ii"
+        }
+      ],
+      "notes": [
+        "Support unit with no direct attack strength.",
+        "The report says old community notes are clearer than the current public official web for move plus EMP restrictions."
+      ]
+    },
+    "mecha_ii": {
+      "display_name": "Mecha II",
+      "faction": "sapiens",
+      "unit_type": "ground_light",
+      "cost": 0,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 8,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 3
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 7,
+        "ground_heavy": 4,
+        "air": 4,
+        "aquatic": 2,
+        "amphibian": 7
+      },
+      "surface_defense_strength": 8,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "teleport",
+          "cannot_target_terrains": [
+            "base"
+          ],
+          "disabled_rounds_after_use": 1,
+          "recharge_rounds": null,
+          "recharge_rounds_confidence": "unpublished"
+        }
+      ],
+      "notes": [
+        "Created by Engineer re-programming a Titan Mecha."
+      ]
+    },
+    "marauder": {
+      "display_name": "Marauder",
+      "faction": "sapiens",
+      "unit_type": "ground_heavy",
+      "cost": 250,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 2,
+        "surface": 12,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 5
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 8,
+        "ground_heavy": 4,
+        "air": 4,
+        "aquatic": 4,
+        "amphibian": 8
+      },
+      "surface_defense_strength": 7,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "two_phase_turn"
+        },
+        {
+          "id": "attack_after_move"
+        }
+      ],
+      "notes": []
+    },
+    "bopper": {
+      "display_name": "Bopper",
+      "faction": "sapiens",
+      "unit_type": "ground_light",
+      "cost": 300,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 7,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 3
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 3,
+          "max": 3
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 3,
+        "ground_heavy": 5,
+        "air": 1,
+        "aquatic": 5,
+        "amphibian": 3
+      },
+      "surface_defense_strength": 0,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 25,
+        "air": 35,
+        "aquatic": 50,
+        "amphibian": 25
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [],
+      "notes": []
+    },
+    "tank": {
+      "display_name": "Tank",
+      "faction": "sapiens",
+      "unit_type": "ground_heavy",
+      "cost": 400,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 8,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 3
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 10,
+        "ground_heavy": 10,
+        "air": 0,
+        "aquatic": 9,
+        "amphibian": 10
+      },
+      "surface_defense_strength": 13,
+      "repair_points": 2,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [],
+      "notes": [
+        "Cannot attack air units."
+      ]
+    },
+    "helicopter": {
+      "display_name": "Helicopter",
+      "faction": "sapiens",
+      "unit_type": "air",
+      "cost": 500,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 12,
+        "after_attack": 6
+      },
+      "vision": {
+        "surface": 5
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 12,
+        "ground_heavy": 7,
+        "air": 10,
+        "aquatic": 8,
+        "amphibian": 12
+      },
+      "surface_defense_strength": 10,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": -5,
+      "abilities": [
+        {
+          "id": "move_after_attack",
+          "after_attack_mobility": 6
+        }
+      ],
+      "notes": []
+    },
+    "battery": {
+      "display_name": "Battery",
+      "faction": "sapiens",
+      "unit_type": "ground_heavy",
+      "cost": 600,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 2,
+        "surface": 5,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 4
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 2,
+          "max": 4
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 10,
+        "ground_heavy": 6,
+        "air": 5,
+        "aquatic": 10,
+        "amphibian": 10
+      },
+      "surface_defense_strength": 4,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "cannot_move_and_attack_same_turn"
+        },
+        {
+          "id": "no_point_blank_defense"
+        }
+      ],
+      "notes": [
+        "The report marks Battery action semantics as partially unclear because official cards also show moves_per_turn = 2."
+      ]
+    },
+    "destroyer": {
+      "display_name": "Destroyer",
+      "faction": "sapiens",
+      "unit_type": "aquatic",
+      "cost": 800,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 12,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 5
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 3,
+          "max": 3
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 10,
+        "ground_heavy": 10,
+        "air": 12,
+        "aquatic": 16,
+        "amphibian": 10
+      },
+      "surface_defense_strength": 12,
+      "repair_points": 2,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": -9,
+      "abilities": [],
+      "notes": [
+        "The report calls this the strongest surface ship for Sapiens."
+      ]
+    },
+    "fuze": {
+      "display_name": "Fuze",
+      "faction": "sapiens",
+      "unit_type": "amphibian",
+      "cost": 200,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 9,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 4
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 2,
+          "max": 2
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 5,
+        "ground_heavy": 4,
+        "air": 1,
+        "aquatic": 4,
+        "amphibian": 6
+      },
+      "surface_defense_strength": 2,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 25,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 20,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [],
+      "notes": []
+    },
+    "submarine": {
+      "display_name": "Submarine",
+      "faction": "sapiens",
+      "unit_type": "aquatic",
+      "cost": 400,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 9,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 3
+      },
+      "hidden_mode": {
+        "mode": "submerged",
+        "mobility": 9,
+        "vision": 2,
+        "attack_range": {
+          "min": 1,
+          "max": 2
+        },
+        "defense_strength": 8,
+        "attack_from_hidden_penalty": -2,
+        "resurface_bonus": null,
+        "detection_rules_published": false
+      },
+      "attack_range": {
+        "surface": {
+          "min": 3,
+          "max": 3
+        },
+        "hidden": {
+          "min": 1,
+          "max": 2
+        }
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 5,
+        "ground_heavy": 5,
+        "air": 3,
+        "aquatic": 8,
+        "amphibian": 4
+      },
+      "surface_defense_strength": 5,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 15,
+        "ground_heavy": 30,
+        "air": 15,
+        "aquatic": 40,
+        "amphibian": 10
+      },
+      "known_underwater_attack_penalty": -2,
+      "abilities": [
+        {
+          "id": "submerge"
+        }
+      ],
+      "notes": [
+        "The report says surface units can attack submerged targets, but the full public detection rules are incomplete."
+      ]
+    },
+    "underling": {
+      "display_name": "Underling",
+      "faction": "khraleans",
+      "unit_type": "ground_light",
+      "cost": 100,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 11,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 3
+      },
+      "hidden_mode": {
+        "mode": "buried",
+        "mobility": 7,
+        "vision": 2,
+        "attack_range": null,
+        "defense_strength": 5,
+        "attack_from_hidden_penalty": null,
+        "resurface_bonus": 4,
+        "forbidden_terrains": [
+          "medical",
+          "base",
+          "harbor",
+          "water"
+        ],
+        "ground_heavy_passover_damage": 1,
+        "confidence": "community_consensus"
+      },
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 6,
+        "ground_heavy": 3,
+        "air": 0,
+        "aquatic": 2,
+        "amphibian": 6
+      },
+      "surface_defense_strength": 5,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "bury"
+        }
+      ],
+      "notes": [
+        "Cannot attack air units."
+      ]
+    },
+    "infector": {
+      "display_name": "Infector",
+      "faction": "khraleans",
+      "unit_type": "ground_light",
+      "cost": 250,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 8,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 3
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "surface_defense_strength": 0,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "plague",
+          "range": 2,
+          "effect_details_confidence": "community_consensus"
+        },
+        {
+          "id": "infect",
+          "target_unit_id": "marine",
+          "result_unit_id": "infected_marine"
+        },
+        {
+          "id": "repair_aura",
+          "multiplier": 3
+        }
+      ],
+      "notes": [
+        "The report says community references support move plus plague in the same turn for Infector."
+      ]
+    },
+    "infected_marine": {
+      "display_name": "Infected Marine",
+      "faction": "khraleans",
+      "unit_type": "ground_light",
+      "cost": 0,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 10,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 4
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 7,
+        "ground_heavy": 4,
+        "air": 4,
+        "aquatic": 2,
+        "amphibian": 7
+      },
+      "surface_defense_strength": 6,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [],
+      "notes": [
+        "Created by Infector infecting a Sapien Marine."
+      ]
+    },
+    "swarmer": {
+      "display_name": "Swarmer",
+      "faction": "khraleans",
+      "unit_type": "air",
+      "cost": 250,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 9,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 5
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 2
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 8,
+        "ground_heavy": 4,
+        "air": 3,
+        "aquatic": 6,
+        "amphibian": 7
+      },
+      "surface_defense_strength": 4,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [],
+      "notes": [
+        "Cheap ranged flyer."
+      ]
+    },
+    "borfly": {
+      "display_name": "Borfly",
+      "faction": "khraleans",
+      "unit_type": "air",
+      "cost": 200,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 6,
+        "after_attack": 6
+      },
+      "vision": {
+        "surface": 3
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 2,
+          "max": 3
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 4,
+        "ground_heavy": 6,
+        "air": 1,
+        "aquatic": 4,
+        "amphibian": 4
+      },
+      "surface_defense_strength": 2,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 30,
+        "air": 30,
+        "aquatic": 50,
+        "amphibian": 25
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "move_after_attack",
+          "after_attack_mobility": 6
+        }
+      ],
+      "notes": []
+    },
+    "garuda": {
+      "display_name": "Garuda",
+      "faction": "khraleans",
+      "unit_type": "air",
+      "cost": 350,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 12,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 5
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 7,
+        "ground_heavy": 8,
+        "air": 9,
+        "aquatic": 8,
+        "amphibian": 7
+      },
+      "surface_defense_strength": 9,
+      "repair_points": 2,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [],
+      "notes": [
+        "Heavy air brawler."
+      ]
+    },
+    "pinzer": {
+      "display_name": "Pinzer",
+      "faction": "khraleans",
+      "unit_type": "ground_heavy",
+      "cost": 450,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 8,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 3
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 12,
+        "ground_heavy": 10,
+        "air": 3,
+        "aquatic": 10,
+        "amphibian": 12
+      },
+      "surface_defense_strength": 13,
+      "repair_points": 2,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [],
+      "notes": [
+        "Heavy frontline unit."
+      ]
+    },
+    "wyrm": {
+      "display_name": "Wyrm",
+      "faction": "khraleans",
+      "unit_type": "ground_heavy",
+      "cost": 550,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 6,
+        "after_attack": 4
+      },
+      "vision": {
+        "surface": 3
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 3
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 10,
+        "ground_heavy": 9,
+        "air": 12,
+        "aquatic": 10,
+        "amphibian": 10
+      },
+      "surface_defense_strength": 4,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "move_after_attack",
+          "after_attack_mobility": 4
+        }
+      ],
+      "notes": [
+        "Hybrid artillery.",
+        "The report says Wyrm can respond in close combat."
+      ]
+    },
+    "leviathan": {
+      "display_name": "Leviathan",
+      "faction": "khraleans",
+      "unit_type": "aquatic",
+      "cost": 600,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 11,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 4
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 3,
+          "max": 3
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 10,
+        "ground_heavy": 10,
+        "air": 9,
+        "aquatic": 12,
+        "amphibian": 10
+      },
+      "surface_defense_strength": 12,
+      "repair_points": 2,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [],
+      "notes": [
+        "The report highlights Leviathan as cheaper than some rival flagships while still having strong stats."
+      ]
+    },
+    "salamander": {
+      "display_name": "Salamander",
+      "faction": "khraleans",
+      "unit_type": "amphibian",
+      "cost": 200,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 9,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 4
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 6,
+        "ground_heavy": 4,
+        "air": 3,
+        "aquatic": 5,
+        "amphibian": 6
+      },
+      "surface_defense_strength": 8,
+      "repair_points": 2,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 25,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 30,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "plague",
+          "range": 1,
+          "effect_details_confidence": "community_consensus"
+        }
+      ],
+      "notes": []
+    },
+    "kraken": {
+      "display_name": "Kraken",
+      "faction": "khraleans",
+      "unit_type": "aquatic",
+      "cost": 350,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 10,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 3
+      },
+      "hidden_mode": {
+        "mode": "submerged",
+        "mobility": 10,
+        "vision": 3,
+        "attack_range": {
+          "min": 1,
+          "max": 1
+        },
+        "defense_strength": 12,
+        "attack_from_hidden_penalty": -2,
+        "resurface_bonus": 3,
+        "detection_rules_published": false
+      },
+      "attack_range": {
+        "surface": {
+          "min": 2,
+          "max": 2
+        },
+        "hidden": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 6,
+        "ground_heavy": 6,
+        "air": 0,
+        "aquatic": 6,
+        "amphibian": 6
+      },
+      "surface_defense_strength": 8,
+      "repair_points": 2,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 15,
+        "ground_heavy": 30,
+        "air": 0,
+        "aquatic": 60,
+        "amphibian": 15
+      },
+      "known_underwater_attack_penalty": -2,
+      "abilities": [
+        {
+          "id": "submerge"
+        }
+      ],
+      "notes": [
+        "Cannot attack air units."
+      ]
+    },
+    "mecha": {
+      "display_name": "Mecha",
+      "faction": "titans",
+      "unit_type": "ground_light",
+      "cost": 100,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 8,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 4
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 6,
+        "ground_heavy": 3,
+        "air": 4,
+        "aquatic": 2,
+        "amphibian": 6
+      },
+      "surface_defense_strength": 6,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "teleport",
+          "cannot_target_terrains": [
+            "base"
+          ],
+          "disabled_rounds_after_use": 1,
+          "recharge_rounds": null,
+          "recharge_rounds_confidence": "unpublished"
+        }
+      ],
+      "notes": []
+    },
+    "assimilator": {
+      "display_name": "Assimilator",
+      "faction": "titans",
+      "unit_type": "ground_light",
+      "cost": 200,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 6,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 3
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "surface_defense_strength": 0,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "uv",
+          "radius": 5,
+          "damage": 1,
+          "recharge_rounds": 11,
+          "affects_factions": [
+            "sapiens",
+            "khraleans"
+          ],
+          "affects_buried_units": false,
+          "move_then_use_same_turn": false
+        },
+        {
+          "id": "repair_aura",
+          "multiplier": 2
+        },
+        {
+          "id": "assimilate",
+          "target_unit_id": "underling",
+          "result_unit_id": "cyber_underling"
+        }
+      ],
+      "notes": []
+    },
+    "cyber_underling": {
+      "display_name": "Cyber Underling",
+      "faction": "titans",
+      "unit_type": "ground_light",
+      "cost": 0,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 10,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 4
+      },
+      "hidden_mode": {
+        "mode": "buried",
+        "mobility": 6,
+        "vision": 2,
+        "attack_range": null,
+        "defense_strength": 6,
+        "attack_from_hidden_penalty": null,
+        "resurface_bonus": 4,
+        "forbidden_terrains": [
+          "medical",
+          "base",
+          "harbor",
+          "water"
+        ],
+        "ground_heavy_passover_damage": 1,
+        "confidence": "community_consensus"
+      },
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 7,
+        "ground_heavy": 4,
+        "air": 2,
+        "aquatic": 2,
+        "amphibian": 7
+      },
+      "surface_defense_strength": 6,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "bury"
+        }
+      ],
+      "notes": [
+        "Created by Assimilator assimilating an Underling."
+      ]
+    },
+    "speeder": {
+      "display_name": "Speeder",
+      "faction": "titans",
+      "unit_type": "ground_heavy",
+      "cost": 250,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 16,
+        "after_attack": 6
+      },
+      "vision": {
+        "surface": 5
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 10,
+        "ground_heavy": 5,
+        "air": 5,
+        "aquatic": 5,
+        "amphibian": 8
+      },
+      "surface_defense_strength": 8,
+      "repair_points": 2,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "move_after_attack",
+          "after_attack_mobility": 6
+        }
+      ],
+      "notes": []
+    },
+    "guardian": {
+      "display_name": "Guardian",
+      "faction": "titans",
+      "unit_type": "ground_light",
+      "cost": 350,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 10,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 2
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 2
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 7,
+        "ground_heavy": 5,
+        "air": 7,
+        "aquatic": 5,
+        "amphibian": 7
+      },
+      "surface_defense_strength": 3,
+      "repair_points": 0,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 40,
+        "air": 0,
+        "aquatic": 45,
+        "amphibian": 25
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "teleport",
+          "cannot_target_terrains": [
+            "base"
+          ],
+          "disabled_rounds_after_use": 1,
+          "recharge_rounds": null,
+          "recharge_rounds_confidence": "unpublished"
+        }
+      ],
+      "notes": []
+    },
+    "eclipse": {
+      "display_name": "Eclipse",
+      "faction": "titans",
+      "unit_type": "ground_heavy",
+      "cost": 400,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 10,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 4
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 2
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 10,
+        "ground_heavy": 6,
+        "air": 12,
+        "aquatic": 5,
+        "amphibian": 11
+      },
+      "surface_defense_strength": 10,
+      "repair_points": 2,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "teleport",
+          "cannot_target_terrains": [
+            "base"
+          ],
+          "disabled_rounds_after_use": 1,
+          "recharge_rounds": null,
+          "recharge_rounds_confidence": "unpublished"
+        }
+      ],
+      "notes": []
+    },
+    "plasma_tank": {
+      "display_name": "Plasma Tank",
+      "faction": "titans",
+      "unit_type": "ground_heavy",
+      "cost": 500,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 7,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 3
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 1,
+          "max": 1
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 10,
+        "ground_heavy": 12,
+        "air": 5,
+        "aquatic": 11,
+        "amphibian": 10
+      },
+      "surface_defense_strength": 14,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [],
+      "notes": [
+        "Main heavy-wall unit."
+      ]
+    },
+    "walker": {
+      "display_name": "Walker",
+      "faction": "titans",
+      "unit_type": "ground_heavy",
+      "cost": 700,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 6,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 5
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 3,
+          "max": 5
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 10,
+        "ground_heavy": 10,
+        "air": 11,
+        "aquatic": 10,
+        "amphibian": 10
+      },
+      "surface_defense_strength": 5,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "move_or_attack"
+        },
+        {
+          "id": "no_point_blank_attack_or_defense"
+        }
+      ],
+      "notes": []
+    },
+    "hydronaut": {
+      "display_name": "Hydronaut",
+      "faction": "titans",
+      "unit_type": "aquatic",
+      "cost": 800,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 11,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 6
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 2,
+          "max": 4
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 12,
+        "ground_heavy": 10,
+        "air": 12,
+        "aquatic": 13,
+        "amphibian": 12
+      },
+      "surface_defense_strength": 10,
+      "repair_points": 2,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 0,
+        "ground_heavy": 0,
+        "air": 0,
+        "aquatic": 0,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [
+        {
+          "id": "no_point_blank_attack_or_defense"
+        }
+      ],
+      "notes": []
+    },
+    "mantisse": {
+      "display_name": "Mantisse",
+      "faction": "titans",
+      "unit_type": "amphibian",
+      "cost": 250,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 11,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 4
+      },
+      "hidden_mode": null,
+      "attack_range": {
+        "surface": {
+          "min": 2,
+          "max": 2
+        },
+        "hidden": null
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 6,
+        "ground_heavy": 4,
+        "air": 2,
+        "aquatic": 4,
+        "amphibian": 7
+      },
+      "surface_defense_strength": 4,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 25,
+        "ground_heavy": 0,
+        "air": 10,
+        "aquatic": 20,
+        "amphibian": 0
+      },
+      "known_underwater_attack_penalty": null,
+      "abilities": [],
+      "notes": []
+    },
+    "skimmer": {
+      "display_name": "Skimmer",
+      "faction": "titans",
+      "unit_type": "aquatic",
+      "cost": 450,
+      "base_max_hp": 10,
+      "base_max_hp_confidence": "community_consensus",
+      "movement": {
+        "moves_per_turn": 1,
+        "surface": 10,
+        "after_attack": 0
+      },
+      "vision": {
+        "surface": 4
+      },
+      "hidden_mode": {
+        "mode": "submerged",
+        "mobility": 10,
+        "vision": 3,
+        "attack_range": {
+          "min": 1,
+          "max": 2
+        },
+        "defense_strength": 9,
+        "attack_from_hidden_penalty": -2,
+        "resurface_bonus": null,
+        "detection_rules_published": false
+      },
+      "attack_range": {
+        "surface": {
+          "min": 3,
+          "max": 3
+        },
+        "hidden": {
+          "min": 1,
+          "max": 2
+        }
+      },
+      "attack_strength_by_target_class": {
+        "ground_light": 5,
+        "ground_heavy": 5,
+        "air": 5,
+        "aquatic": 9,
+        "amphibian": 5
+      },
+      "surface_defense_strength": 6,
+      "repair_points": 1,
+      "armor_piercing_percent_by_target_class": {
+        "ground_light": 10,
+        "ground_heavy": 30,
+        "air": 20,
+        "aquatic": 50,
+        "amphibian": 15
+      },
+      "known_underwater_attack_penalty": -2,
+      "abilities": [
+        {
+          "id": "submerge"
+        }
+      ],
+      "notes": []
+    }
+  },
+  "known_gaps": [
+    {
+      "id": "terrain_matrix",
+      "description": "The full unit x terrain movement-cost and combat-modifier matrix is not published in the public web sources cited by the report."
+    },
+    {
+      "id": "teleport_recharge_rounds",
+      "description": "The exact recharge after teleport for Mecha, Mecha II, Guardian, and Eclipse is not published in the current public official pages."
+    },
+    {
+      "id": "submerged_detection_rules",
+      "description": "The report says the exact public rules for detecting submerged units are incomplete."
+    },
+    {
+      "id": "repair_stacking_formula",
+      "description": "Support repair multipliers are known, but the exact stacking rule for multiple support sources is not fully published."
+    },
+    {
+      "id": "veterancy_xp_formula",
+      "description": "Veterancy bonuses are known, but the XP gain formula is community consensus rather than fully current official publication."
+    }
+  ]
+}
