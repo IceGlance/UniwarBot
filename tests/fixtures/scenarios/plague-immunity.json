@@ -1,0 +1,16 @@
+{
+  "name": "starting_p2_turn_clears_plague_from_engineer_and_submarine_without_damage",
+  "input_state": "states/plague-immunity.json",
+  "actions": [
+    {
+      "type": "end_turn"
+    }
+  ],
+  "expected_changes": {
+    "active_player_id": "p2",
+    "units.u_engineer.hp": 8,
+    "units.u_engineer.status.plague_infected": false,
+    "units.u_submarine.hp": 8,
+    "units.u_submarine.status.plague_infected": false
+  }
+}

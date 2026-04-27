@@ -1,0 +1,20 @@
+{
+  "name": "surface_and_buried_units_can_share_one_tile",
+  "input_state": "states/map-only.json",
+  "actions": [
+    {
+      "type": "add_unit",
+      "unit_fixture": "units/marine.json"
+    },
+    {
+      "type": "add_unit",
+      "unit_fixture": "units/underling-buried.json"
+    }
+  ],
+  "expected_changes": {
+    "tile.0:0.surface_unit_id": "u_marine",
+    "tile.0:0.hidden_unit_id": "u_underling",
+    "tile.0:0.occupying_unit_id": "u_marine",
+    "units.u_underling.status.hidden_mode": "buried"
+  }
+}

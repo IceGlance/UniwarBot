@@ -516,16 +516,27 @@ class TileState:
     coord: HexCoord
     terrain_id: str
     owner_id: str | None = None
-    occupying_unit_id: str | None = None
+    surface_unit_id: str | None = None
+    hidden_unit_id: str | None = None
     capture_state: CaptureState | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def occupying_unit_id(self) -> str | None:
+        return self.surface_unit_id
+
+    @occupying_unit_id.setter
+    def occupying_unit_id(self, value: str | None) -> None:
+        self.surface_unit_id = value
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "coord": self.coord.to_dict(),
             "terrain_id": self.terrain_id,
             "owner_id": self.owner_id,
-            "occupying_unit_id": self.occupying_unit_id,
+            "occupying_unit_id": self.surface_unit_id,
+            "surface_unit_id": self.surface_unit_id,
+            "hidden_unit_id": self.hidden_unit_id,
             "capture_state": (
                 self.capture_state.to_dict() if self.capture_state else None
             ),
@@ -539,10 +550,15 @@ class TileState:
             coord=HexCoord.from_dict(dict(data["coord"])),
             terrain_id=str(data["terrain_id"]),
             owner_id=None if data.get("owner_id") is None else str(data["owner_id"]),
-            occupying_unit_id=(
+            surface_unit_id=(
                 None
-                if data.get("occupying_unit_id") is None
-                else str(data["occupying_unit_id"])
+                if data.get("surface_unit_id", data.get("occupying_unit_id")) is None
+                else str(data.get("surface_unit_id", data.get("occupying_unit_id")))
+            ),
+            hidden_unit_id=(
+                None
+                if data.get("hidden_unit_id") is None
+                else str(data["hidden_unit_id"])
             ),
             capture_state=(
                 CaptureState.from_dict(dict(capture_state)) if capture_state else None
@@ -724,15 +740,18 @@ class GameState:
         self.units[unit.instance_id] = unit
         tile = self.game_map.get_tile(unit.position)
         if tile is not None:
-            tile.occupying_unit_id = unit.instance_id
+            self._place_unit_on_tile(tile, unit, strict=True)
 
     def remove_unit(self, instance_id: str) -> UnitState | None:
         unit = self.units.pop(instance_id, None)
         if unit is None:
             return None
         tile = self.game_map.get_tile(unit.position)
-        if tile is not None and tile.occupying_unit_id == instance_id:
-            tile.occupying_unit_id = None
+        if tile is not None:
+            if tile.surface_unit_id == instance_id:
+                tile.surface_unit_id = None
+            if tile.hidden_unit_id == instance_id:
+                tile.hidden_unit_id = None
         return unit
 
     def get_unit(self, instance_id: str) -> UnitState | None:
@@ -740,9 +759,25 @@ class GameState:
 
     def get_unit_at(self, coord: HexCoord) -> UnitState | None:
         tile = self.game_map.get_tile(coord)
-        if tile is None or tile.occupying_unit_id is None:
+        if tile is None or tile.surface_unit_id is None:
             return None
-        return self.units.get(tile.occupying_unit_id)
+        return self.units.get(tile.surface_unit_id)
+
+    def get_hidden_unit_at(self, coord: HexCoord) -> UnitState | None:
+        tile = self.game_map.get_tile(coord)
+        if tile is None or tile.hidden_unit_id is None:
+            return None
+        return self.units.get(tile.hidden_unit_id)
+
+    def get_units_at(self, coord: HexCoord) -> list[UnitState]:
+        units_at_tile: list[UnitState] = []
+        surface_unit = self.get_unit_at(coord)
+        hidden_unit = self.get_hidden_unit_at(coord)
+        if surface_unit is not None:
+            units_at_tile.append(surface_unit)
+        if hidden_unit is not None:
+            units_at_tile.append(hidden_unit)
+        return units_at_tile
 
     def set_active_player(self, player_id: str) -> None:
         if player_id not in self.players:
@@ -763,15 +798,19 @@ class GameState:
         destination_tile = self.game_map.get_tile(destination)
         if destination_tile is None:
             raise ValueError("Destination tile does not exist")
-        if destination_tile.occupying_unit_id is not None:
+        if self._tile_slot_for_unit(destination_tile, unit) is not None:
             raise ValueError("Destination tile is already occupied")
 
         source_tile = self.game_map.get_tile(unit.position)
-        if source_tile is not None and source_tile.occupying_unit_id == instance_id:
-            source_tile.occupying_unit_id = None
+        if source_tile is not None:
+            if self._uses_hidden_slot(unit):
+                if source_tile.hidden_unit_id == instance_id:
+                    source_tile.hidden_unit_id = None
+            elif source_tile.surface_unit_id == instance_id:
+                source_tile.surface_unit_id = None
 
         unit.position = destination
-        destination_tile.occupying_unit_id = instance_id
+        self._place_unit_on_tile(destination_tile, unit, strict=True)
         unit.action.has_moved_this_turn = True
         current_window = unit.action.current_action_window
         if current_window is not None:
@@ -911,12 +950,15 @@ class GameState:
         }
 
     def _apply_plague_start_of_turn(self, unit: UnitState) -> None:
+        if self._is_plague_immune(unit):
+            unit.status.plague_infected = False
+            return
         if unit.hp > 1:
             unit.hp -= 1
         for other in self._adjacent_units(unit):
             if other.instance_id == unit.instance_id:
                 continue
-            if not self._is_sapiens_unit(other):
+            if not self._can_be_infected_by_plague(other):
                 continue
             other.status.plague_infected = True
 
@@ -1013,14 +1055,36 @@ class GameState:
     def _adjacent_units(self, unit: UnitState) -> list[UnitState]:
         adjacent_units: list[UnitState] = []
         for coord in self._adjacent_hexes(unit.position):
-            other = self.get_unit_at(coord)
-            if other is not None:
-                adjacent_units.append(other)
+            adjacent_units.extend(self.get_units_at(coord))
         return adjacent_units
 
     def _is_sapiens_unit(self, unit: UnitState) -> bool:
         player = self.players.get(unit.owner_id)
         return player is not None and player.faction == "sapiens"
+
+    def _is_plague_immune(self, unit: UnitState) -> bool:
+        return unit.unit_id in {"engineer", "submarine"}
+
+    def _can_be_infected_by_plague(self, unit: UnitState) -> bool:
+        return self._is_sapiens_unit(unit) and not self._is_plague_immune(unit)
+
+    def _uses_hidden_slot(self, unit: UnitState) -> bool:
+        return unit.status.hidden_mode is not None
+
+    def _tile_slot_for_unit(self, tile: TileState, unit: UnitState) -> str | None:
+        return tile.hidden_unit_id if self._uses_hidden_slot(unit) else tile.surface_unit_id
+
+    def _place_unit_on_tile(
+        self, tile: TileState, unit: UnitState, *, strict: bool
+    ) -> None:
+        if self._uses_hidden_slot(unit):
+            if strict and tile.hidden_unit_id not in (None, unit.instance_id):
+                raise ValueError("Destination hidden slot is already occupied")
+            tile.hidden_unit_id = unit.instance_id
+            return
+        if strict and tile.surface_unit_id not in (None, unit.instance_id):
+            raise ValueError("Destination surface slot is already occupied")
+        tile.surface_unit_id = unit.instance_id
 
     def _process_capture_progress(self, player_id: str) -> None:
         for tile in self.game_map.tiles.values():
@@ -1102,7 +1166,7 @@ class GameState:
             state.units[str(unit_id)] = unit
             tile = state.game_map.get_tile(unit.position)
             if tile is not None:
-                tile.occupying_unit_id = unit.instance_id
+                state._place_unit_on_tile(tile, unit, strict=False)
         return state
 
     @classmethod

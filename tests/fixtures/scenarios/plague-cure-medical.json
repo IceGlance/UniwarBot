@@ -1,0 +1,14 @@
+{
+  "name": "ending_p1_turn_heals_and_cures_plague_on_medical_tile",
+  "input_state": "states/plague-cure-medical.json",
+  "actions": [
+    {
+      "type": "end_turn"
+    }
+  ],
+  "expected_changes": {
+    "active_player_id": "p2",
+    "units.u_medical_marine.hp": 10,
+    "units.u_medical_marine.status.plague_infected": false
+  }
+}

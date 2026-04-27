@@ -19,6 +19,8 @@
     "units.u_friendly_target.hp": 10,
     "units.u_friendly_target.status.plague_infected": true,
     "units.u_enemy_target.hp": 10,
-    "units.u_enemy_target.status.plague_infected": true
+    "units.u_enemy_target.status.plague_infected": true,
+    "units.u_engineer.status.plague_infected": false,
+    "units.u_submarine.status.plague_infected": false
   }
 }
