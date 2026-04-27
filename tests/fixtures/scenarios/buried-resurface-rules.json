@@ -1,0 +1,174 @@
+{
+  "name": "Buried Resurface Rules",
+  "cases": [
+    {
+      "name": "buried underling can move while staying buried",
+      "input_state": "states/buried-move-ready.json",
+      "actions": [
+        {
+          "type": "move_unit",
+          "unit_id": "u_underling",
+          "destination": "1:0"
+        }
+      ],
+      "expected_changes": {
+        "current_rseed": 12345,
+        "tile.0:0.hidden_unit_id": null,
+        "tile.1:0.hidden_unit_id": "u_underling",
+        "units.u_underling.position.q": 1,
+        "units.u_underling.position.r": 0,
+        "units.u_underling.hp": 10,
+        "units.u_underling.status.hidden_mode": "buried",
+        "units.u_underling.action.actions_remaining": 0
+      }
+    },
+    {
+      "name": "buried underling can resurface as a full action",
+      "input_state": "states/buried-resurface-ready.json",
+      "actions": [
+        {
+          "type": "resurface_unit",
+          "unit_id": "u_underling"
+        }
+      ],
+      "expected_changes": {
+        "current_rseed": 12345,
+        "tile.0:0.hidden_unit_id": null,
+        "tile.0:0.surface_unit_id": "u_underling",
+        "units.u_underling.hp": 10,
+        "units.u_underling.status.hidden_mode": null,
+        "units.u_underling.status.buried_resurface_bonus": 0,
+        "units.u_underling.action.actions_remaining": 0,
+        "units.u_underling.action.atomic_action_locked": false
+      }
+    },
+    {
+      "name": "buried underling resurface attack gets plus 4 bonus",
+      "input_state": "states/buried-resurface-attack-ready.json",
+      "actions": [
+        {
+          "type": "resurface_unit",
+          "unit_id": "u_underling",
+          "continue_as_atomic_attack": true
+        },
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_underling",
+          "defender_id": "u_defender"
+        }
+      ],
+      "expected_changes": {
+        "current_rseed": -2704195468370554623,
+        "tile.0:0.hidden_unit_id": null,
+        "tile.0:0.surface_unit_id": "u_underling",
+        "units.u_underling.hp": 5,
+        "units.u_defender.hp": 3,
+        "units.u_underling.status.hidden_mode": null,
+        "units.u_underling.status.buried_resurface_bonus": 0,
+        "units.u_underling.action.atomic_action_locked": false,
+        "units.u_underling.action.actions_remaining": 0,
+        "fight_context.chain_index": 1
+      }
+    },
+    {
+      "name": "buried underling resurface attack cannot be split by another unit action",
+      "input_state": "states/buried-resurface-attack-ready.json",
+      "actions": [
+        {
+          "type": "resurface_unit",
+          "unit_id": "u_underling",
+          "continue_as_atomic_attack": true
+        },
+        {
+          "type": "move_unit",
+          "unit_id": "u_helper",
+          "destination": "2:1",
+          "expect_error": "must finish its atomic action"
+        }
+      ],
+      "expected_changes": {
+        "current_rseed": 12345,
+        "tile.0:0.hidden_unit_id": null,
+        "tile.0:0.surface_unit_id": "u_underling",
+        "tile.2:2.surface_unit_id": "u_helper",
+        "units.u_underling.hp": 10,
+        "units.u_defender.hp": 10,
+        "units.u_underling.action.atomic_action_locked": true,
+        "units.u_underling.action.atomic_action_label": "resurface_attack",
+        "units.u_underling.action.actions_remaining": 0,
+        "units.u_underling.status.buried_resurface_bonus": 4,
+        "units.u_helper.position.q": 2,
+        "units.u_helper.position.r": 2
+      }
+    },
+    {
+      "name": "buried cyber underling resurface attack gets plus 4 bonus",
+      "input_state": "states/cyber-underling-resurface-attack-ready.json",
+      "actions": [
+        {
+          "type": "resurface_unit",
+          "unit_id": "u_attacker",
+          "continue_as_atomic_attack": true
+        },
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_attacker",
+          "defender_id": "u_defender"
+        }
+      ],
+      "expected_changes": {
+        "current_rseed": -2704195468370554623,
+        "tile.0:0.hidden_unit_id": null,
+        "tile.0:0.surface_unit_id": "u_attacker",
+        "units.u_attacker.hp": 6,
+        "units.u_defender.hp": 2,
+        "units.u_attacker.status.hidden_mode": null,
+        "units.u_attacker.status.buried_resurface_bonus": 0,
+        "units.u_attacker.action.atomic_action_locked": false,
+        "units.u_attacker.action.actions_remaining": 0,
+        "fight_context.chain_index": 1
+      }
+    },
+    {
+      "name": "buried underling resurface attack stacks with gang up bonus",
+      "input_state": "states/buried-gang-up-resurface-attack-ready.json",
+      "actions": [
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_prev",
+          "defender_id": "u_defender"
+        },
+        {
+          "type": "assert_gang_up_bonus",
+          "attacker_id": "u_curr",
+          "defender_id": "u_defender",
+          "expected_bonus": 3,
+          "name": "opposite side gang up before resurfacing strike"
+        },
+        {
+          "type": "resurface_unit",
+          "unit_id": "u_curr",
+          "continue_as_atomic_attack": true
+        },
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_curr",
+          "defender_id": "u_defender"
+        }
+      ],
+      "expected_changes": {
+        "current_rseed": 5971266674099280749,
+        "tile.2:0.hidden_unit_id": null,
+        "tile.2:0.surface_unit_id": "u_curr",
+        "units.u_prev.hp": 5,
+        "units.u_curr.hp": 8,
+        "units.u_defender": "__missing__",
+        "units.u_curr.status.hidden_mode": null,
+        "units.u_curr.status.buried_resurface_bonus": 0,
+        "units.u_curr.action.atomic_action_locked": false,
+        "units.u_curr.action.actions_remaining": 0,
+        "fight_context.chain_index": 2
+      }
+    }
+  ]
+}

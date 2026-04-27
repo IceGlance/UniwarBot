@@ -123,6 +123,49 @@
       "is_atomic": true,
       "move_and_attack_mutually_exclusive": false
     },
+    "single_action_buried_move_or_resurface_attack": {
+      "action_count": 1,
+      "can_interleave_between_action_windows": false,
+      "segments": [
+        {
+          "segment_id": "buried_move",
+          "kind": "move",
+          "mobility_source": "hidden_mode",
+          "optional": true
+        },
+        {
+          "segment_id": "resurface",
+          "kind": "toggle_state",
+          "optional": true,
+          "metadata": {
+            "from_state": "buried",
+            "to_state": "surface"
+          }
+        },
+        {
+          "segment_id": "attack_after_resurface",
+          "kind": "attack",
+          "max_uses": 1,
+          "optional": true,
+          "metadata": {
+            "requires_resurface_same_action": true,
+            "resurface_attack_bonus": 4
+          }
+        }
+      ],
+      "is_atomic": true,
+      "move_and_attack_mutually_exclusive": false,
+      "examples_of_legal_sequences": [
+        "buried-move",
+        "resurface",
+        "resurface-attack"
+      ],
+      "examples_of_illegal_sequences": [
+        "buried-move-attack",
+        "resurface-wait-attack",
+        "resurface-other_unit_acts-attack"
+      ]
+    },
     "single_action_support_or_special": {
       "action_count": 1,
       "can_interleave_between_action_windows": false,
@@ -181,7 +224,7 @@
     "destroyer": "standard_single_action_attack_after_move",
     "fuze": "standard_single_action_attack_after_move",
     "submarine": "single_action_state_toggle_and_attack",
-    "underling": "single_action_state_toggle_and_attack",
+    "underling": "single_action_buried_move_or_resurface_attack",
     "infector": "single_action_support_or_special",
     "infected_marine": "standard_single_action_attack_after_move",
     "swarmer": "standard_single_action_attack_after_move",
@@ -194,7 +237,7 @@
     "kraken": "single_action_state_toggle_and_attack",
     "mecha": "single_action_support_or_special",
     "assimilator": "single_action_support_or_special",
-    "cyber_underling": "single_action_state_toggle_and_attack",
+    "cyber_underling": "single_action_buried_move_or_resurface_attack",
     "speeder": "single_action_move_attack_conditional_post_move",
     "guardian": "single_action_support_or_special",
     "eclipse": "single_action_support_or_special",

@@ -153,6 +153,19 @@ class GameStateScenarioTestCase(unittest.TestCase):
                     continue
                 state.move_unit(str(action["unit_id"]), destination)
                 continue
+            if action_type == "resurface_unit":
+                expected_error = action.get("expect_error")
+                kwargs = {
+                    "continue_as_atomic_attack": bool(
+                        action.get("continue_as_atomic_attack", False)
+                    )
+                }
+                if expected_error is not None:
+                    with self.assertRaisesRegex(ValueError, str(expected_error)):
+                        state.resurface_unit(str(action["unit_id"]), **kwargs)
+                    continue
+                state.resurface_unit(str(action["unit_id"]), **kwargs)
+                continue
             if action_type == "attack_unit":
                 kwargs: dict[str, Any] = {}
                 if "attack_bonus" in action:

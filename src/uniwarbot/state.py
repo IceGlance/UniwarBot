@@ -435,6 +435,8 @@ class UnitActionState:
     action_phase_index: int = 0
     current_action_index: int = 0
     action_windows: list[CompositeActionState] = field(default_factory=list)
+    atomic_action_locked: bool = False
+    atomic_action_label: str | None = None
     has_moved_this_turn: bool = False
     has_attacked_this_turn: bool = False
     has_used_special_this_turn: bool = False
@@ -453,8 +455,10 @@ class UnitActionState:
     def has_atomic_window_lock(self) -> bool:
         current = self.current_action_window
         if current is None:
-            return False
-        return current.is_atomic and current.in_progress and not current.completed
+            return self.atomic_action_locked
+        return (
+            current.is_atomic and current.in_progress and not current.completed
+        ) or self.atomic_action_locked
 
     def reset_for_new_turn(self) -> None:
         self.is_available = True
@@ -464,6 +468,8 @@ class UnitActionState:
         self.special_actions_remaining = None
         self.action_phase_index = 0
         self.current_action_index = 0
+        self.atomic_action_locked = False
+        self.atomic_action_label = None
         self.has_moved_this_turn = False
         self.has_attacked_this_turn = False
         self.has_used_special_this_turn = False
@@ -487,6 +493,8 @@ class UnitActionState:
             "action_phase_index": self.action_phase_index,
             "current_action_index": self.current_action_index,
             "action_windows": [action.to_dict() for action in self.action_windows],
+            "atomic_action_locked": self.atomic_action_locked,
+            "atomic_action_label": self.atomic_action_label,
             "has_moved_this_turn": self.has_moved_this_turn,
             "has_attacked_this_turn": self.has_attacked_this_turn,
             "has_used_special_this_turn": self.has_used_special_this_turn,
@@ -518,6 +526,12 @@ class UnitActionState:
                 CompositeActionState.from_dict(dict(action))
                 for action in data.get("action_windows", [])
             ],
+            atomic_action_locked=bool(data.get("atomic_action_locked", False)),
+            atomic_action_label=(
+                None
+                if data.get("atomic_action_label") is None
+                else str(data["atomic_action_label"])
+            ),
             has_moved_this_turn=bool(data.get("has_moved_this_turn", False)),
             has_attacked_this_turn=bool(data.get("has_attacked_this_turn", False)),
             has_used_special_this_turn=bool(
@@ -893,8 +907,32 @@ class GameState:
             raise ValueError("Only the active player's units may act")
         return unit
 
+    def _enforce_atomic_action_lock(
+        self,
+        acting_unit: UnitState,
+        *,
+        action_kind: str,
+    ) -> None:
+        if (
+            acting_unit.action.atomic_action_locked
+            and acting_unit.action.atomic_action_label == "resurface_attack"
+            and action_kind != "attack"
+        ):
+            raise ValueError("Unit must finish its resurface-attack action with an attack")
+        for other_unit in self.units.values():
+            if other_unit.owner_id != self.active_player_id:
+                continue
+            if other_unit.instance_id == acting_unit.instance_id:
+                continue
+            if not other_unit.action.has_atomic_window_lock:
+                continue
+            raise ValueError(
+                f"Unit {other_unit.instance_id} must finish its atomic action before another unit acts"
+            )
+
     def move_unit(self, instance_id: str, destination: HexCoord) -> None:
         unit = self._require_active_player_unit(instance_id)
+        self._enforce_atomic_action_lock(unit, action_kind="move")
         if unit.status.movement_blocked:
             raise ValueError("Unit cannot move while teleport-locked or disabled")
         self._consume_action_if_needed(unit)
@@ -928,6 +966,40 @@ class GameState:
                     segment.mobility_points_remaining = 0
                     break
 
+    def resurface_unit(
+        self,
+        instance_id: str,
+        *,
+        continue_as_atomic_attack: bool = False,
+    ) -> None:
+        unit = self._require_active_player_unit(instance_id)
+        self._enforce_atomic_action_lock(unit, action_kind="special")
+        if unit.status.hidden_mode != HiddenMode.BURIED:
+            raise ValueError("Only buried units can resurface")
+
+        tile = self.game_map.get_tile(unit.position)
+        if tile is None:
+            raise ValueError("Unit tile does not exist")
+        if tile.surface_unit_id not in (None, unit.instance_id):
+            raise ValueError("Cannot resurface onto an occupied surface slot")
+
+        self._consume_action_if_needed(unit)
+        unit.action.has_used_special_this_turn = True
+
+        if tile.hidden_unit_id == unit.instance_id:
+            tile.hidden_unit_id = None
+        tile.surface_unit_id = unit.instance_id
+
+        unit.status.hidden_mode = None
+        unit.status.buried_resurface_bonus = 0
+        if continue_as_atomic_attack:
+            unit.status.buried_resurface_bonus = self._hidden_mode_resurface_bonus(unit)
+            unit.action.atomic_action_locked = True
+            unit.action.atomic_action_label = "resurface_attack"
+        else:
+            unit.action.atomic_action_locked = False
+            unit.action.atomic_action_label = None
+
     def attack_unit(
         self,
         attacker_id: str,
@@ -940,6 +1012,7 @@ class GameState:
         was_melee: bool | None = None,
     ) -> None:
         attacker = self._require_active_player_unit(attacker_id)
+        self._enforce_atomic_action_lock(attacker, action_kind="attack")
         defender = self.get_unit(defender_id)
         if defender is None:
             raise KeyError(f"Unknown defender_id: {defender_id}")
@@ -978,6 +1051,7 @@ class GameState:
             if attack_bonus is None
             else int(attack_bonus)
         )
+        resolved_attack_bonus += int(attacker.status.buried_resurface_bonus)
 
         self.fight_context.last_attacked_unit_id = defender_id
         self.fight_context.previous_attack_origin = attacker.position
@@ -1019,6 +1093,10 @@ class GameState:
 
         defender.hp = max(0, defender_original_hp - max(0, resolved_defender_damage))
         attacker.hp = max(0, attacker_original_hp - max(0, resolved_attacker_damage))
+        attacker.status.buried_resurface_bonus = 0
+        if attacker.action.atomic_action_label == "resurface_attack":
+            attacker.action.atomic_action_locked = False
+            attacker.action.atomic_action_label = None
 
         if defender.hp == 0:
             self.remove_unit(defender.instance_id)
@@ -1034,6 +1112,7 @@ class GameState:
 
     def begin_capture(self, unit_id: str, tile_coord: HexCoord) -> None:
         unit = self._require_active_player_unit(unit_id)
+        self._enforce_atomic_action_lock(unit, action_kind="capture")
         tile = self.game_map.get_tile(tile_coord)
         if tile is None:
             raise ValueError("Capture tile does not exist")
@@ -1066,6 +1145,9 @@ class GameState:
         for unit in list(self.units.values()):
             if unit.owner_id != player_id:
                 continue
+            unit.status.buried_resurface_bonus = 0
+            unit.action.atomic_action_locked = False
+            unit.action.atomic_action_label = None
             if not unit.action.is_available:
                 continue
             if unit.action.actions_remaining <= 0:
@@ -1228,6 +1310,10 @@ class GameState:
     def _unit_dictionary_entry(self, unit: UnitState) -> dict[str, Any]:
         return dict(_cached_game_dictionary()["units"].get(unit.unit_id, {}))
 
+    def _hidden_mode_resurface_bonus(self, unit: UnitState) -> int:
+        hidden_mode = self._unit_dictionary_entry(unit).get("hidden_mode") or {}
+        return int(hidden_mode.get("resurface_bonus", 0))
+
     def _published_base_attack_strength(
         self,
         attacker: UnitState,
@@ -1266,6 +1352,8 @@ class GameState:
         raise ValueError(f"Unsupported target class for unit type: {unit_type}")
 
     def _current_attack_range(self, unit: UnitState) -> tuple[int, int] | None:
+        if unit.status.hidden_mode == HiddenMode.BURIED:
+            return None
         attack_range = self._unit_dictionary_entry(unit).get("attack_range", {})
         range_data: dict[str, Any] | None
         if unit.status.hidden_mode == HiddenMode.SUBMERGED:
@@ -1278,7 +1366,7 @@ class GameState:
 
     def _current_defense_strength(self, unit: UnitState) -> int:
         unit_data = self._unit_dictionary_entry(unit)
-        if unit.status.hidden_mode == HiddenMode.SUBMERGED:
+        if unit.status.hidden_mode in {HiddenMode.SUBMERGED, HiddenMode.BURIED}:
             hidden_mode = unit_data.get("hidden_mode") or {}
             base_defense = int(
                 hidden_mode.get("defense_strength", unit_data["surface_defense_strength"])
