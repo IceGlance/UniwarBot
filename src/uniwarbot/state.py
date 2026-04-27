@@ -933,19 +933,19 @@ class GameState:
         attacker_id: str,
         defender_id: str,
         *,
-        attack_bonus: int = 0,
+        attack_bonus: int | None = None,
         retaliation_bonus: int = 0,
         defender_damage: int | None = None,
         attacker_damage: int | None = None,
         was_melee: bool | None = None,
     ) -> None:
         attacker = self._require_active_player_unit(attacker_id)
-        self._consume_action_if_needed(attacker)
         defender = self.get_unit(defender_id)
         if defender is None:
             raise KeyError(f"Unknown defender_id: {defender_id}")
         if not self._can_unit_attack_target(attacker, defender):
             raise ValueError("Attacker cannot attack the selected target")
+        self._consume_action_if_needed(attacker)
 
         attacker.action.has_attacked_this_turn = True
         attacker.action.attacks_remaining = max(0, attacker.action.attacks_remaining - 1)
@@ -967,18 +967,23 @@ class GameState:
         if was_melee is None:
             was_melee = self._hex_distance(attacker.position, defender.position) == 1
 
-        self.fight_context.last_attacked_unit_id = defender_id
-        self.fight_context.previous_attack_origin = attacker.position
-        self.fight_context.previous_attack_was_melee = was_melee
-        self.fight_context.acting_player_id = attacker.owner_id
-        self.fight_context.chain_index += 1
-
         attacker_original_hp = attacker.hp
         defender_original_hp = defender.hp
         defender_can_retaliate = (
             not defender.status.retaliation_blocked
             and self._can_unit_attack_target(defender, attacker)
         )
+        resolved_attack_bonus = (
+            self._calculate_gang_up_bonus(attacker, defender)
+            if attack_bonus is None
+            else int(attack_bonus)
+        )
+
+        self.fight_context.last_attacked_unit_id = defender_id
+        self.fight_context.previous_attack_origin = attacker.position
+        self.fight_context.previous_attack_was_melee = was_melee
+        self.fight_context.acting_player_id = attacker.owner_id
+        self.fight_context.chain_index += 1
 
         formula = LegalFormula(self.current_rseed)
         resolved_defender_damage = (
@@ -987,7 +992,7 @@ class GameState:
                 attacker=attacker,
                 defender=defender,
                 attacker_hp_override=attacker_original_hp,
-                attack_bonus=attack_bonus,
+                attack_bonus=resolved_attack_bonus,
             )
             if defender_damage is None
             else int(defender_damage)
@@ -1019,6 +1024,13 @@ class GameState:
             self.remove_unit(defender.instance_id)
         if attacker.hp == 0:
             self.remove_unit(attacker.instance_id)
+
+    def get_gang_up_bonus(self, attacker_id: str, defender_id: str) -> int:
+        attacker = self._require_active_player_unit(attacker_id)
+        defender = self.get_unit(defender_id)
+        if defender is None:
+            raise KeyError(f"Unknown defender_id: {defender_id}")
+        return self._calculate_gang_up_bonus(attacker, defender)
 
     def begin_capture(self, unit_id: str, tile_coord: HexCoord) -> None:
         unit = self._require_active_player_unit(unit_id)
@@ -1216,6 +1228,22 @@ class GameState:
     def _unit_dictionary_entry(self, unit: UnitState) -> dict[str, Any]:
         return dict(_cached_game_dictionary()["units"].get(unit.unit_id, {}))
 
+    def _published_base_attack_strength(
+        self,
+        attacker: UnitState,
+        defender: UnitState,
+    ) -> int | None:
+        attacker_data = self._unit_dictionary_entry(attacker)
+        if defender.status.hidden_mode == HiddenMode.SUBMERGED:
+            submerged_target_attack = attacker_data.get("submerged_target_attack", {})
+            if attacker.status.hidden_mode == HiddenMode.SUBMERGED:
+                return submerged_target_attack.get("hidden_mode_effective_strength")
+            return submerged_target_attack.get("surface_mode_effective_strength")
+        if defender.status.hidden_mode == HiddenMode.BURIED:
+            return None
+        target_class = self._target_class_for_unit(defender)
+        return int(attacker_data["attack_strength_by_target_class"][target_class])
+
     def _terrain_combat_modifiers(self, unit: UnitState) -> tuple[int, int]:
         tile = self.game_map.get_tile(unit.position)
         if tile is None:
@@ -1261,20 +1289,9 @@ class GameState:
         return base_defense + terrain_defense_bonus
 
     def _effective_attack_strength(self, attacker: UnitState, defender: UnitState) -> int | None:
-        attacker_data = self._unit_dictionary_entry(attacker)
-        if defender.status.hidden_mode == HiddenMode.SUBMERGED:
-            submerged_target_attack = attacker_data.get("submerged_target_attack", {})
-            terrain_attack_bonus, _ = self._terrain_combat_modifiers(attacker)
-            if attacker.status.hidden_mode == HiddenMode.SUBMERGED:
-                effective = submerged_target_attack.get("hidden_mode_effective_strength")
-                return None if effective is None else int(effective) + terrain_attack_bonus
-            effective = submerged_target_attack.get("surface_mode_effective_strength")
-            return None if effective is None else int(effective) + terrain_attack_bonus
-        if defender.status.hidden_mode == HiddenMode.BURIED:
-            return None
-        target_class = self._target_class_for_unit(defender)
+        effective = self._published_base_attack_strength(attacker, defender)
         terrain_attack_bonus, _ = self._terrain_combat_modifiers(attacker)
-        return int(attacker_data["attack_strength_by_target_class"][target_class]) + terrain_attack_bonus
+        return None if effective is None else int(effective) + terrain_attack_bonus
 
     def _effective_armor_piercing_percent(
         self,
@@ -1288,6 +1305,47 @@ class GameState:
         target_class = self._target_class_for_unit(defender)
         return int(armor_data.get(target_class, 0))
 
+    def _calculate_gang_up_bonus(self, attacker: UnitState, defender: UnitState) -> int:
+        context = self.fight_context
+        if context.acting_player_id != attacker.owner_id:
+            return 0
+        if context.last_attacked_unit_id != defender.instance_id:
+            return 0
+        if context.previous_attack_origin is None:
+            return 0
+        if not context.previous_attack_was_melee:
+            return 1
+        previous_direction = self._direction_index_around(
+            defender.position,
+            context.previous_attack_origin,
+        )
+        current_direction = self._direction_index_around(defender.position, attacker.position)
+        delta = (current_direction - previous_direction) % 6
+        if delta in {1, 5}:
+            return 1
+        if delta in {0, 2, 4}:
+            return 2
+        return 3
+
+    def _direction_index_around(self, center: HexCoord, origin: HexCoord) -> int:
+        directions = [
+            (1, 0),
+            (1, -1),
+            (0, -1),
+            (-1, 0),
+            (-1, 1),
+            (0, 1),
+        ]
+        best_index = 0
+        best_distance: int | None = None
+        for index, (dq, dr) in enumerate(directions):
+            neighbor = HexCoord(center.q + dq, center.r + dr)
+            distance = self._hex_distance(neighbor, origin)
+            if best_distance is None or distance < best_distance:
+                best_distance = distance
+                best_index = index
+        return best_index
+
     def _can_unit_attack_target(self, attacker: UnitState, defender: UnitState) -> bool:
         attack_range = self._current_attack_range(attacker)
         if attack_range is None:
@@ -1296,10 +1354,12 @@ class GameState:
         range_min, range_max = attack_range
         if distance < range_min or distance > range_max:
             return False
-        effective_attack = self._effective_attack_strength(attacker, defender)
+        published_base_attack = self._published_base_attack_strength(attacker, defender)
         if defender.status.hidden_mode == HiddenMode.SUBMERGED:
-            return effective_attack is not None
-        return effective_attack is not None and int(effective_attack) > 0
+            return published_base_attack is not None
+        if published_base_attack is None:
+            return False
+        return int(published_base_attack) > 0
 
     def _calculate_combat_damage(
         self,
