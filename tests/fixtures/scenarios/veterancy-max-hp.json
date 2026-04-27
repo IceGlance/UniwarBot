@@ -1,0 +1,14 @@
+{
+  "name": "ending_p1_turn_heals_units_up_to_veterancy_hp_caps",
+  "input_state": "states/veterancy-max-hp.json",
+  "actions": [
+    {
+      "type": "end_turn"
+    }
+  ],
+  "expected_changes": {
+    "active_player_id": "p2",
+    "units.u_vet1.hp": 11,
+    "units.u_vet2.hp": 12
+  }
+}
