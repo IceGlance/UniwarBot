@@ -1,0 +1,21 @@
+{
+  "name": "json_round_trip_preserves_nested_state",
+  "input_state": "states/serialization-rich.json",
+  "assert_final_dict_equals_input": true,
+  "actions": [
+    {
+      "type": "round_trip_json"
+    }
+  ],
+  "expected_state": {
+    "ruleset_version": "test-v1",
+    "metadata.income_per_city": 50,
+    "fight_context.chain_index": 2,
+    "units.u_mecha.status.hidden_mode": "buried",
+    "units.u_wyrm.action.current_action_index": 0,
+    "units.u_wyrm.action.action_windows.0.is_atomic": true,
+    "units.u_wyrm.action.action_windows.0.in_progress": true,
+    "units.u_wyrm.action.action_windows.0.segments.2.mobility_points_remaining": 4,
+    "tile.2:0.capture_state.rounds_remaining": 2
+  }
+}

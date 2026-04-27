@@ -15,15 +15,15 @@
       "notes": null
     },
     "tiles": [
-      {"coord": {"q": 0, "r": 0}, "terrain_id": "base", "owner_id": "p1", "occupying_unit_id": null, "capture_state": null, "metadata": {}},
+      {"coord": {"q": 0, "r": 0}, "terrain_id": "plain", "owner_id": null, "occupying_unit_id": null, "capture_state": null, "metadata": {}},
       {"coord": {"q": 0, "r": 1}, "terrain_id": "medical", "owner_id": null, "occupying_unit_id": null, "capture_state": null, "metadata": {}},
       {"coord": {"q": 0, "r": 2}, "terrain_id": "plain", "owner_id": null, "occupying_unit_id": null, "capture_state": null, "metadata": {}},
       {"coord": {"q": 1, "r": 0}, "terrain_id": "plain", "owner_id": null, "occupying_unit_id": null, "capture_state": null, "metadata": {}},
-      {"coord": {"q": 1, "r": 1}, "terrain_id": "base", "owner_id": "p2", "occupying_unit_id": null, "capture_state": null, "metadata": {}},
+      {"coord": {"q": 1, "r": 1}, "terrain_id": "plain", "owner_id": null, "occupying_unit_id": null, "capture_state": null, "metadata": {}},
       {"coord": {"q": 1, "r": 2}, "terrain_id": "plain", "owner_id": null, "occupying_unit_id": null, "capture_state": null, "metadata": {}},
       {
         "coord": {"q": 2, "r": 0},
-        "terrain_id": "harbor",
+        "terrain_id": "base",
         "owner_id": "p1",
         "occupying_unit_id": "u_capture",
         "capture_state": {

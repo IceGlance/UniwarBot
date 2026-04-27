@@ -1,0 +1,11 @@
+{
+  "name": "map_load_exposes_expected_tiles",
+  "input_state": "states/map-only.json",
+  "actions": [],
+  "expected_state": {
+    "game_map.metadata.name": "Test Map",
+    "tile.0:0.terrain_id": "base",
+    "tile.2:0.terrain_id": "harbor",
+    "tile.9:9": "__missing__"
+  }
+}

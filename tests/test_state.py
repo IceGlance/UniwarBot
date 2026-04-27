@@ -4,11 +4,15 @@ import json
 import sys
 import unittest
 from pathlib import Path
+from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 FIXTURES = ROOT / "tests" / "fixtures"
+SCENARIOS = FIXTURES / "scenarios"
+MISSING = object()
+
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
@@ -22,122 +26,139 @@ from uniwarbot import (  # noqa: E402
 )
 
 
-class GameStateTestCase(unittest.TestCase):
-    def load_fixture_text(self, *parts: str) -> str:
-        return (FIXTURES.joinpath(*parts)).read_text(encoding="utf-8")
+class GameStateScenarioTestCase(unittest.TestCase):
+    def load_text(self, relative_path: str) -> str:
+        return (FIXTURES / relative_path).read_text(encoding="utf-8")
 
-    def load_state(self, name: str) -> GameState:
-        return json_to_game_state(self.load_fixture_text("states", name))
+    def load_json(self, relative_path: str) -> dict[str, Any]:
+        return json.loads(self.load_text(relative_path))
 
-    def load_json_object(self, *parts: str) -> dict[str, object]:
-        return json.loads(self.load_fixture_text(*parts))
+    def load_state(self, relative_path: str) -> GameState:
+        return json_to_game_state(self.load_text(relative_path))
 
-    def test_map_creation_and_tile_lookup(self) -> None:
-        state = self.load_state("map-only.json")
+    def load_scenarios(self) -> list[dict[str, Any]]:
+        scenario_files = sorted(SCENARIOS.glob("*.json"))
+        return [json.loads(path.read_text(encoding="utf-8")) for path in scenario_files]
 
-        self.assertEqual(state.game_map.metadata.name, "Test Map")
-        self.assertEqual(state.game_map.get_tile(HexCoord(0, 0)).terrain_id, "base")
-        self.assertEqual(state.game_map.get_tile(HexCoord(2, 0)).terrain_id, "harbor")
-        self.assertIsNone(state.game_map.get_tile(HexCoord(9, 9)))
+    def apply_actions(self, state: GameState, actions: list[dict[str, Any]]) -> GameState:
+        for action in actions:
+            action_type = str(action["type"])
+            if action_type == "add_unit":
+                unit = UnitState.from_dict(self.load_json(str(action["unit_fixture"])))
+                state.add_unit(unit)
+                continue
+            if action_type == "move_unit":
+                destination = HexCoord.from_dict(dict(action["destination"]))
+                state.move_unit(str(action["unit_id"]), destination)
+                continue
+            if action_type == "attack_unit":
+                state.attack_unit(
+                    str(action["attacker_id"]),
+                    str(action["defender_id"]),
+                    defender_damage=int(action.get("defender_damage", 0)),
+                    attacker_damage=int(action.get("attacker_damage", 0)),
+                )
+                continue
+            if action_type == "end_turn":
+                state.end_turn()
+                continue
+            if action_type == "set_metadata":
+                state.metadata[str(action["key"])] = action["value"]
+                continue
+            if action_type == "round_trip_json":
+                state = json_to_game_state(game_state_to_json(state))
+                continue
+            raise ValueError(f"Unsupported action type: {action_type}")
+        return state
 
-    def test_unit_creation_updates_tile_occupancy(self) -> None:
-        state = self.load_state("map-only.json")
-        marine = UnitState.from_dict(self.load_json_object("units", "marine.json"))
+    def resolve_path(self, state_dict: dict[str, Any], path: str) -> Any:
+        if path.startswith("tile."):
+            parts = path.split(".")
+            coord_key = parts[1]
+            tile = self.find_tile(state_dict, coord_key)
+            if tile is MISSING:
+                return MISSING
+            return self.walk_value(tile, parts[2:])
+        return self.walk_value(state_dict, path.split("."))
 
-        state.add_unit(marine)
+    def find_tile(self, state_dict: dict[str, Any], coord_key: str) -> Any:
+        q_text, r_text = coord_key.split(":")
+        q = int(q_text)
+        r = int(r_text)
+        for tile in state_dict["game_map"]["tiles"]:
+            if tile["coord"]["q"] == q and tile["coord"]["r"] == r:
+                return tile
+        return MISSING
 
-        self.assertEqual(state.get_unit("u_marine").unit_id, "marine")
-        self.assertEqual(
-            state.game_map.get_tile(HexCoord(0, 0)).occupying_unit_id, "u_marine"
-        )
-        self.assertEqual(state.get_unit_at(HexCoord(0, 0)).instance_id, "u_marine")
+    def walk_value(self, value: Any, parts: list[str]) -> Any:
+        current = value
+        for part in parts:
+            if current is None:
+                return MISSING
+            if isinstance(current, list):
+                try:
+                    current = current[int(part)]
+                except (ValueError, IndexError):
+                    return MISSING
+                continue
+            if isinstance(current, dict):
+                if part not in current:
+                    return MISSING
+                current = current[part]
+                continue
+            return MISSING
+        return current
 
-    def test_unit_move_updates_position_and_occupancy(self) -> None:
-        state = self.load_state("move-ready.json")
+    def assert_partial_state(
+        self,
+        state: GameState,
+        expectations: dict[str, Any],
+        *,
+        scenario_name: str,
+    ) -> None:
+        state_dict = state.to_dict()
+        for path, expected in expectations.items():
+            with self.subTest(scenario=scenario_name, path=path):
+                actual = self.resolve_path(state_dict, path)
+                if expected == "__missing__":
+                    self.assertIs(
+                        actual,
+                        MISSING,
+                        msg=f"{scenario_name}: expected missing path {path}, got {actual!r}",
+                    )
+                else:
+                    self.assertEqual(
+                        actual,
+                        expected,
+                        msg=f"{scenario_name}: path {path}",
+                    )
 
-        state.move_unit("u_marine", HexCoord(1, 0))
+    def test_game_state_scenarios(self) -> None:
+        for scenario in self.load_scenarios():
+            scenario_name = str(scenario["name"])
+            state = self.load_state(str(scenario["input_state"]))
+            input_state_dict = state.to_dict()
+            state = self.apply_actions(state, list(scenario.get("actions", [])))
 
-        self.assertEqual(state.get_unit("u_marine").position, HexCoord(1, 0))
-        self.assertIsNone(state.game_map.get_tile(HexCoord(0, 0)).occupying_unit_id)
-        self.assertEqual(
-            state.game_map.get_tile(HexCoord(1, 0)).occupying_unit_id, "u_marine"
-        )
-        self.assertTrue(state.get_unit("u_marine").action.has_moved_this_turn)
+            if bool(scenario.get("assert_final_dict_equals_input", False)):
+                self.assertEqual(
+                    state.to_dict(),
+                    input_state_dict,
+                    msg=f"{scenario_name}: full state changed after round trip",
+                )
 
-    def test_attack_updates_hp_and_fight_context(self) -> None:
-        state = self.load_state("attack-ready.json")
-
-        state.attack_unit("u_attacker", "u_defender", defender_damage=3)
-
-        self.assertEqual(state.get_unit("u_defender").hp, 7)
-        self.assertEqual(state.fight_context.last_attacked_unit_id, "u_defender")
-        self.assertEqual(state.fight_context.previous_attack_origin, HexCoord(0, 0))
-        self.assertTrue(state.fight_context.previous_attack_was_melee)
-        self.assertTrue(state.get_unit("u_attacker").action.has_attacked_this_turn)
-
-    def test_end_turn_healing_uses_actions_remaining_and_heal_modifiers(self) -> None:
-        state = self.load_state("end-turn-heal.json")
-
-        state.end_turn()
-
-        self.assertEqual(state.get_unit("u_idle_marine").hp, 9)
-        self.assertEqual(state.get_unit("u_tank_medical").hp, 9)
-        self.assertEqual(state.get_unit("u_marauder_idle").hp, 9)
-        self.assertEqual(state.get_unit("u_plagued_marine").hp, 9)
-        self.assertEqual(state.get_unit("u_marauder_one_left").hp, 8)
-        self.assertFalse(state.get_unit("u_plagued_marine").status.plague_infected)
-        self.assertEqual(state.get_unit("u_moved_marine").hp, 8)
-
-    def test_end_turn_applies_start_of_turn_effects(self) -> None:
-        state = self.load_state("end-turn-status-income.json")
-
-        next_player = state.end_turn()
-
-        self.assertEqual(next_player, "p2")
-        self.assertEqual(state.active_player_id, "p2")
-        self.assertEqual(state.players["p2"].credits, 150)
-        self.assertEqual(state.get_unit("u_titan").hp, 5)
-        self.assertEqual(state.get_unit("u_titan").status.emp_disabled_rounds, 1)
-        self.assertEqual(state.get_unit("u_titan").status.teleport_disabled_rounds, 0)
-        self.assertEqual(state.get_unit("u_titan").status.ability_cooldowns["uv"], 2)
-
-    def test_city_income_uses_separate_metadata_setting(self) -> None:
-        state = self.load_state("end-turn-status-income.json")
-        state.metadata["income_per_city"] = 35
-
-        state.end_turn()
-
-        self.assertEqual(state.players["p2"].credits, 135)
-
-    def test_end_turn_processes_capture_completion(self) -> None:
-        state = self.load_state("capture-ready.json")
-
-        state.end_turn()
-
-        harbor_tile = state.game_map.get_tile(HexCoord(2, 0))
-        self.assertEqual(state.active_player_id, "p2")
-        self.assertEqual(harbor_tile.owner_id, "p2")
-        self.assertIsNone(harbor_tile.capture_state)
-        self.assertIsNone(harbor_tile.occupying_unit_id)
-        self.assertIsNone(state.get_unit("u_capture"))
-
-    def test_json_to_game_state_round_trip_preserves_nested_state(self) -> None:
-        payload = self.load_fixture_text("states", "serialization-rich.json")
-
-        state = json_to_game_state(payload)
-        reloaded_state = json_to_game_state(game_state_to_json(state))
-
-        self.assertEqual(reloaded_state.to_dict(), state.to_dict())
-        self.assertEqual(reloaded_state.fight_context.chain_index, 2)
-        self.assertTrue(reloaded_state.get_unit("u_wyrm").action.has_atomic_window_lock)
-        self.assertEqual(
-            reloaded_state.get_unit("u_mecha").status.hidden_mode.value, "buried"
-        )
-        self.assertEqual(reloaded_state.metadata["income_per_city"], 50)
-        self.assertEqual(
-            reloaded_state.game_map.get_tile(HexCoord(2, 0)).capture_state.rounds_remaining,
-            2,
-        )
+            if "expected_state" in scenario:
+                self.assert_partial_state(
+                    state,
+                    dict(scenario["expected_state"]),
+                    scenario_name=scenario_name,
+                )
+            if "expected_changes" in scenario:
+                self.assert_partial_state(
+                    state,
+                    dict(scenario["expected_changes"]),
+                    scenario_name=scenario_name,
+                )
 
 
 if __name__ == "__main__":

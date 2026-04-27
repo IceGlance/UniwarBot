@@ -1,0 +1,24 @@
+{
+  "name": "ending_p1_turn_starts_p2_turn_with_income_plague_spread_and_cooldowns",
+  "input_state": "states/end-turn-status-income.json",
+  "actions": [
+    {
+      "type": "end_turn"
+    }
+  ],
+  "expected_changes": {
+    "active_player_id": "p2",
+    "turn_number": 2,
+    "round_number": 2,
+    "players.p1.has_ended_turn": true,
+    "players.p2.credits": 150,
+    "units.u_infected.hp": 5,
+    "units.u_infected.status.emp_disabled_rounds": 1,
+    "units.u_infected.status.teleport_disabled_rounds": 0,
+    "units.u_infected.status.ability_cooldowns.uv": 2,
+    "units.u_friendly_target.hp": 10,
+    "units.u_friendly_target.status.plague_infected": true,
+    "units.u_enemy_target.hp": 10,
+    "units.u_enemy_target.status.plague_infected": true
+  }
+}

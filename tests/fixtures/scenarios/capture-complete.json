@@ -1,0 +1,19 @@
+{
+  "name": "ending_p1_turn_starts_p2_turn_and_capture_resolves_before_income",
+  "input_state": "states/capture-ready.json",
+  "actions": [
+    {
+      "type": "end_turn"
+    }
+  ],
+  "expected_changes": {
+    "active_player_id": "p2",
+    "turn_number": 2,
+    "round_number": 2,
+    "players.p2.credits": 100,
+    "tile.2:0.owner_id": "p2",
+    "tile.2:0.capture_state": null,
+    "tile.2:0.occupying_unit_id": null,
+    "units.u_capture": "__missing__"
+  }
+}

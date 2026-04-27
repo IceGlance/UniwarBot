@@ -1,0 +1,14 @@
+{
+  "name": "unit_create_updates_tile_occupancy",
+  "input_state": "states/map-only.json",
+  "actions": [
+    {
+      "type": "add_unit",
+      "unit_fixture": "units/marine.json"
+    }
+  ],
+  "expected_changes": {
+    "units.u_marine.unit_id": "marine",
+    "tile.0:0.occupying_unit_id": "u_marine"
+  }
+}

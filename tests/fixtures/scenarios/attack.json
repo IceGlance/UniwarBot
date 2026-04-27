@@ -1,0 +1,23 @@
+{
+  "name": "attack_updates_hp_and_fight_context",
+  "input_state": "states/attack-ready.json",
+  "actions": [
+    {
+      "type": "attack_unit",
+      "attacker_id": "u_attacker",
+      "defender_id": "u_defender",
+      "defender_damage": 3
+    }
+  ],
+  "expected_changes": {
+    "units.u_attacker.action.actions_remaining": 0,
+    "units.u_attacker.action.has_attacked_this_turn": true,
+    "units.u_defender.hp": 7,
+    "fight_context.last_attacked_unit_id": "u_defender",
+    "fight_context.previous_attack_origin.q": 0,
+    "fight_context.previous_attack_origin.r": 0,
+    "fight_context.previous_attack_was_melee": true,
+    "fight_context.acting_player_id": "p1",
+    "fight_context.chain_index": 1
+  }
+}

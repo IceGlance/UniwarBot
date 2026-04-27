@@ -880,17 +880,26 @@ class GameState:
 
     def _apply_start_of_turn_effects(self, player_id: str) -> None:
         self.players[player_id].has_ended_turn = False
-        self.players[player_id].credits += self._income_for_player(player_id)
         self._process_capture_progress(player_id)
+        self.players[player_id].credits += self._income_for_player(player_id)
+        infected_units = [
+            unit
+            for unit in list(self.units.values())
+            if unit.owner_id == player_id and unit.status.plague_infected
+        ]
+        for unit in infected_units:
+            if unit.instance_id not in self.units:
+                continue
+            self._apply_plague_start_of_turn(unit)
         for unit in list(self.units.values()):
             if unit.owner_id != player_id:
                 continue
-            self._tick_unit_start_of_turn(unit)
+            self._tick_unit_start_of_turn(unit, skip_plague=True)
             if unit.instance_id in self.units:
                 unit.action.reset_for_new_turn()
 
-    def _tick_unit_start_of_turn(self, unit: UnitState) -> None:
-        if unit.status.plague_infected and unit.hp > 1:
+    def _tick_unit_start_of_turn(self, unit: UnitState, *, skip_plague: bool = False) -> None:
+        if not skip_plague and unit.status.plague_infected and unit.hp > 1:
             unit.hp -= 1
         unit.status.emp_disabled_rounds = max(0, unit.status.emp_disabled_rounds - 1)
         unit.status.teleport_disabled_rounds = max(
@@ -900,6 +909,16 @@ class GameState:
             key: max(0, value - 1)
             for key, value in unit.status.ability_cooldowns.items()
         }
+
+    def _apply_plague_start_of_turn(self, unit: UnitState) -> None:
+        if unit.hp > 1:
+            unit.hp -= 1
+        for other in self._adjacent_units(unit):
+            if other.instance_id == unit.instance_id:
+                continue
+            if not self._is_sapiens_unit(other):
+                continue
+            other.status.plague_infected = True
 
     def _auto_heal_unit(self, unit: UnitState, *, heal_actions: int = 1) -> None:
         repair_points = _unit_repair_points(unit.unit_id)
@@ -962,12 +981,11 @@ class GameState:
         return False
 
     def _adjacent_friendly_units(self, unit: UnitState) -> list[UnitState]:
-        adjacent_units: list[UnitState] = []
-        for coord in self._adjacent_hexes(unit.position):
-            other = self.get_unit_at(coord)
-            if other is not None and other.owner_id == unit.owner_id:
-                adjacent_units.append(other)
-        return adjacent_units
+        return [
+            other
+            for other in self._adjacent_units(unit)
+            if other.owner_id == unit.owner_id
+        ]
 
     def _consume_action_if_needed(self, unit: UnitState) -> None:
         current_window = unit.action.current_action_window
@@ -991,6 +1009,18 @@ class GameState:
             return
 
         unit.action.actions_remaining -= 1
+
+    def _adjacent_units(self, unit: UnitState) -> list[UnitState]:
+        adjacent_units: list[UnitState] = []
+        for coord in self._adjacent_hexes(unit.position):
+            other = self.get_unit_at(coord)
+            if other is not None:
+                adjacent_units.append(other)
+        return adjacent_units
+
+    def _is_sapiens_unit(self, unit: UnitState) -> bool:
+        player = self.players.get(unit.owner_id)
+        return player is not None and player.faction == "sapiens"
 
     def _process_capture_progress(self, player_id: str) -> None:
         for tile in self.game_map.tiles.values():

@@ -1,0 +1,18 @@
+{
+  "name": "ending_p1_turn_starts_p2_turn_with_city_income_override",
+  "input_state": "states/end-turn-status-income.json",
+  "actions": [
+    {
+      "type": "set_metadata",
+      "key": "income_per_city",
+      "value": 35
+    },
+    {
+      "type": "end_turn"
+    }
+  ],
+  "expected_changes": {
+    "metadata.income_per_city": 35,
+    "players.p2.credits": 135
+  }
+}

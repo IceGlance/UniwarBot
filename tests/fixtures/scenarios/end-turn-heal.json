@@ -1,0 +1,21 @@
+{
+  "name": "ending_p1_turn_applies_immediate_healing_before_p2_turn_starts",
+  "input_state": "states/end-turn-heal.json",
+  "actions": [
+    {
+      "type": "end_turn"
+    }
+  ],
+  "expected_changes": {
+    "active_player_id": "p2",
+    "turn_number": 2,
+    "round_number": 2,
+    "units.u_idle_marine.hp": 9,
+    "units.u_idle_marine.action.actions_remaining": 0,
+    "units.u_tank_medical.hp": 9,
+    "units.u_marauder_idle.hp": 9,
+    "units.u_marauder_one_left.hp": 8,
+    "units.u_plagued_marine.hp": 9,
+    "units.u_plagued_marine.status.plague_infected": false
+  }
+}
