@@ -75,13 +75,18 @@ class GameStateTestCase(unittest.TestCase):
         self.assertTrue(state.fight_context.previous_attack_was_melee)
         self.assertTrue(state.get_unit("u_attacker").action.has_attacked_this_turn)
 
-    def test_end_turn_auto_heal_only_unused_units(self) -> None:
+    def test_end_turn_healing_uses_actions_remaining_and_heal_modifiers(self) -> None:
         state = self.load_state("end-turn-heal.json")
 
         state.end_turn()
 
-        self.assertEqual(state.get_unit("u_idle").hp, 9)
-        self.assertEqual(state.get_unit("u_moved").hp, 8)
+        self.assertEqual(state.get_unit("u_idle_marine").hp, 9)
+        self.assertEqual(state.get_unit("u_tank_medical").hp, 9)
+        self.assertEqual(state.get_unit("u_marauder_idle").hp, 9)
+        self.assertEqual(state.get_unit("u_plagued_marine").hp, 9)
+        self.assertEqual(state.get_unit("u_marauder_one_left").hp, 8)
+        self.assertFalse(state.get_unit("u_plagued_marine").status.plague_infected)
+        self.assertEqual(state.get_unit("u_moved_marine").hp, 8)
 
     def test_end_turn_applies_start_of_turn_effects(self) -> None:
         state = self.load_state("end-turn-status-income.json")

@@ -27,6 +27,11 @@ def _terrain_repair_multiplier(terrain_id: str) -> int:
     return int(terrain_data.get("repair_multiplier", 1))
 
 
+def _unit_abilities(unit_id: str) -> list[dict[str, Any]]:
+    unit_data = _cached_game_dictionary()["units"].get(unit_id, {})
+    return [dict(ability) for ability in unit_data.get("abilities", [])]
+
+
 class VeterancyLevel(IntEnum):
     NONE = 0
     ONE = 1
@@ -754,6 +759,7 @@ class GameState:
 
     def move_unit(self, instance_id: str, destination: HexCoord) -> None:
         unit = self._require_active_player_unit(instance_id)
+        self._consume_action_if_needed(unit)
         destination_tile = self.game_map.get_tile(destination)
         if destination_tile is None:
             raise ValueError("Destination tile does not exist")
@@ -767,12 +773,9 @@ class GameState:
         unit.position = destination
         destination_tile.occupying_unit_id = instance_id
         unit.action.has_moved_this_turn = True
-        unit.action.current_action_window and setattr(
-            unit.action.current_action_window, "in_progress", True
-        )
-
         current_window = unit.action.current_action_window
         if current_window is not None:
+            current_window.in_progress = True
             for segment in current_window.segments:
                 if (
                     segment.kind == ActionSegmentKind.MOVE
@@ -793,16 +796,15 @@ class GameState:
         was_melee: bool | None = None,
     ) -> None:
         attacker = self._require_active_player_unit(attacker_id)
+        self._consume_action_if_needed(attacker)
         defender = self.get_unit(defender_id)
         if defender is None:
             raise KeyError(f"Unknown defender_id: {defender_id}")
 
         attacker.action.has_attacked_this_turn = True
-        attacker.action.current_action_window and setattr(
-            attacker.action.current_action_window, "in_progress", True
-        )
         current_window = attacker.action.current_action_window
         if current_window is not None:
+            current_window.in_progress = True
             current_window.attack_occurred = True
             for segment in current_window.segments:
                 if (
@@ -850,6 +852,7 @@ class GameState:
         )
         unit.capture_target = tile_coord
         unit.action.is_available = False
+        unit.action.actions_remaining = 0
 
     def end_turn(self) -> str:
         outgoing_player_id = self.active_player_id
@@ -866,13 +869,13 @@ class GameState:
         for unit in list(self.units.values()):
             if unit.owner_id != player_id:
                 continue
-            if (
-                unit.action.is_available
-                and not unit.action.has_moved_this_turn
-                and not unit.action.has_attacked_this_turn
-                and not unit.action.has_used_special_this_turn
-            ):
-                self._auto_heal_unit(unit)
+            if not unit.action.is_available:
+                continue
+            if unit.action.actions_remaining <= 0:
+                continue
+            self._auto_heal_unit(unit, heal_actions=unit.action.actions_remaining)
+            unit.action.actions_remaining = 0
+            unit.action.is_available = False
         self.players[player_id].has_ended_turn = True
 
     def _apply_start_of_turn_effects(self, player_id: str) -> None:
@@ -898,16 +901,21 @@ class GameState:
             for key, value in unit.status.ability_cooldowns.items()
         }
 
-    def _auto_heal_unit(self, unit: UnitState) -> None:
+    def _auto_heal_unit(self, unit: UnitState, *, heal_actions: int = 1) -> None:
         repair_points = _unit_repair_points(unit.unit_id)
         tile = self.game_map.get_tile(unit.position)
         terrain_multiplier = (
             _terrain_repair_multiplier(tile.terrain_id) if tile is not None else 1
         )
-        heal_amount = repair_points * terrain_multiplier
+        support_multiplier = self._support_repair_multiplier(unit)
+        heal_amount = repair_points * terrain_multiplier * support_multiplier * max(
+            0, heal_actions
+        )
         if heal_amount <= 0:
             return
         unit.hp = min(self._unit_max_hp(unit), unit.hp + heal_amount)
+        if self._repair_cures_plague(unit):
+            unit.status.plague_infected = False
 
     def _income_for_player(self, player_id: str) -> int:
         total = 0
@@ -934,6 +942,56 @@ class GameState:
             return int(configured_amount)
         return self.income_per_base
 
+    def _support_repair_multiplier(self, unit: UnitState) -> int:
+        multiplier = 1
+        for support_unit in self._adjacent_friendly_units(unit):
+            for ability in _unit_abilities(support_unit.unit_id):
+                if ability.get("id") == "repair_aura":
+                    multiplier = max(multiplier, int(ability.get("multiplier", 1)))
+        return multiplier
+
+    def _repair_cures_plague(self, unit: UnitState) -> bool:
+        if not unit.status.plague_infected:
+            return False
+        tile = self.game_map.get_tile(unit.position)
+        if tile is not None and tile.terrain_id == "medical":
+            return True
+        for support_unit in self._adjacent_friendly_units(unit):
+            if support_unit.unit_id == "engineer":
+                return True
+        return False
+
+    def _adjacent_friendly_units(self, unit: UnitState) -> list[UnitState]:
+        adjacent_units: list[UnitState] = []
+        for coord in self._adjacent_hexes(unit.position):
+            other = self.get_unit_at(coord)
+            if other is not None and other.owner_id == unit.owner_id:
+                adjacent_units.append(other)
+        return adjacent_units
+
+    def _consume_action_if_needed(self, unit: UnitState) -> None:
+        current_window = unit.action.current_action_window
+        if current_window is not None:
+            if not current_window.in_progress and unit.action.actions_remaining > 0:
+                unit.action.actions_remaining -= 1
+                current_window.in_progress = True
+            return
+
+        if unit.action.configured_action_count != 1:
+            return
+
+        if unit.action.actions_remaining <= 0:
+            return
+
+        if (
+            unit.action.has_moved_this_turn
+            or unit.action.has_attacked_this_turn
+            or unit.action.has_used_special_this_turn
+        ):
+            return
+
+        unit.action.actions_remaining -= 1
+
     def _process_capture_progress(self, player_id: str) -> None:
         for tile in self.game_map.tiles.values():
             capture_state = tile.capture_state
@@ -952,6 +1010,18 @@ class GameState:
     @staticmethod
     def _hex_distance(a: HexCoord, b: HexCoord) -> int:
         return max(abs(a.q - b.q), abs(a.r - b.r), abs(a.s - b.s))
+
+    @staticmethod
+    def _adjacent_hexes(coord: HexCoord) -> list[HexCoord]:
+        directions = [
+            (1, 0),
+            (1, -1),
+            (0, -1),
+            (-1, 0),
+            (-1, 1),
+            (0, 1),
+        ]
+        return [HexCoord(coord.q + dq, coord.r + dr) for dq, dr in directions]
 
     @staticmethod
     def _unit_max_hp(unit: UnitState) -> int:
