@@ -3,58 +3,6 @@
   "cases": [
     {
       "name": "marauder second hit from same hex gets +2 and keeps carried seed",
-      "input_state_data": {
-        "ruleset_version": "test-v1",
-        "current_rseed": 12345,
-        "active_player_id": "p1",
-        "players": [
-          {
-            "player_id": "p1",
-            "faction": "sapiens"
-          },
-          {
-            "player_id": "p2",
-            "faction": "sapiens"
-          }
-        ],
-        "tiles": [
-          {
-            "coord": "1:0",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "0:0",
-            "terrain_id": "plain"
-          }
-        ],
-        "units": [
-          {
-            "instance_id": "u_attacker",
-            "unit_id": "marauder",
-            "owner_id": "p1",
-            "coord": "1:0",
-            "hp": 10,
-            "action": {
-              "configured_action_count": 2,
-              "actions_remaining": 2,
-              "attacks_remaining": 2
-            }
-          },
-          {
-            "instance_id": "u_defender",
-            "unit_id": "tank",
-            "owner_id": "p2",
-            "coord": "0:0",
-            "hp": 12
-          }
-        ],
-        "metadata": {
-          "income_per_base": 100,
-          "income_per_city": 50
-        },
-        "map_id": "gang-up",
-        "map_name": "Gang Up Rules"
-      },
       "actions": [
         {
           "type": "attack_unit",
@@ -79,68 +27,11 @@
         "units.u_defender.hp": 12,
         "fight_context.chain_index": 2,
         "units.u_attacker": "__missing__"
-      }
+      },
+      "input_state": "states/gang_up_rules/001_marauder_second_hit_from_same_hex_gets_2_and_keeps_carried_seed.json"
     },
     {
       "name": "melee geometry +1 clockwise",
-      "input_state_data": {
-        "ruleset_version": "test-v1",
-        "current_rseed": 12345,
-        "active_player_id": "p1",
-        "players": [
-          {
-            "player_id": "p1",
-            "faction": "sapiens"
-          },
-          {
-            "player_id": "p2",
-            "faction": "sapiens"
-          }
-        ],
-        "tiles": [
-          {
-            "coord": "1:0",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "1:-1",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "0:0",
-            "terrain_id": "plain"
-          }
-        ],
-        "units": [
-          {
-            "instance_id": "u_prev",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "1:0",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_curr",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "1:-1",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_defender",
-            "unit_id": "tank",
-            "owner_id": "p2",
-            "coord": "0:0",
-            "hp": 12
-          }
-        ],
-        "metadata": {
-          "income_per_base": 100,
-          "income_per_city": 50
-        },
-        "map_id": "gang-up",
-        "map_name": "Gang Up Rules"
-      },
       "actions": [
         {
           "type": "attack_unit",
@@ -165,68 +56,11 @@
         "units.u_curr.hp": 2,
         "units.u_defender.hp": 12,
         "fight_context.chain_index": 2
-      }
+      },
+      "input_state": "states/gang_up_rules/002_melee_geometry_1_clockwise.json"
     },
     {
       "name": "melee geometry +2 second ring",
-      "input_state_data": {
-        "ruleset_version": "test-v1",
-        "current_rseed": 12345,
-        "active_player_id": "p1",
-        "players": [
-          {
-            "player_id": "p1",
-            "faction": "sapiens"
-          },
-          {
-            "player_id": "p2",
-            "faction": "sapiens"
-          }
-        ],
-        "tiles": [
-          {
-            "coord": "1:0",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "0:-1",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "0:0",
-            "terrain_id": "plain"
-          }
-        ],
-        "units": [
-          {
-            "instance_id": "u_prev",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "1:0",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_curr",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "0:-1",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_defender",
-            "unit_id": "tank",
-            "owner_id": "p2",
-            "coord": "0:0",
-            "hp": 12
-          }
-        ],
-        "metadata": {
-          "income_per_base": 100,
-          "income_per_city": 50
-        },
-        "map_id": "gang-up",
-        "map_name": "Gang Up Rules"
-      },
       "actions": [
         {
           "type": "attack_unit",
@@ -251,68 +85,11 @@
         "units.u_curr.hp": 2,
         "units.u_defender.hp": 11,
         "fight_context.chain_index": 2
-      }
+      },
+      "input_state": "states/gang_up_rules/003_melee_geometry_2_second_ring.json"
     },
     {
       "name": "melee geometry +3 opposite side",
-      "input_state_data": {
-        "ruleset_version": "test-v1",
-        "current_rseed": 12345,
-        "active_player_id": "p1",
-        "players": [
-          {
-            "player_id": "p1",
-            "faction": "sapiens"
-          },
-          {
-            "player_id": "p2",
-            "faction": "sapiens"
-          }
-        ],
-        "tiles": [
-          {
-            "coord": "1:0",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "-1:0",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "0:0",
-            "terrain_id": "plain"
-          }
-        ],
-        "units": [
-          {
-            "instance_id": "u_prev",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "1:0",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_curr",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "-1:0",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_defender",
-            "unit_id": "tank",
-            "owner_id": "p2",
-            "coord": "0:0",
-            "hp": 12
-          }
-        ],
-        "metadata": {
-          "income_per_base": 100,
-          "income_per_city": 50
-        },
-        "map_id": "gang-up",
-        "map_name": "Gang Up Rules"
-      },
       "actions": [
         {
           "type": "attack_unit",
@@ -337,68 +114,11 @@
         "units.u_curr.hp": 2,
         "units.u_defender.hp": 11,
         "fight_context.chain_index": 2
-      }
+      },
+      "input_state": "states/gang_up_rules/004_melee_geometry_3_opposite_side.json"
     },
     {
       "name": "melee geometry +2 wrap",
-      "input_state_data": {
-        "ruleset_version": "test-v1",
-        "current_rseed": 12345,
-        "active_player_id": "p1",
-        "players": [
-          {
-            "player_id": "p1",
-            "faction": "sapiens"
-          },
-          {
-            "player_id": "p2",
-            "faction": "sapiens"
-          }
-        ],
-        "tiles": [
-          {
-            "coord": "1:0",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "-1:1",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "0:0",
-            "terrain_id": "plain"
-          }
-        ],
-        "units": [
-          {
-            "instance_id": "u_prev",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "1:0",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_curr",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "-1:1",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_defender",
-            "unit_id": "tank",
-            "owner_id": "p2",
-            "coord": "0:0",
-            "hp": 12
-          }
-        ],
-        "metadata": {
-          "income_per_base": 100,
-          "income_per_city": 50
-        },
-        "map_id": "gang-up",
-        "map_name": "Gang Up Rules"
-      },
       "actions": [
         {
           "type": "attack_unit",
@@ -423,68 +143,11 @@
         "units.u_curr.hp": 2,
         "units.u_defender.hp": 11,
         "fight_context.chain_index": 2
-      }
+      },
+      "input_state": "states/gang_up_rules/005_melee_geometry_2_wrap.json"
     },
     {
       "name": "melee geometry +1 wrap",
-      "input_state_data": {
-        "ruleset_version": "test-v1",
-        "current_rseed": 12345,
-        "active_player_id": "p1",
-        "players": [
-          {
-            "player_id": "p1",
-            "faction": "sapiens"
-          },
-          {
-            "player_id": "p2",
-            "faction": "sapiens"
-          }
-        ],
-        "tiles": [
-          {
-            "coord": "1:0",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "0:1",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "0:0",
-            "terrain_id": "plain"
-          }
-        ],
-        "units": [
-          {
-            "instance_id": "u_prev",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "1:0",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_curr",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "0:1",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_defender",
-            "unit_id": "tank",
-            "owner_id": "p2",
-            "coord": "0:0",
-            "hp": 12
-          }
-        ],
-        "metadata": {
-          "income_per_base": 100,
-          "income_per_city": 50
-        },
-        "map_id": "gang-up",
-        "map_name": "Gang Up Rules"
-      },
       "actions": [
         {
           "type": "attack_unit",
@@ -509,68 +172,11 @@
         "units.u_curr.hp": 2,
         "units.u_defender.hp": 12,
         "fight_context.chain_index": 2
-      }
+      },
+      "input_state": "states/gang_up_rules/006_melee_geometry_1_wrap.json"
     },
     {
       "name": "ranged first attack forces next gang-up bonus to +1",
-      "input_state_data": {
-        "ruleset_version": "test-v1",
-        "current_rseed": 12345,
-        "active_player_id": "p1",
-        "players": [
-          {
-            "player_id": "p1",
-            "faction": "sapiens"
-          },
-          {
-            "player_id": "p2",
-            "faction": "sapiens"
-          }
-        ],
-        "tiles": [
-          {
-            "coord": "0:-2",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "-1:0",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "0:0",
-            "terrain_id": "plain"
-          }
-        ],
-        "units": [
-          {
-            "instance_id": "u_prev",
-            "unit_id": "battery",
-            "owner_id": "p1",
-            "coord": "0:-2",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_curr",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "-1:0",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_defender",
-            "unit_id": "tank",
-            "owner_id": "p2",
-            "coord": "0:0",
-            "hp": 12
-          }
-        ],
-        "metadata": {
-          "income_per_base": 100,
-          "income_per_city": 50
-        },
-        "map_id": "gang-up",
-        "map_name": "Gang Up Rules"
-      },
       "actions": [
         {
           "type": "attack_unit",
@@ -595,83 +201,11 @@
         "units.u_curr.hp": 2,
         "units.u_defender.hp": 11,
         "fight_context.chain_index": 2
-      }
+      },
+      "input_state": "states/gang_up_rules/007_ranged_first_attack_forces_next_gang_up_bonus_to_1.json"
     },
     {
       "name": "non-attack action between attacks does not break gang-up chain",
-      "input_state_data": {
-        "ruleset_version": "test-v1",
-        "current_rseed": 12345,
-        "active_player_id": "p1",
-        "players": [
-          {
-            "player_id": "p1",
-            "faction": "sapiens"
-          },
-          {
-            "player_id": "p2",
-            "faction": "sapiens"
-          }
-        ],
-        "tiles": [
-          {
-            "coord": "1:0",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "2:1",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "-1:0",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "0:0",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "3:2",
-            "terrain_id": "plain"
-          }
-        ],
-        "units": [
-          {
-            "instance_id": "u_prev",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "1:0",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_mover",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "2:1",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_curr",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "-1:0",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_defender",
-            "unit_id": "tank",
-            "owner_id": "p2",
-            "coord": "0:0",
-            "hp": 12
-          }
-        ],
-        "metadata": {
-          "income_per_base": 100,
-          "income_per_city": 50
-        },
-        "map_id": "gang-up",
-        "map_name": "Gang Up Rules"
-      },
       "actions": [
         {
           "type": "attack_unit",
@@ -701,79 +235,11 @@
         "units.u_curr.hp": 2,
         "units.u_defender.hp": 11,
         "fight_context.chain_index": 2
-      }
+      },
+      "input_state": "states/gang_up_rules/008_non_attack_action_between_attacks_does_not_break_gang_up_chain.json"
     },
     {
       "name": "attacking a different target resets gang-up bonus to zero",
-      "input_state_data": {
-        "ruleset_version": "test-v1",
-        "current_rseed": 12345,
-        "active_player_id": "p1",
-        "players": [
-          {
-            "player_id": "p1",
-            "faction": "sapiens"
-          },
-          {
-            "player_id": "p2",
-            "faction": "sapiens"
-          }
-        ],
-        "tiles": [
-          {
-            "coord": "1:0",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "-1:0",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "0:0",
-            "terrain_id": "plain"
-          },
-          {
-            "coord": "-2:0",
-            "terrain_id": "plain"
-          }
-        ],
-        "units": [
-          {
-            "instance_id": "u_prev",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "1:0",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_curr",
-            "unit_id": "marine",
-            "owner_id": "p1",
-            "coord": "-1:0",
-            "hp": 10
-          },
-          {
-            "instance_id": "u_defender_1",
-            "unit_id": "tank",
-            "owner_id": "p2",
-            "coord": "0:0",
-            "hp": 12
-          },
-          {
-            "instance_id": "u_defender_2",
-            "unit_id": "tank",
-            "owner_id": "p2",
-            "coord": "-2:0",
-            "hp": 12
-          }
-        ],
-        "metadata": {
-          "income_per_base": 100,
-          "income_per_city": 50
-        },
-        "map_id": "gang-up",
-        "map_name": "Gang Up Rules"
-      },
       "actions": [
         {
           "type": "attack_unit",
@@ -798,7 +264,8 @@
         "units.u_curr.hp": 2,
         "units.u_defender_2.hp": 12,
         "fight_context.chain_index": 2
-      }
+      },
+      "input_state": "states/gang_up_rules/009_attacking_a_different_target_resets_gang_up_bonus_to_zero.json"
     }
   ]
 }

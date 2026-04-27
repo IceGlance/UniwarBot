@@ -1,0 +1,168 @@
+{
+  "ruleset_version": "test-v1",
+  "active_player_id": "p1",
+  "player_order": [
+    "p1",
+    "p2"
+  ],
+  "turn_number": 1,
+  "round_number": 1,
+  "current_rseed": 12345,
+  "game_map": {
+    "metadata": {
+      "map_id": "attack-matrix",
+      "name": "Surface Attack Matrix",
+      "tags": [],
+      "width": null,
+      "height": null,
+      "notes": null
+    },
+    "tiles": [
+      {
+        "coord": {
+          "q": 0,
+          "r": 0
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": "u_attacker",
+        "surface_unit_id": "u_attacker",
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 2,
+          "r": 0
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": "u_defender",
+        "surface_unit_id": "u_defender",
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      }
+    ]
+  },
+  "players": {
+    "p1": {
+      "player_id": "p1",
+      "faction": "sapiens",
+      "credits": 0,
+      "team_id": null,
+      "defeated": false,
+      "has_ended_turn": false,
+      "metadata": {}
+    },
+    "p2": {
+      "player_id": "p2",
+      "faction": "sapiens",
+      "credits": 0,
+      "team_id": null,
+      "defeated": false,
+      "has_ended_turn": false,
+      "metadata": {}
+    }
+  },
+  "units": {
+    "u_attacker": {
+      "instance_id": "u_attacker",
+      "unit_id": "battery",
+      "owner_id": "p1",
+      "position": {
+        "q": 0,
+        "r": 0
+      },
+      "hp": 10,
+      "veterancy_level": 0,
+      "experience_points": 0,
+      "status": {
+        "plague_infected": false,
+        "hidden_mode": null,
+        "emp_disabled_rounds": 0,
+        "teleport_disabled_rounds": 0,
+        "teleport_lock_phase": null,
+        "teleport_cooldown_rounds": 0,
+        "retaliation_blocked": false,
+        "control_zones_suppressed": false,
+        "movement_blocked": false,
+        "buried_resurface_bonus": 0,
+        "submerged_attack_penalty": 0,
+        "ability_cooldowns": {}
+      },
+      "action": {
+        "is_available": true,
+        "configured_action_count": 1,
+        "actions_remaining": 1,
+        "can_interleave_between_action_windows": true,
+        "move_points_remaining": null,
+        "attacks_remaining": 1,
+        "special_actions_remaining": null,
+        "action_phase_index": 0,
+        "current_action_index": 0,
+        "action_windows": [],
+        "has_moved_this_turn": false,
+        "has_attacked_this_turn": false,
+        "has_used_special_this_turn": false
+      },
+      "capture_target": null,
+      "metadata": {}
+    },
+    "u_defender": {
+      "instance_id": "u_defender",
+      "unit_id": "helicopter",
+      "owner_id": "p2",
+      "position": {
+        "q": 2,
+        "r": 0
+      },
+      "hp": 10,
+      "veterancy_level": 0,
+      "experience_points": 0,
+      "status": {
+        "plague_infected": false,
+        "hidden_mode": null,
+        "emp_disabled_rounds": 0,
+        "teleport_disabled_rounds": 0,
+        "teleport_lock_phase": null,
+        "teleport_cooldown_rounds": 0,
+        "retaliation_blocked": false,
+        "control_zones_suppressed": false,
+        "movement_blocked": false,
+        "buried_resurface_bonus": 0,
+        "submerged_attack_penalty": 0,
+        "ability_cooldowns": {}
+      },
+      "action": {
+        "is_available": true,
+        "configured_action_count": 1,
+        "actions_remaining": 1,
+        "can_interleave_between_action_windows": true,
+        "move_points_remaining": null,
+        "attacks_remaining": 1,
+        "special_actions_remaining": null,
+        "action_phase_index": 0,
+        "current_action_index": 0,
+        "action_windows": [],
+        "has_moved_this_turn": false,
+        "has_attacked_this_turn": false,
+        "has_used_special_this_turn": false
+      },
+      "capture_target": null,
+      "metadata": {}
+    }
+  },
+  "fight_context": {
+    "last_attacked_unit_id": null,
+    "previous_attack_origin": null,
+    "previous_attack_was_melee": false,
+    "acting_player_id": null,
+    "chain_index": 0
+  },
+  "metadata": {
+    "income_per_base": 100,
+    "income_per_city": 50
+  }
+}
