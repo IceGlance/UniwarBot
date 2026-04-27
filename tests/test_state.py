@@ -261,32 +261,83 @@ class GameStateScenarioTestCase(unittest.TestCase):
                         msg=f"{scenario_name}: path {path}",
                     )
 
-    def test_game_state_scenarios(self) -> None:
-        for scenario in self.load_scenarios():
-            scenario_name = str(scenario["name"])
-            state = self.load_state_from_scenario(scenario)
-            input_state_dict = state.to_dict()
-            state = self.apply_actions(state, list(scenario.get("actions", [])))
+    def run_scenario(self, scenario: dict[str, Any]) -> None:
+        scenario_name = str(scenario["name"])
+        state = self.load_state_from_scenario(scenario)
+        input_state_dict = state.to_dict()
+        state = self.apply_actions(state, list(scenario.get("actions", [])))
 
-            if bool(scenario.get("assert_final_dict_equals_input", False)):
-                self.assertEqual(
-                    state.to_dict(),
-                    input_state_dict,
-                    msg=f"{scenario_name}: full state changed after round trip",
-                )
+        if bool(scenario.get("assert_final_dict_equals_input", False)):
+            self.assertEqual(
+                state.to_dict(),
+                input_state_dict,
+                msg=f"{scenario_name}: full state changed after round trip",
+            )
 
-            if "expected_state" in scenario:
-                self.assert_partial_state(
-                    state,
-                    dict(scenario["expected_state"]),
-                    scenario_name=scenario_name,
-                )
-            if "expected_changes" in scenario:
-                self.assert_partial_state(
-                    state,
-                    dict(scenario["expected_changes"]),
-                    scenario_name=scenario_name,
-                )
+        if "expected_state" in scenario:
+            self.assert_partial_state(
+                state,
+                dict(scenario["expected_state"]),
+                scenario_name=scenario_name,
+            )
+        if "expected_changes" in scenario:
+            self.assert_partial_state(
+                state,
+                dict(scenario["expected_changes"]),
+                scenario_name=scenario_name,
+            )
+
+
+def _safe_test_name(name: str) -> str:
+    normalized = "".join(ch if ch.isalnum() else "_" for ch in name.lower())
+    while "__" in normalized:
+        normalized = normalized.replace("__", "_")
+    normalized = normalized.strip("_")
+    return normalized or "scenario"
+
+
+def _load_all_scenarios() -> list[dict[str, Any]]:
+    scenario_files = sorted(SCENARIOS.glob("*.json"))
+    scenarios: list[dict[str, Any]] = []
+    for path in scenario_files:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if "cases" in payload:
+            suite_name = str(payload.get("name", path.stem))
+            defaults = {
+                key: value
+                for key, value in payload.items()
+                if key not in {"cases", "name"}
+            }
+            for case in list(payload["cases"]):
+                merged = dict(defaults)
+                merged.update(dict(case))
+                merged["name"] = f"{suite_name} :: {case['name']}"
+                scenarios.append(merged)
+            continue
+        scenarios.append(payload)
+    return scenarios
+
+
+def _install_scenario_tests() -> None:
+    seen_names: set[str] = set()
+    for index, scenario in enumerate(_load_all_scenarios(), start=1):
+        scenario_copy = dict(scenario)
+        base_name = _safe_test_name(str(scenario_copy["name"]))
+        test_name = f"test_{index:03d}_{base_name}"
+        while test_name in seen_names:
+            index += 1
+            test_name = f"test_{index:03d}_{base_name}"
+        seen_names.add(test_name)
+
+        def _test(self: GameStateScenarioTestCase, scenario: dict[str, Any] = scenario_copy) -> None:
+            self.run_scenario(scenario)
+
+        _test.__name__ = test_name
+        _test.__doc__ = str(scenario_copy["name"])
+        setattr(GameStateScenarioTestCase, test_name, _test)
+
+
+_install_scenario_tests()
 
 
 if __name__ == "__main__":
