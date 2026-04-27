@@ -90,11 +90,19 @@ class GameStateTestCase(unittest.TestCase):
 
         self.assertEqual(next_player, "p2")
         self.assertEqual(state.active_player_id, "p2")
-        self.assertEqual(state.players["p2"].credits, 100)
+        self.assertEqual(state.players["p2"].credits, 150)
         self.assertEqual(state.get_unit("u_titan").hp, 5)
         self.assertEqual(state.get_unit("u_titan").status.emp_disabled_rounds, 1)
         self.assertEqual(state.get_unit("u_titan").status.teleport_disabled_rounds, 0)
         self.assertEqual(state.get_unit("u_titan").status.ability_cooldowns["uv"], 2)
+
+    def test_city_income_uses_separate_metadata_setting(self) -> None:
+        state = self.load_state("end-turn-status-income.json")
+        state.metadata["income_per_city"] = 35
+
+        state.end_turn()
+
+        self.assertEqual(state.players["p2"].credits, 135)
 
     def test_end_turn_processes_capture_completion(self) -> None:
         state = self.load_state("capture-ready.json")
@@ -120,6 +128,7 @@ class GameStateTestCase(unittest.TestCase):
         self.assertEqual(
             reloaded_state.get_unit("u_mecha").status.hidden_mode.value, "buried"
         )
+        self.assertEqual(reloaded_state.metadata["income_per_city"], 50)
         self.assertEqual(
             reloaded_state.game_map.get_tile(HexCoord(2, 0)).capture_state.rounds_remaining,
             2,

@@ -110,6 +110,7 @@
     "chain_index": 0
   },
   "metadata": {
-    "income_per_base": 100
+    "income_per_base": 100,
+    "income_per_city": 50
   }
 }

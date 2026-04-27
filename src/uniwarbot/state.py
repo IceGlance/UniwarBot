@@ -708,6 +708,10 @@ class GameState:
     def income_per_base(self) -> int:
         return int(self.metadata.get("income_per_base", 100))
 
+    @property
+    def income_per_city(self) -> int:
+        return int(self.metadata.get("income_per_city", 50))
+
     def add_player(self, player: PlayerState) -> None:
         self.players[player.player_id] = player
 
@@ -910,10 +914,25 @@ class GameState:
         for tile in self.game_map.tiles.values():
             if tile.owner_id != player_id:
                 continue
-            terrain_data = _cached_game_dictionary()["terrains"].get(tile.terrain_id, {})
-            if bool(terrain_data.get("provides_income", False)):
-                total += self.income_per_base
+            income_amount = self._income_amount_for_terrain(tile.terrain_id)
+            if income_amount > 0:
+                total += income_amount
         return total
+
+    def _income_amount_for_terrain(self, terrain_id: str) -> int:
+        if terrain_id == "base":
+            return self.income_per_base
+        if terrain_id == "city":
+            return self.income_per_city
+
+        terrain_data = _cached_game_dictionary()["terrains"].get(terrain_id, {})
+        if not bool(terrain_data.get("provides_income", False)):
+            return 0
+
+        configured_amount = terrain_data.get("income_amount")
+        if configured_amount is not None:
+            return int(configured_amount)
+        return self.income_per_base
 
     def _process_capture_progress(self, player_id: str) -> None:
         for tile in self.game_map.tiles.values():
