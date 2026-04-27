@@ -28,7 +28,7 @@
   },
   "players": {
     "p1": {"player_id": "p1", "faction": "sapiens", "credits": 0, "team_id": null, "defeated": false, "has_ended_turn": false, "metadata": {}},
-    "p2": {"player_id": "p2", "faction": "titans", "credits": 0, "team_id": null, "defeated": false, "has_ended_turn": false, "metadata": {}}
+    "p2": {"player_id": "p2", "faction": "khraleans", "credits": 0, "team_id": null, "defeated": false, "has_ended_turn": false, "metadata": {}}
   },
   "units": {
     "u_idle_marine": {
