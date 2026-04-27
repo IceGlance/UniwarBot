@@ -339,7 +339,19 @@
       ],
       "notes": [
         "Baseline infantry."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -100,
+        "surface_mode_effective_strength": null,
+        "surface_mode_can_attack": false,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "engineer": {
       "display_name": "Engineer",
@@ -405,7 +417,19 @@
       "notes": [
         "Support unit with no direct attack strength.",
         "The report says old community notes are clearer than the current public official web for move plus EMP restrictions."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": null,
+        "surface_mode_effective_strength": null,
+        "surface_mode_can_attack": false,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "mecha_ii": {
       "display_name": "Mecha II",
@@ -446,7 +470,7 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -100,
       "abilities": [
         {
           "id": "teleport",
@@ -460,7 +484,19 @@
       ],
       "notes": [
         "Created by Engineer re-programming a Titan Mecha."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -100,
+        "surface_mode_effective_strength": null,
+        "surface_mode_can_attack": false,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "marauder": {
       "display_name": "Marauder",
@@ -501,7 +537,7 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -8,
       "abilities": [
         {
           "id": "two_phase_turn"
@@ -510,7 +546,19 @@
           "id": "attack_after_move"
         }
       ],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -8,
+        "surface_mode_effective_strength": -4,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "bopper": {
       "display_name": "Bopper",
@@ -551,9 +599,21 @@
         "aquatic": 50,
         "amphibian": 25
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -8,
       "abilities": [],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -8,
+        "surface_mode_effective_strength": -3,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "tank": {
       "display_name": "Tank",
@@ -594,11 +654,23 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -8,
       "abilities": [],
       "notes": [
         "Cannot attack air units."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -8,
+        "surface_mode_effective_strength": 1,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "helicopter": {
       "display_name": "Helicopter",
@@ -646,7 +718,19 @@
           "after_attack_mobility": 6
         }
       ],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -5,
+        "surface_mode_effective_strength": 3,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "battery": {
       "display_name": "Battery",
@@ -687,7 +771,7 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -8,
       "abilities": [
         {
           "id": "cannot_move_and_attack_same_turn"
@@ -698,7 +782,19 @@
       ],
       "notes": [
         "The report marks Battery action semantics as partially unclear because official cards also show moves_per_turn = 2."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -8,
+        "surface_mode_effective_strength": 2,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "destroyer": {
       "display_name": "Destroyer",
@@ -743,7 +839,19 @@
       "abilities": [],
       "notes": [
         "The report calls this the strongest surface ship for Sapiens."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -9,
+        "surface_mode_effective_strength": 7,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "fuze": {
       "display_name": "Fuze",
@@ -784,9 +892,21 @@
         "aquatic": 20,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -1,
       "abilities": [],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -1,
+        "surface_mode_effective_strength": 3,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "submarine": {
       "display_name": "Submarine",
@@ -842,7 +962,7 @@
         "aquatic": 40,
         "amphibian": 10
       },
-      "known_underwater_attack_penalty": -2,
+      "known_underwater_attack_penalty": null,
       "abilities": [
         {
           "id": "submerge"
@@ -850,7 +970,19 @@
       ],
       "notes": [
         "The report says surface units can attack submerged targets, but the full public detection rules are incomplete."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": null,
+        "surface_mode_effective_strength": null,
+        "surface_mode_can_attack": false,
+        "hidden_mode_penalty": -2,
+        "hidden_mode_effective_strength": 6,
+        "hidden_mode_can_attack": true,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "underling": {
       "display_name": "Underling",
@@ -907,7 +1039,7 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -100,
       "abilities": [
         {
           "id": "bury"
@@ -915,7 +1047,19 @@
       ],
       "notes": [
         "Cannot attack air units."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -100,
+        "surface_mode_effective_strength": null,
+        "surface_mode_can_attack": false,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "infector": {
       "display_name": "Infector",
@@ -975,7 +1119,19 @@
       ],
       "notes": [
         "The report says community references support move plus plague in the same turn for Infector."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": null,
+        "surface_mode_effective_strength": null,
+        "surface_mode_can_attack": false,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "infected_marine": {
       "display_name": "Infected Marine",
@@ -1016,11 +1172,23 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -100,
       "abilities": [],
       "notes": [
         "Created by Infector infecting a Sapien Marine."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -100,
+        "surface_mode_effective_strength": null,
+        "surface_mode_can_attack": false,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "swarmer": {
       "display_name": "Swarmer",
@@ -1061,11 +1229,23 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -5,
       "abilities": [],
       "notes": [
         "Cheap ranged flyer."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -5,
+        "surface_mode_effective_strength": 1,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "borfly": {
       "display_name": "Borfly",
@@ -1106,14 +1286,26 @@
         "aquatic": 50,
         "amphibian": 25
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -8,
       "abilities": [
         {
           "id": "move_after_attack",
           "after_attack_mobility": 6
         }
       ],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -8,
+        "surface_mode_effective_strength": -4,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "garuda": {
       "display_name": "Garuda",
@@ -1154,11 +1346,23 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -5,
       "abilities": [],
       "notes": [
         "Heavy air brawler."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -5,
+        "surface_mode_effective_strength": 3,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "pinzer": {
       "display_name": "Pinzer",
@@ -1199,11 +1403,23 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -8,
       "abilities": [],
       "notes": [
         "Heavy frontline unit."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -8,
+        "surface_mode_effective_strength": 2,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "wyrm": {
       "display_name": "Wyrm",
@@ -1244,7 +1460,7 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -8,
       "abilities": [
         {
           "id": "move_after_attack",
@@ -1254,7 +1470,19 @@
       "notes": [
         "Hybrid artillery.",
         "The report says Wyrm can respond in close combat."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -8,
+        "surface_mode_effective_strength": 2,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "leviathan": {
       "display_name": "Leviathan",
@@ -1295,11 +1523,23 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -9,
       "abilities": [],
       "notes": [
         "The report highlights Leviathan as cheaper than some rival flagships while still having strong stats."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -9,
+        "surface_mode_effective_strength": 3,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "salamander": {
       "display_name": "Salamander",
@@ -1340,7 +1580,7 @@
         "aquatic": 30,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -1,
       "abilities": [
         {
           "id": "plague",
@@ -1348,7 +1588,19 @@
           "effect_details_confidence": "community_consensus"
         }
       ],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -1,
+        "surface_mode_effective_strength": 4,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "kraken": {
       "display_name": "Kraken",
@@ -1404,7 +1656,7 @@
         "aquatic": 60,
         "amphibian": 15
       },
-      "known_underwater_attack_penalty": -2,
+      "known_underwater_attack_penalty": null,
       "abilities": [
         {
           "id": "submerge"
@@ -1412,7 +1664,19 @@
       ],
       "notes": [
         "Cannot attack air units."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": null,
+        "surface_mode_effective_strength": null,
+        "surface_mode_can_attack": false,
+        "hidden_mode_penalty": -2,
+        "hidden_mode_effective_strength": 4,
+        "hidden_mode_can_attack": true,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "mecha": {
       "display_name": "Mecha",
@@ -1453,7 +1717,7 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -100,
       "abilities": [
         {
           "id": "teleport",
@@ -1465,7 +1729,19 @@
           "recharge_rounds_confidence": "unpublished"
         }
       ],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -100,
+        "surface_mode_effective_strength": null,
+        "surface_mode_can_attack": false,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "assimilator": {
       "display_name": "Assimilator",
@@ -1530,7 +1806,19 @@
           "result_unit_id": "cyber_underling"
         }
       ],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": null,
+        "surface_mode_effective_strength": null,
+        "surface_mode_can_attack": false,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "cyber_underling": {
       "display_name": "Cyber Underling",
@@ -1587,7 +1875,7 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -100,
       "abilities": [
         {
           "id": "bury"
@@ -1595,7 +1883,19 @@
       ],
       "notes": [
         "Created by Assimilator assimilating an Underling."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -100,
+        "surface_mode_effective_strength": null,
+        "surface_mode_can_attack": false,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "speeder": {
       "display_name": "Speeder",
@@ -1636,14 +1936,26 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -8,
       "abilities": [
         {
           "id": "move_after_attack",
           "after_attack_mobility": 6
         }
       ],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -8,
+        "surface_mode_effective_strength": -3,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "guardian": {
       "display_name": "Guardian",
@@ -1684,7 +1996,7 @@
         "aquatic": 45,
         "amphibian": 25
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -8,
       "abilities": [
         {
           "id": "teleport",
@@ -1696,7 +2008,19 @@
           "recharge_rounds_confidence": "unpublished"
         }
       ],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -8,
+        "surface_mode_effective_strength": -3,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "eclipse": {
       "display_name": "Eclipse",
@@ -1737,7 +2061,7 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -8,
       "abilities": [
         {
           "id": "teleport",
@@ -1749,7 +2073,19 @@
           "recharge_rounds_confidence": "unpublished"
         }
       ],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -8,
+        "surface_mode_effective_strength": -3,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "plasma_tank": {
       "display_name": "Plasma Tank",
@@ -1790,11 +2126,23 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -8,
       "abilities": [],
       "notes": [
         "Main heavy-wall unit."
-      ]
+      ],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -8,
+        "surface_mode_effective_strength": 3,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "walker": {
       "display_name": "Walker",
@@ -1835,7 +2183,7 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -8,
       "abilities": [
         {
           "id": "move_or_attack"
@@ -1844,7 +2192,19 @@
           "id": "no_point_blank_attack_or_defense"
         }
       ],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -8,
+        "surface_mode_effective_strength": 2,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "hydronaut": {
       "display_name": "Hydronaut",
@@ -1885,13 +2245,25 @@
         "aquatic": 0,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -9,
       "abilities": [
         {
           "id": "no_point_blank_attack_or_defense"
         }
       ],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -9,
+        "surface_mode_effective_strength": 4,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "mantisse": {
       "display_name": "Mantisse",
@@ -1932,9 +2304,21 @@
         "aquatic": 20,
         "amphibian": 0
       },
-      "known_underwater_attack_penalty": null,
+      "known_underwater_attack_penalty": -1,
       "abilities": [],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": -1,
+        "surface_mode_effective_strength": 3,
+        "surface_mode_can_attack": true,
+        "hidden_mode_penalty": null,
+        "hidden_mode_effective_strength": null,
+        "hidden_mode_can_attack": false,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     },
     "skimmer": {
       "display_name": "Skimmer",
@@ -1990,13 +2374,25 @@
         "aquatic": 50,
         "amphibian": 15
       },
-      "known_underwater_attack_penalty": -2,
+      "known_underwater_attack_penalty": null,
       "abilities": [
         {
           "id": "submerge"
         }
       ],
-      "notes": []
+      "notes": [],
+      "submerged_target_attack": {
+        "surface_mode_penalty": null,
+        "surface_mode_effective_strength": null,
+        "surface_mode_can_attack": false,
+        "hidden_mode_penalty": -2,
+        "hidden_mode_effective_strength": 7,
+        "hidden_mode_can_attack": true,
+        "source_notes": [
+          "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
+          "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
+        ]
+      }
     }
   },
   "known_gaps": [
@@ -2020,5 +2416,18 @@
       "id": "veterancy_xp_formula",
       "description": "Veterancy bonuses are known, but the XP gain formula is community consensus rather than fully current official publication."
     }
-  ]
+  ],
+  "derived_rules": {
+    "submerged_target_attack_strength": {
+      "surface_formula": "attack_strength_by_target_class.aquatic + attack_against_submerged_units_penalty",
+      "hidden_formula": "attack_strength_by_target_class.aquatic + hidden_mode.attack_from_hidden_penalty",
+      "null_meaning": "The public official unit page does not publish the required input for that mode/target pairing, or the unit cannot attack submerged targets in that mode.",
+      "notes": [
+        "For most non-submerged attackers, official unit pages publish Attack Underwater units penalty.",
+        "For Submarine, Kraken, and Skimmer, official unit pages publish Attack from Underwater penalty for their submerged attack mode instead of a separate surface-versus-submerged penalty.",
+        "A penalty of -100 is treated as cannot attack submerged targets in that mode."
+      ],
+      "confidence": "official_with_explicit_derivation"
+    }
+  }
 }

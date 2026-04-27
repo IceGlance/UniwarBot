@@ -57,11 +57,21 @@ class GameStateScenarioTestCase(unittest.TestCase):
                 state.move_unit(str(action["unit_id"]), destination)
                 continue
             if action_type == "attack_unit":
+                kwargs: dict[str, Any] = {}
+                if "attack_bonus" in action:
+                    kwargs["attack_bonus"] = int(action["attack_bonus"])
+                if "retaliation_bonus" in action:
+                    kwargs["retaliation_bonus"] = int(action["retaliation_bonus"])
+                if "defender_damage" in action:
+                    kwargs["defender_damage"] = int(action["defender_damage"])
+                if "attacker_damage" in action:
+                    kwargs["attacker_damage"] = int(action["attacker_damage"])
+                if "was_melee" in action:
+                    kwargs["was_melee"] = bool(action["was_melee"])
                 state.attack_unit(
                     str(action["attacker_id"]),
                     str(action["defender_id"]),
-                    defender_damage=int(action.get("defender_damage", 0)),
-                    attacker_damage=int(action.get("attacker_damage", 0)),
+                    **kwargs,
                 )
                 continue
             if action_type == "end_turn":
