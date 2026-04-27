@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -7,55 +8,32 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
+FIXTURES = ROOT / "tests" / "fixtures"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 
 from uniwarbot import (  # noqa: E402
-    CaptureState,
-    GameMap,
     GameState,
     HexCoord,
-    MapMetadata,
-    PlayerState,
-    TileState,
-    UnitActionState,
     UnitState,
-    UnitStatusState,
+    game_state_to_json,
+    json_to_game_state,
 )
 
 
 class GameStateTestCase(unittest.TestCase):
-    def build_state(self) -> GameState:
-        game_map = GameMap(
-            metadata=MapMetadata(map_id="test-map", name="Test Map", width=3, height=3)
-        )
-        game_map.add_tile(TileState(coord=HexCoord(0, 0), terrain_id="base", owner_id="p1"))
-        game_map.add_tile(TileState(coord=HexCoord(1, 0), terrain_id="plain"))
-        game_map.add_tile(TileState(coord=HexCoord(2, 0), terrain_id="harbor", owner_id="p1"))
-        game_map.add_tile(TileState(coord=HexCoord(0, 1), terrain_id="medical"))
-        game_map.add_tile(TileState(coord=HexCoord(1, 1), terrain_id="base", owner_id="p2"))
-        game_map.add_tile(TileState(coord=HexCoord(2, 1), terrain_id="harbor", owner_id="p2"))
-        game_map.add_tile(TileState(coord=HexCoord(0, 2), terrain_id="plain"))
-        game_map.add_tile(TileState(coord=HexCoord(1, 2), terrain_id="plain"))
-        game_map.add_tile(TileState(coord=HexCoord(2, 2), terrain_id="plain"))
+    def load_fixture_text(self, *parts: str) -> str:
+        return (FIXTURES.joinpath(*parts)).read_text(encoding="utf-8")
 
-        state = GameState(
-            ruleset_version="test-v1",
-            active_player_id="p1",
-            player_order=["p1", "p2"],
-            turn_number=1,
-            round_number=1,
-            current_rseed=42,
-            game_map=game_map,
-            metadata={"income_per_base": 100},
-        )
-        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=0))
-        state.add_player(PlayerState(player_id="p2", faction="titans", credits=0))
-        return state
+    def load_state(self, name: str) -> GameState:
+        return json_to_game_state(self.load_fixture_text("states", name))
+
+    def load_json_object(self, *parts: str) -> dict[str, object]:
+        return json.loads(self.load_fixture_text(*parts))
 
     def test_map_creation_and_tile_lookup(self) -> None:
-        state = self.build_state()
+        state = self.load_state("map-only.json")
 
         self.assertEqual(state.game_map.metadata.name, "Test Map")
         self.assertEqual(state.game_map.get_tile(HexCoord(0, 0)).terrain_id, "base")
@@ -63,14 +41,8 @@ class GameStateTestCase(unittest.TestCase):
         self.assertIsNone(state.game_map.get_tile(HexCoord(9, 9)))
 
     def test_unit_creation_updates_tile_occupancy(self) -> None:
-        state = self.build_state()
-        marine = UnitState(
-            instance_id="u_marine",
-            unit_id="marine",
-            owner_id="p1",
-            position=HexCoord(0, 0),
-            hp=10,
-        )
+        state = self.load_state("map-only.json")
+        marine = UnitState.from_dict(self.load_json_object("units", "marine.json"))
 
         state.add_unit(marine)
 
@@ -81,15 +53,7 @@ class GameStateTestCase(unittest.TestCase):
         self.assertEqual(state.get_unit_at(HexCoord(0, 0)).instance_id, "u_marine")
 
     def test_unit_move_updates_position_and_occupancy(self) -> None:
-        state = self.build_state()
-        marine = UnitState(
-            instance_id="u_marine",
-            unit_id="marine",
-            owner_id="p1",
-            position=HexCoord(0, 0),
-            hp=10,
-        )
-        state.add_unit(marine)
+        state = self.load_state("move-ready.json")
 
         state.move_unit("u_marine", HexCoord(1, 0))
 
@@ -101,23 +65,7 @@ class GameStateTestCase(unittest.TestCase):
         self.assertTrue(state.get_unit("u_marine").action.has_moved_this_turn)
 
     def test_attack_updates_hp_and_fight_context(self) -> None:
-        state = self.build_state()
-        attacker = UnitState(
-            instance_id="u_attacker",
-            unit_id="marine",
-            owner_id="p1",
-            position=HexCoord(0, 0),
-            hp=10,
-        )
-        defender = UnitState(
-            instance_id="u_defender",
-            unit_id="mecha",
-            owner_id="p2",
-            position=HexCoord(1, 0),
-            hp=10,
-        )
-        state.add_unit(attacker)
-        state.add_unit(defender)
+        state = self.load_state("attack-ready.json")
 
         state.attack_unit("u_attacker", "u_defender", defender_damage=3)
 
@@ -128,24 +76,7 @@ class GameStateTestCase(unittest.TestCase):
         self.assertTrue(state.get_unit("u_attacker").action.has_attacked_this_turn)
 
     def test_end_turn_auto_heal_only_unused_units(self) -> None:
-        state = self.build_state()
-        idle_marine = UnitState(
-            instance_id="u_idle",
-            unit_id="marine",
-            owner_id="p1",
-            position=HexCoord(0, 0),
-            hp=8,
-        )
-        moved_marine = UnitState(
-            instance_id="u_moved",
-            unit_id="marine",
-            owner_id="p1",
-            position=HexCoord(1, 0),
-            hp=8,
-            action=UnitActionState(is_available=True, has_moved_this_turn=True),
-        )
-        state.add_unit(idle_marine)
-        state.add_unit(moved_marine)
+        state = self.load_state("end-turn-heal.json")
 
         state.end_turn()
 
@@ -153,21 +84,7 @@ class GameStateTestCase(unittest.TestCase):
         self.assertEqual(state.get_unit("u_moved").hp, 8)
 
     def test_end_turn_applies_start_of_turn_effects(self) -> None:
-        state = self.build_state()
-        plagued_titan = UnitState(
-            instance_id="u_titan",
-            unit_id="mecha",
-            owner_id="p2",
-            position=HexCoord(1, 1),
-            hp=6,
-            status=UnitStatusState(
-                plague_infected=True,
-                emp_disabled_rounds=2,
-                teleport_disabled_rounds=1,
-                ability_cooldowns={"uv": 3},
-            ),
-        )
-        state.add_unit(plagued_titan)
+        state = self.load_state("end-turn-status-income.json")
 
         next_player = state.end_turn()
 
@@ -180,33 +97,33 @@ class GameStateTestCase(unittest.TestCase):
         self.assertEqual(state.get_unit("u_titan").status.ability_cooldowns["uv"], 2)
 
     def test_end_turn_processes_capture_completion(self) -> None:
-        state = self.build_state()
-        capturer = UnitState(
-            instance_id="u_capture",
-            unit_id="marine",
-            owner_id="p2",
-            position=HexCoord(2, 0),
-            hp=10,
-        )
-        state.add_unit(capturer)
-
-        harbor_tile = state.game_map.get_tile(HexCoord(2, 0))
-        harbor_tile.capture_state = CaptureState(
-            tile=HexCoord(2, 0),
-            structure_owner_id="p1",
-            capturing_player_id="p2",
-            capturing_unit_id="u_capture",
-            rounds_remaining=1,
-        )
-        capturer.capture_target = HexCoord(2, 0)
+        state = self.load_state("capture-ready.json")
 
         state.end_turn()
 
+        harbor_tile = state.game_map.get_tile(HexCoord(2, 0))
         self.assertEqual(state.active_player_id, "p2")
         self.assertEqual(harbor_tile.owner_id, "p2")
         self.assertIsNone(harbor_tile.capture_state)
         self.assertIsNone(harbor_tile.occupying_unit_id)
         self.assertIsNone(state.get_unit("u_capture"))
+
+    def test_json_to_game_state_round_trip_preserves_nested_state(self) -> None:
+        payload = self.load_fixture_text("states", "serialization-rich.json")
+
+        state = json_to_game_state(payload)
+        reloaded_state = json_to_game_state(game_state_to_json(state))
+
+        self.assertEqual(reloaded_state.to_dict(), state.to_dict())
+        self.assertEqual(reloaded_state.fight_context.chain_index, 2)
+        self.assertTrue(reloaded_state.get_unit("u_wyrm").action.has_atomic_window_lock)
+        self.assertEqual(
+            reloaded_state.get_unit("u_mecha").status.hidden_mode.value, "buried"
+        )
+        self.assertEqual(
+            reloaded_state.game_map.get_tile(HexCoord(2, 0)).capture_state.rounds_remaining,
+            2,
+        )
 
 
 if __name__ == "__main__":

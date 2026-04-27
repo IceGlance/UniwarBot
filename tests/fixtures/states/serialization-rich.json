@@ -1,0 +1,210 @@
+{
+  "ruleset_version": "test-v1",
+  "active_player_id": "p1",
+  "player_order": ["p1", "p2"],
+  "turn_number": 7,
+  "round_number": 4,
+  "current_rseed": 987654321,
+  "game_map": {
+    "metadata": {
+      "map_id": "rich-map",
+      "name": "Serialization Coverage Map",
+      "width": 3,
+      "height": 3,
+      "tags": ["test", "serialization"],
+      "notes": "Covers nested state payloads."
+    },
+    "tiles": [
+      {"coord": {"q": 0, "r": 0}, "terrain_id": "base", "owner_id": "p1", "occupying_unit_id": "u_wyrm", "capture_state": null, "metadata": {"spawn": true}},
+      {"coord": {"q": 0, "r": 1}, "terrain_id": "medical", "owner_id": null, "occupying_unit_id": null, "capture_state": null, "metadata": {}},
+      {"coord": {"q": 0, "r": 2}, "terrain_id": "plain", "owner_id": null, "occupying_unit_id": null, "capture_state": null, "metadata": {}},
+      {"coord": {"q": 1, "r": 0}, "terrain_id": "plain", "owner_id": null, "occupying_unit_id": "u_mecha", "capture_state": null, "metadata": {}},
+      {"coord": {"q": 1, "r": 1}, "terrain_id": "base", "owner_id": "p2", "occupying_unit_id": null, "capture_state": null, "metadata": {}},
+      {"coord": {"q": 1, "r": 2}, "terrain_id": "plain", "owner_id": null, "occupying_unit_id": null, "capture_state": null, "metadata": {}},
+      {
+        "coord": {"q": 2, "r": 0},
+        "terrain_id": "harbor",
+        "owner_id": "p1",
+        "occupying_unit_id": null,
+        "capture_state": {
+          "tile": {"q": 2, "r": 0},
+          "structure_owner_id": "p1",
+          "capturing_player_id": "p2",
+          "capturing_unit_id": "u_marine",
+          "rounds_remaining": 2,
+          "defense_penalty_applies": true
+        },
+        "metadata": {}
+      },
+      {"coord": {"q": 2, "r": 1}, "terrain_id": "harbor", "owner_id": "p2", "occupying_unit_id": "u_marine", "capture_state": null, "metadata": {}},
+      {"coord": {"q": 2, "r": 2}, "terrain_id": "plain", "owner_id": null, "occupying_unit_id": null, "capture_state": null, "metadata": {"fog": false}}
+    ]
+  },
+  "players": {
+    "p1": {"player_id": "p1", "faction": "titans", "credits": 350, "team_id": "t1", "defeated": false, "has_ended_turn": false, "metadata": {"name": "Blue"}},
+    "p2": {"player_id": "p2", "faction": "sapiens", "credits": 125, "team_id": "t2", "defeated": false, "has_ended_turn": true, "metadata": {"name": "Red"}}
+  },
+  "units": {
+    "u_wyrm": {
+      "instance_id": "u_wyrm",
+      "unit_id": "wyrm",
+      "owner_id": "p1",
+      "position": {"q": 0, "r": 0},
+      "hp": 9,
+      "veterancy_level": 1,
+      "experience_points": 7,
+      "status": {
+        "plague_infected": false,
+        "hidden_mode": null,
+        "emp_disabled_rounds": 1,
+        "teleport_disabled_rounds": 0,
+        "buried_resurface_bonus": 0,
+        "submerged_attack_penalty": 0,
+        "ability_cooldowns": {
+          "acid": 2
+        }
+      },
+      "action": {
+        "is_available": true,
+        "configured_action_count": 1,
+        "actions_remaining": 1,
+        "can_interleave_between_action_windows": false,
+        "move_points_remaining": 4,
+        "attacks_remaining": 0,
+        "special_actions_remaining": null,
+        "action_phase_index": 1,
+        "current_action_index": 0,
+        "action_windows": [
+          {
+            "action_id": "move_attack_postmove",
+            "is_atomic": true,
+            "in_progress": true,
+            "attack_occurred": true,
+            "completed": false,
+            "metadata": {"profile": "wyrm"},
+            "segments": [
+              {
+                "segment_id": "pre_move",
+                "kind": "move",
+                "uses_remaining": 0,
+                "mobility_points_remaining": 0,
+                "unlocked": true,
+                "completed": true,
+                "requires_attack_before_use": false,
+                "metadata": {}
+              },
+              {
+                "segment_id": "attack",
+                "kind": "attack",
+                "uses_remaining": 0,
+                "mobility_points_remaining": null,
+                "unlocked": true,
+                "completed": true,
+                "requires_attack_before_use": false,
+                "metadata": {}
+              },
+              {
+                "segment_id": "post_move",
+                "kind": "move",
+                "uses_remaining": 1,
+                "mobility_points_remaining": 4,
+                "unlocked": true,
+                "completed": false,
+                "requires_attack_before_use": true,
+                "metadata": {}
+              }
+            ]
+          }
+        ],
+        "has_moved_this_turn": true,
+        "has_attacked_this_turn": true,
+        "has_used_special_this_turn": false
+      },
+      "capture_target": null,
+      "metadata": {"note": "mid-activation"}
+    },
+    "u_mecha": {
+      "instance_id": "u_mecha",
+      "unit_id": "mecha",
+      "owner_id": "p2",
+      "position": {"q": 1, "r": 0},
+      "hp": 6,
+      "veterancy_level": 0,
+      "experience_points": 3,
+      "status": {
+        "plague_infected": true,
+        "hidden_mode": "buried",
+        "emp_disabled_rounds": 0,
+        "teleport_disabled_rounds": 2,
+        "buried_resurface_bonus": 3,
+        "submerged_attack_penalty": 0,
+        "ability_cooldowns": {
+          "bury": 1
+        }
+      },
+      "action": {
+        "is_available": false,
+        "configured_action_count": 1,
+        "actions_remaining": 0,
+        "can_interleave_between_action_windows": true,
+        "move_points_remaining": null,
+        "attacks_remaining": 0,
+        "special_actions_remaining": null,
+        "action_phase_index": 0,
+        "current_action_index": 0,
+        "action_windows": [],
+        "has_moved_this_turn": false,
+        "has_attacked_this_turn": false,
+        "has_used_special_this_turn": true
+      },
+      "capture_target": null,
+      "metadata": {}
+    },
+    "u_marine": {
+      "instance_id": "u_marine",
+      "unit_id": "marine",
+      "owner_id": "p2",
+      "position": {"q": 2, "r": 1},
+      "hp": 10,
+      "veterancy_level": 2,
+      "experience_points": 11,
+      "status": {
+        "plague_infected": false,
+        "hidden_mode": null,
+        "emp_disabled_rounds": 0,
+        "teleport_disabled_rounds": 0,
+        "buried_resurface_bonus": 0,
+        "submerged_attack_penalty": 0,
+        "ability_cooldowns": {}
+      },
+      "action": {
+        "is_available": true,
+        "configured_action_count": 1,
+        "actions_remaining": 1,
+        "can_interleave_between_action_windows": true,
+        "move_points_remaining": null,
+        "attacks_remaining": 1,
+        "special_actions_remaining": null,
+        "action_phase_index": 0,
+        "current_action_index": 0,
+        "action_windows": [],
+        "has_moved_this_turn": false,
+        "has_attacked_this_turn": false,
+        "has_used_special_this_turn": false
+      },
+      "capture_target": {"q": 2, "r": 0},
+      "metadata": {}
+    }
+  },
+  "fight_context": {
+    "last_attacked_unit_id": "u_mecha",
+    "previous_attack_origin": {"q": 0, "r": 0},
+    "previous_attack_was_melee": false,
+    "acting_player_id": "p1",
+    "chain_index": 2
+  },
+  "metadata": {
+    "income_per_base": 100,
+    "scenario": "serialization-rich"
+  }
+}

@@ -991,6 +991,16 @@ class GameState:
         return cls.from_dict(json.loads(payload))
 
 
+def game_state_to_json(state: GameState, *, indent: int = 2) -> str:
+    return state.to_json(indent=indent)
+
+
+def json_to_game_state(payload: str | bytes | bytearray) -> GameState:
+    if isinstance(payload, (bytes, bytearray)):
+        payload = payload.decode("utf-8")
+    return GameState.from_json(payload)
+
+
 def load_game_dictionary(path: str | Path | None = None) -> dict[str, Any]:
     if path is None:
         path = (

@@ -1,0 +1,35 @@
+{
+  "instance_id": "u_marine",
+  "unit_id": "marine",
+  "owner_id": "p1",
+  "position": {"q": 0, "r": 0},
+  "hp": 10,
+  "veterancy_level": 0,
+  "experience_points": 0,
+  "status": {
+    "plague_infected": false,
+    "hidden_mode": null,
+    "emp_disabled_rounds": 0,
+    "teleport_disabled_rounds": 0,
+    "buried_resurface_bonus": 0,
+    "submerged_attack_penalty": 0,
+    "ability_cooldowns": {}
+  },
+  "action": {
+    "is_available": true,
+    "configured_action_count": 1,
+    "actions_remaining": 1,
+    "can_interleave_between_action_windows": true,
+    "move_points_remaining": null,
+    "attacks_remaining": 1,
+    "special_actions_remaining": null,
+    "action_phase_index": 0,
+    "current_action_index": 0,
+    "action_windows": [],
+    "has_moved_this_turn": false,
+    "has_attacked_this_turn": false,
+    "has_used_special_this_turn": false
+  },
+  "capture_target": null,
+  "metadata": {}
+}

@@ -21,6 +21,8 @@ from .state import (
     UnitState,
     UnitStatusState,
     VeterancyLevel,
+    game_state_to_json,
+    json_to_game_state,
     load_action_economy_dictionary,
     load_game_dictionary,
 )
@@ -46,6 +48,8 @@ __all__ = [
     "UnitState",
     "UnitStatusState",
     "VeterancyLevel",
+    "game_state_to_json",
+    "json_to_game_state",
     "load_action_economy_dictionary",
     "load_game_dictionary",
 ]
