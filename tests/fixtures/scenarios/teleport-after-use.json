@@ -1,0 +1,18 @@
+{
+  "name": "ending_p1_turn_starts_p2_turn_with_teleported_unit_retaliation_and_zoc_blocked",
+  "input_state": "states/teleport-after-use.json",
+  "actions": [
+    {
+      "type": "end_turn"
+    }
+  ],
+  "expected_changes": {
+    "active_player_id": "p2",
+    "units.u_mecha.status.teleport_lock_phase": "opponent_turn",
+    "units.u_mecha.status.teleport_disabled_rounds": 1,
+    "units.u_mecha.status.teleport_cooldown_rounds": 3,
+    "units.u_mecha.status.retaliation_blocked": true,
+    "units.u_mecha.status.control_zones_suppressed": true,
+    "units.u_mecha.status.movement_blocked": false
+  }
+}

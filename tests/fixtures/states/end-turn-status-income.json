@@ -43,7 +43,7 @@
         "plague_infected": true,
         "hidden_mode": null,
         "emp_disabled_rounds": 2,
-        "teleport_disabled_rounds": 1,
+        "teleport_disabled_rounds": 0,
         "buried_resurface_bonus": 0,
         "submerged_attack_penalty": 0,
         "ability_cooldowns": {

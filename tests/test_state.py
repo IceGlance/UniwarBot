@@ -49,6 +49,11 @@ class GameStateScenarioTestCase(unittest.TestCase):
                 continue
             if action_type == "move_unit":
                 destination = HexCoord.from_dict(dict(action["destination"]))
+                expected_error = action.get("expect_error")
+                if expected_error is not None:
+                    with self.assertRaisesRegex(ValueError, str(expected_error)):
+                        state.move_unit(str(action["unit_id"]), destination)
+                    continue
                 state.move_unit(str(action["unit_id"]), destination)
                 continue
             if action_type == "attack_unit":

@@ -14,7 +14,6 @@
     "players.p2.credits": 150,
     "units.u_infected.hp": 5,
     "units.u_infected.status.emp_disabled_rounds": 1,
-    "units.u_infected.status.teleport_disabled_rounds": 0,
     "units.u_infected.status.ability_cooldowns.uv": 2,
     "units.u_friendly_target.hp": 10,
     "units.u_friendly_target.status.plague_infected": true,

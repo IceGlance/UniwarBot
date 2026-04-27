@@ -43,6 +43,11 @@ class HiddenMode(str, Enum):
     SUBMERGED = "submerged"
 
 
+class TeleportLockPhase(str, Enum):
+    OPPONENT_TURN = "opponent_turn"
+    OWNER_TURN = "owner_turn"
+
+
 class ActionSegmentKind(str, Enum):
     TOGGLE_STATE = "toggle_state"
     MOVE = "move"
@@ -206,13 +211,31 @@ class UnitStatusState:
     hidden_mode: HiddenMode | None = None
     emp_disabled_rounds: int = 0
     teleport_disabled_rounds: int = 0
+    teleport_lock_phase: TeleportLockPhase | None = None
+    teleport_cooldown_rounds: int = 0
     buried_resurface_bonus: int = 0
     submerged_attack_penalty: int = 0
     ability_cooldowns: dict[str, int] = field(default_factory=dict)
 
     @property
     def is_disabled(self) -> bool:
-        return self.emp_disabled_rounds > 0 or self.teleport_disabled_rounds > 0
+        return self.emp_disabled_rounds > 0 or self.teleport_lock_phase is not None
+
+    @property
+    def retaliation_blocked(self) -> bool:
+        return self.emp_disabled_rounds > 0 or (
+            self.teleport_lock_phase == TeleportLockPhase.OPPONENT_TURN
+        )
+
+    @property
+    def control_zones_suppressed(self) -> bool:
+        return self.retaliation_blocked
+
+    @property
+    def movement_blocked(self) -> bool:
+        return self.emp_disabled_rounds > 0 or (
+            self.teleport_lock_phase == TeleportLockPhase.OWNER_TURN
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -220,6 +243,13 @@ class UnitStatusState:
             "hidden_mode": self.hidden_mode.value if self.hidden_mode else None,
             "emp_disabled_rounds": self.emp_disabled_rounds,
             "teleport_disabled_rounds": self.teleport_disabled_rounds,
+            "teleport_lock_phase": (
+                self.teleport_lock_phase.value if self.teleport_lock_phase else None
+            ),
+            "teleport_cooldown_rounds": self.teleport_cooldown_rounds,
+            "retaliation_blocked": self.retaliation_blocked,
+            "control_zones_suppressed": self.control_zones_suppressed,
+            "movement_blocked": self.movement_blocked,
             "buried_resurface_bonus": self.buried_resurface_bonus,
             "submerged_attack_penalty": self.submerged_attack_penalty,
             "ability_cooldowns": dict(sorted(self.ability_cooldowns.items())),
@@ -228,11 +258,16 @@ class UnitStatusState:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "UnitStatusState":
         hidden_mode = data.get("hidden_mode")
+        teleport_lock_phase = data.get("teleport_lock_phase")
         return cls(
             plague_infected=bool(data.get("plague_infected", False)),
             hidden_mode=HiddenMode(hidden_mode) if hidden_mode else None,
             emp_disabled_rounds=int(data.get("emp_disabled_rounds", 0)),
             teleport_disabled_rounds=int(data.get("teleport_disabled_rounds", 0)),
+            teleport_lock_phase=(
+                TeleportLockPhase(teleport_lock_phase) if teleport_lock_phase else None
+            ),
+            teleport_cooldown_rounds=int(data.get("teleport_cooldown_rounds", 0)),
             buried_resurface_bonus=int(data.get("buried_resurface_bonus", 0)),
             submerged_attack_penalty=int(data.get("submerged_attack_penalty", 0)),
             ability_cooldowns={
@@ -794,6 +829,8 @@ class GameState:
 
     def move_unit(self, instance_id: str, destination: HexCoord) -> None:
         unit = self._require_active_player_unit(instance_id)
+        if unit.status.movement_blocked:
+            raise ValueError("Unit cannot move while teleport-locked or disabled")
         self._consume_action_if_needed(unit)
         destination_tile = self.game_map.get_tile(destination)
         if destination_tile is None:
@@ -919,6 +956,7 @@ class GameState:
 
     def _apply_start_of_turn_effects(self, player_id: str) -> None:
         self.players[player_id].has_ended_turn = False
+        self._advance_teleport_state_for_turn_start(player_id)
         self._process_capture_progress(player_id)
         self.players[player_id].credits += self._income_for_player(player_id)
         infected_units = [
@@ -941,13 +979,27 @@ class GameState:
         if not skip_plague and unit.status.plague_infected and unit.hp > 1:
             unit.hp -= 1
         unit.status.emp_disabled_rounds = max(0, unit.status.emp_disabled_rounds - 1)
-        unit.status.teleport_disabled_rounds = max(
-            0, unit.status.teleport_disabled_rounds - 1
-        )
         unit.status.ability_cooldowns = {
             key: max(0, value - 1)
             for key, value in unit.status.ability_cooldowns.items()
         }
+
+    def _advance_teleport_state_for_turn_start(self, active_player_id: str) -> None:
+        for unit in self.units.values():
+            phase = unit.status.teleport_lock_phase
+            if phase == TeleportLockPhase.OPPONENT_TURN:
+                if unit.owner_id == active_player_id:
+                    unit.status.teleport_lock_phase = TeleportLockPhase.OWNER_TURN
+                continue
+            if phase == TeleportLockPhase.OWNER_TURN:
+                if unit.owner_id != active_player_id:
+                    unit.status.teleport_lock_phase = None
+                    unit.status.teleport_disabled_rounds = max(
+                        0, unit.status.teleport_disabled_rounds - 1
+                    )
+                    unit.status.teleport_cooldown_rounds = max(
+                        0, unit.status.teleport_cooldown_rounds - 1
+                    )
 
     def _apply_plague_start_of_turn(self, unit: UnitState) -> None:
         if self._is_plague_immune(unit):
