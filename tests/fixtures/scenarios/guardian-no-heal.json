@@ -1,0 +1,15 @@
+{
+  "name": "ending_p1_turn_does_not_heal_guardian_with_actions_remaining",
+  "input_state": "states/guardian-no-heal.json",
+  "actions": [
+    {
+      "type": "end_turn"
+    }
+  ],
+  "expected_changes": {
+    "active_player_id": "p2",
+    "turn_number": 2,
+    "round_number": 2,
+    "units.u_guardian.hp": 7
+  }
+}
