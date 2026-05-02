@@ -455,7 +455,7 @@
       "submerged_target_attack": {
         "surface_mode_penalty": -100,
         "surface_mode_effective_strength": 0,
-        "surface_mode_can_attack": false,
+        "surface_mode_can_attack": true,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
@@ -465,7 +465,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -639,7 +641,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": false,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -792,7 +796,7 @@
       "submerged_target_attack": {
         "surface_mode_penalty": -100,
         "surface_mode_effective_strength": 0,
-        "surface_mode_can_attack": false,
+        "surface_mode_can_attack": true,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
@@ -802,7 +806,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -950,7 +956,7 @@
       "submerged_target_attack": {
         "surface_mode_penalty": -8,
         "surface_mode_effective_strength": 0,
-        "surface_mode_can_attack": false,
+        "surface_mode_can_attack": true,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
@@ -960,7 +966,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -1111,7 +1119,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -1264,7 +1274,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 1,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -1420,7 +1432,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 3,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -1580,7 +1594,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 2,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -1733,7 +1749,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 7,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -1884,7 +1902,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 3,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -2066,7 +2086,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 8,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -2245,7 +2267,7 @@
       "submerged_target_attack": {
         "surface_mode_penalty": -100,
         "surface_mode_effective_strength": 0,
-        "surface_mode_can_attack": false,
+        "surface_mode_can_attack": true,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
@@ -2255,7 +2277,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -2423,7 +2447,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": false,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -2566,7 +2592,7 @@
       "submerged_target_attack": {
         "surface_mode_penalty": -100,
         "surface_mode_effective_strength": 0,
-        "surface_mode_can_attack": false,
+        "surface_mode_can_attack": true,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
@@ -2576,7 +2602,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -2729,7 +2757,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 1,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -2885,7 +2915,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -3038,7 +3070,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 3,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -3191,7 +3225,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 2,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -3350,7 +3386,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 2,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -3503,7 +3541,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 3,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -3660,7 +3700,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 4,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -3842,7 +3884,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 6,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -3993,7 +4037,7 @@
       "submerged_target_attack": {
         "surface_mode_penalty": -100,
         "surface_mode_effective_strength": 0,
-        "surface_mode_can_attack": false,
+        "surface_mode_can_attack": true,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
@@ -4003,7 +4047,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -4176,7 +4222,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": false,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -4355,7 +4403,7 @@
       "submerged_target_attack": {
         "surface_mode_penalty": -100,
         "surface_mode_effective_strength": 0,
-        "surface_mode_can_attack": false,
+        "surface_mode_can_attack": true,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
@@ -4365,7 +4413,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -4511,7 +4561,7 @@
       "submerged_target_attack": {
         "surface_mode_penalty": -8,
         "surface_mode_effective_strength": 0,
-        "surface_mode_can_attack": false,
+        "surface_mode_can_attack": true,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
@@ -4521,7 +4571,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -4682,7 +4734,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -4833,7 +4887,7 @@
       "submerged_target_attack": {
         "surface_mode_penalty": -8,
         "surface_mode_effective_strength": 0,
-        "surface_mode_can_attack": false,
+        "surface_mode_can_attack": true,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
@@ -4843,7 +4897,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 0,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -4996,7 +5052,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 3,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -5154,7 +5212,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 2,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -5309,7 +5369,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 4,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -5460,7 +5522,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 3,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -5640,7 +5704,9 @@
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ],
         "surface_mode_explicit_strength": 9,
-        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
+        "surface_same_hex_allowed": true,
+        "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {

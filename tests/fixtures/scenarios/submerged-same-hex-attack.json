@@ -1,0 +1,73 @@
+{
+  "name": "submerged_same_hex_attack_rules",
+  "input_state": "states/submerged-same-hex-attack-ready.json",
+  "cases": [
+    {
+      "name": "marine_can_attack_submerged_target_on_same_hex_when_bonused",
+      "actions": [
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_marine_same",
+          "defender_id": "u_sub_marine_same",
+          "attack_bonus": 2,
+          "defender_damage": 1,
+          "attacker_damage": 0
+        }
+      ],
+      "expected_changes": {
+        "units.u_marine_same.action.actions_remaining": 0,
+        "units.u_marine_same.action.has_attacked_this_turn": true,
+        "units.u_sub_marine_same.hp": 9
+      }
+    },
+    {
+      "name": "fuze_can_attack_submerged_target_on_same_hex",
+      "actions": [
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_fuze_same",
+          "defender_id": "u_sub_fuze_same",
+          "defender_damage": 1,
+          "attacker_damage": 0
+        }
+      ],
+      "expected_changes": {
+        "units.u_fuze_same.action.actions_remaining": 0,
+        "units.u_fuze_same.action.has_attacked_this_turn": true,
+        "units.u_sub_fuze_same.hp": 9
+      }
+    },
+    {
+      "name": "fuze_visible_target_range_is_not_widened_to_adjacent_surface_units",
+      "actions": [
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_fuze_same",
+          "defender_id": "u_visible_marine",
+          "expect_error": "Attacker cannot attack the selected target"
+        }
+      ],
+      "expected_changes": {
+        "units.u_fuze_same.action.actions_remaining": 1,
+        "units.u_fuze_same.action.has_attacked_this_turn": false,
+        "units.u_visible_marine.hp": 10
+      }
+    },
+    {
+      "name": "engineer_still_cannot_attack_submerged_target_on_same_hex",
+      "actions": [
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_engineer_same",
+          "defender_id": "u_sub_engineer_same",
+          "expect_error": "Attacker cannot attack the selected target"
+        }
+      ],
+      "expected_changes": {
+        "units.u_engineer_same.action.actions_remaining": 1,
+        "units.u_engineer_same.action.has_attacked_this_turn": false,
+        "units.u_sub_engineer_same.hp": 10
+      }
+    }
+  ]
+}

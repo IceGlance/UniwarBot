@@ -57,20 +57,21 @@
       }
     },
     {
-      "name": "marine_zero_submerged_strength_cannot_attack",
+      "name": "marine_zero_submerged_strength_can_attack_when_bonused",
       "actions": [
         {
           "type": "attack_unit",
           "attacker_id": "u_marine",
           "defender_id": "u_sub_marine",
           "attack_bonus": 2,
-          "expect_error": "Attacker cannot attack the selected target"
+          "defender_damage": 1,
+          "attacker_damage": 0
         }
       ],
       "expected_changes": {
-        "units.u_marine.action.actions_remaining": 1,
-        "units.u_marine.action.has_attacked_this_turn": false,
-        "units.u_sub_marine.hp": 10
+        "units.u_marine.action.actions_remaining": 0,
+        "units.u_marine.action.has_attacked_this_turn": true,
+        "units.u_sub_marine.hp": 9
       }
     }
   ]

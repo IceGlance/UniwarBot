@@ -1586,7 +1586,13 @@ class GameState:
             return False
         distance = self._hex_distance(position, defender.position)
         range_min, range_max = attack_range
-        if distance < range_min or distance > range_max:
+        same_hex_submerged_override = self._surface_same_hex_submerged_attack_allowed(
+            attacker,
+            defender,
+            hidden_mode_override,
+            distance,
+        )
+        if (distance < range_min or distance > range_max) and not same_hex_submerged_override:
             return False
         if not self._submerged_attacker_can_target(attacker, defender, hidden_mode_override):
             return False
@@ -1649,6 +1655,24 @@ class GameState:
         if hidden_mode == HiddenMode.SUBMERGED:
             return bool(submerged_target_attack.get("hidden_mode_can_attack", False))
         return bool(submerged_target_attack.get("surface_mode_can_attack", False))
+
+    def _surface_same_hex_submerged_attack_allowed(
+        self,
+        attacker: UnitState,
+        defender: UnitState,
+        hidden_mode: HiddenMode | None,
+        distance: int,
+    ) -> bool:
+        if hidden_mode == HiddenMode.SUBMERGED:
+            return False
+        if defender.status.hidden_mode != HiddenMode.SUBMERGED:
+            return False
+        if distance != 0:
+            return False
+        submerged_target_attack = (
+            self._unit_dictionary_entry(attacker).get("submerged_target_attack") or {}
+        )
+        return bool(submerged_target_attack.get("surface_same_hex_allowed", False))
 
     def _submerged_attacker_can_target(
         self,
@@ -1855,7 +1879,13 @@ class GameState:
             return False
         distance = self._hex_distance(attacker.position, defender.position)
         range_min, range_max = attack_range
-        if distance < range_min or distance > range_max:
+        same_hex_submerged_override = self._surface_same_hex_submerged_attack_allowed(
+            attacker,
+            defender,
+            attacker.status.hidden_mode,
+            distance,
+        )
+        if (distance < range_min or distance > range_max) and not same_hex_submerged_override:
             return False
         if not self._submerged_attacker_can_target(
             attacker,

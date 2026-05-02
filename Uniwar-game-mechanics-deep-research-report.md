@@ -214,6 +214,8 @@ Veterancy is community-documented rather than official-web-documented. The commu
 
 The following tables compile the base surface stats for every currently accessible official unit page. `Surf` is surface mobility. `Atk` is shown as `GL/GH/Air/Aq/Am`. Buried, submerged, armor-piercing, and other override values are summarized immediately afterward. Base tables are **high confidence** because they come directly from official unit pages.
 
+Range needs one interpretation note for hidden sea targets. The usual printed range is the visible-target range, but current screenshots also use `0` to mean "this unit may attack a submerged hidden target sharing the same hex." So melee `1` behaves as `0-1` against submerged targets, and Fuze's screenshot explicitly shows `0-2`. The bot dictionary represents this as normal surface range plus a same-hex submerged-target override, rather than widening ordinary visible-target range rules.
+
 ### Sapiens
 
 | Unit | Type | Cost | Surf | Range | Vis | Rep | Def | Atk GL/GH/Air/Aq/Am | Role |
@@ -227,7 +229,7 @@ The following tables compile the base surface stats for every currently accessib
 | Helicopter | Air | 500 | 12 | 1 | 5 | 1 | 10 | 12/7/10/8/12 | Generalist air control |
 | Battery | GH | 600 | 5 | 2-4 | 4 | 1 | 4 | 10/6/5/10/10 | Long-range artillery |
 | Destroyer | Aq | 800 | 12 | 3 | 5 | 2 | 12 | 10/10/12/16/10 | Capital ship, strongest anti-sea |
-| Fuze | Amphi | 200 | 9 | 2 | 4 | 1 | 2 | 5/4/1/4/6 | Amphibious harasser |
+| Fuze | Amphi | 200 | 9 | 0-2 | 4 | 1 | 2 | 5/4/1/4/6 | Amphibious harasser |
 | Submarine | Aq | 400 | 9 | 3 | 3 | 1 | 5 | 5/5/3/8/4 | Submersible skirmisher |
 
 ### Khraleans
@@ -261,14 +263,14 @@ These base stats are compiled from the official unit pages for Mecha through Ski
 | Guardian | GL | 350 | 10 | 1-2 | 2 | 0 | 3 | 7/5/7/5/7 | AP blaster; no self-repair |
 | Eclipse | GH | 400 | 10 | 1-2 | 4 | 2 | 10 | 10/6/12/5/11 | Anti-air / anti-light / anti-amphibian |
 | Plasma Tank | GH | 500 | 7 | 1 | 3 | 1 | 14 | 10/12/5/11/10 | Hardest land wall |
-| Walker | GH | 700 | 3-5 | 5 | 1 | 5 | 10/10/11/10/10 | Longest-range artillery |
+| Walker | GH | 700 | 6 | 3-5 | 5 | 1 | 5 | 10/10/11/10/10 | Longest-range artillery |
 | Hydronaut | Aq | 800 | 11 | 2-4 | 6 | 2 | 10 | 12/10/12/13/12 | Naval artillery |
 | Mantisse | Amphi | 250 | 11 | 2 | 4 | 1 | 4 | 6/4/2/4/7 | Amphibious ranged harasser |
 | Skimmer | Aq | 450 | 10 | 3 | 4 | 1 | 6 | 5/5/5/9/5 | Submersible naval skirmisher |
 
 ### Overrides, underwater states, armor piercing, and practical counters
 
-Screenshot reconciliation update (`UnitsScreenshots/`, 2026-05-02): the current in-game unit screens expose an explicit `Submerged` attack row for every unit, so the bot dictionary stores that row directly as `submerged_target_attack.surface_mode_explicit_strength` and `surface_mode_effective_strength`. The reconciled surface-mode submerged target strengths are: Marine/Engineer/Mecha II/Marauder/Bopper/Underling/Infector/Infected Marine/Borfly/Mecha/Assimilator/Cyber Underling/Speeder/Guardian/Eclipse `0`; Tank/Swarmer `1`; Battery/Pinzer/Wyrm/Walker `2`; Helicopter/Fuze/Garuda/Leviathan/Plasma Tank/Mantisse `3`; Salamander/Hydronaut `4`; Kraken `6`; Destroyer `7`; Submarine `8`; Skimmer `9`. Targeting legality is stored separately from numeric strength: Bopper, Borfly, and Guardian have `0` submerged strength but can still attack submerged units when terrain or gang-up raises effective attack, while support units with all-zero direct attacks cannot attack. The same screenshots state that Submarine can attack ground/air units from underwater, while Kraken and Skimmer cannot attack ground/air units from underwater.
+Screenshot reconciliation update (`UnitsScreenshots/`, 2026-05-02): the current in-game unit screens expose an explicit `Submerged` attack row for every unit, so the bot dictionary stores that row directly as `submerged_target_attack.surface_mode_explicit_strength` and `surface_mode_effective_strength`. The reconciled surface-mode submerged target strengths are: Marine/Engineer/Mecha II/Marauder/Bopper/Underling/Infector/Infected Marine/Borfly/Mecha/Assimilator/Cyber Underling/Speeder/Guardian/Eclipse `0`; Tank/Swarmer `1`; Battery/Pinzer/Wyrm/Walker `2`; Helicopter/Fuze/Garuda/Leviathan/Plasma Tank/Mantisse `3`; Salamander/Hydronaut `4`; Kraken `6`; Destroyer `7`; Submarine `8`; Skimmer `9`. The same screenshots also show that `0` in attack range means "same-hex attack against a submerged hidden target," so surface units that can legally attack submerged targets get a dedicated same-hex hidden-target case in addition to their ordinary visible-target range. The same screenshots state that Submarine can attack ground/air units from underwater, while Kraken and Skimmer cannot attack ground/air units from underwater.
 
 The official unit pages add a second layer of numbers for buried and submerged states. Underling has underground mobility 7, underground vision 2, and a `+4` resurface bonus; Cyber Underling has underground mobility 6, underground vision 2, defense 6 underground, and also `+4` resurface. Engine-wise, that should be interpreted narrowly: buried Underling-family units cannot attack while still buried, but if they unbury and attack immediately as part of the same action, that attack gets `+4` in addition to terrain and gang-up. Conversely, surface Underling-family units may attack directly or move-then-attack or bury, but should not treat plain `move` as a completed legal action. Kraken has submerged mobility 10, submerged vision 3, submerged defense 12, underwater range 1, and `+3` resurface; Submarine and Skimmer have underwater ranges `1-2`, submerged defenses `8` and `9`, and all three submerged sea attackers publish `Attack from Underwater penalty -2`. That field is attacker-side: hidden-mode attack against a submerged target is `Submerged attack row + Attack from Underwater penalty`, so Submarine attacks submerged targets at `8 + (-2) = 6`, Kraken at `6 + (-2) = 4`, and Skimmer at `9 + (-2) = 7`. For current bot implementation, the screenshot-derived explicit `Submerged` row is authoritative for surface-mode submerged target strength; old aquatic-minus-penalty derivations are retained only as historical source context, not as the machine-readable value.
 
