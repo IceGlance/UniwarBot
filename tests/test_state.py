@@ -208,6 +208,14 @@ class GameStateScenarioTestCase(unittest.TestCase):
                     msg=str(action.get("name", "gang_up_bonus")),
                 )
                 continue
+            if action_type == "assert_possible_moves":
+                actual_moves = state.get_possible_moves(str(action["unit_id"]))
+                self.assertEqual(
+                    actual_moves,
+                    dict(action["expected"]),
+                    msg=str(action.get("name", "possible_moves")),
+                )
+                continue
             if action_type == "end_turn":
                 expected_error = action.get("expect_error")
                 if expected_error is not None:

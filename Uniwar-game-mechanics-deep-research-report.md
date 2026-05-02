@@ -83,6 +83,36 @@ So for bot and engine work, every unit definition should eventually carry at lea
 
 The official rules also confirm that movement is terrain-limited and additionally constrained by Zone of Control, although no exact public formula for ZoC was found in the accessible official documentation. There is no separate “initiative” stat published on current unit pages; ordering is determined by player input during the turn, while retaliation depends on range and status rather than a speed-based initiative mechanic. This is an important distinction from some other tactics games: UniWar’s sequencing advantage comes from movement, position, and action economy, not hidden initiative rolls. citeturn31view0turn43search3turn11search11
 
+### Screenshot-derived terrain movement and modifier matrix
+
+The current bot dictionary now treats the in-game unit info screenshots in `UnitsScreenshots/` as the authoritative terrain matrix source. Each unit info terrain table exposes three values per listed terrain row:
+
+- `Mobility cost`: movement points spent when entering that terrain.
+- `Attack bonus`: additive attack modifier for attacks made from that terrain.
+- `Defense bonus`: additive defense modifier for a unit defending on that terrain.
+
+For engine purposes, the matrix is stored per unit in `data/validated/game-dictionary.json` as `terrain_effects[terrain_id] = { mobility_cost, attack_bonus, defense_bonus }`. A `null` `mobility_cost` means that terrain was not listed for that unit class in the screenshot table and is treated as impassable by move generation. This avoids hardcoding movement behavior in Python and keeps all terrain costs configurable for future screenshot or server-payload corrections.
+
+The OCR-normalized unit-class movement-cost tables currently encoded are:
+
+| Unit class | Passable terrain rows and costs |
+|---|---|
+| Ground Light | `mountain:6`, `forest:4`, `base:4`, `harbor:3`, `plain:3`, `medical:3`, `road_water:3`, `road_land:3`, `desert:5`, `swamp:6`, `city:5`, `reef:6`, `chasm:6` |
+| Ground Heavy | `plain:3`, `desert:4`, `medical:3`, `base:4`, `harbor:3`, `road_water:2`, `road_land:2`, `forest:6`, `swamp:6`, `city:5` |
+| Aerial | `plain:3`, `base:4`, `forest:3`, `mountain:3`, `swamp:3`, `desert:3`, `water:3`, `harbor:3`, `medical:3`, `reef:3`, `road_water:3`, `road_land:3`, `chasm:4`, `city:5` |
+| Aquatic | `water:3`, `ocean:3`, `harbor:3`, `road_water:4`, `reef:5` |
+| Amphibian | `swamp:3`, `reef:3`, `base:4`, `forest:4`, `harbor:3`, `plain:3`, `water:3`, `medical:3`, `road_water:3`, `road_land:3`, `ocean:4`, `city:5`, `desert:5` |
+
+The same screenshot tables also provide attack and defense modifiers. The most important modifier patterns are:
+
+- Ground Light gets strong bonuses on `mountain`, `forest`, `base`, and `harbor`, but penalties on `road_*`, `desert`, `swamp`, `city`, `reef`, and `chasm`.
+- Ground Heavy cannot enter `mountain`, `water`, `ocean`, `reef`, or `chasm`; it is strongest on open/road terrain and weak in `forest`, `swamp`, and `city`.
+- Aerial terrain modifiers are mostly neutral, except `city` gives `-2/-2`.
+- Aquatic units are limited to water-domain terrain and are penalized on `harbor`, `road_water`, and `reef`.
+- Amphibian units are strongest in `swamp` and `reef`, have small positive modifiers on `base`, `forest`, and `harbor`, and are weakest in `city` and `desert`.
+
+The terrain ids `road_water`, `road_land`, `ocean`, `reef`, `city`, and `chasm` are normalized engine ids inferred from the visible in-game terrain icons and known modern client assets. The numeric values are high confidence because they are read directly from current in-game screenshots; the exact server serialization names for newer terrain variants remain a validation item.
+
 The official rules say damage depends on attack strength versus target type, defense, terrain, special bonuses, and chance. The calculator and best community explanations model this as a chance-to-hit per health point that starts at 50% and shifts by 5 percentage points per effective attack-defense difference. In measured play, that means the practical average damage is close to `current HP × p`, where `p` is the effective hit probability after terrain, gang-up, veterancy, resurface bonus, and armor piercing. Community reverse engineering further describes the damage roll as multiple internal trials per HP, which is why outcomes cluster tightly around the expected value rather than swinging wildly. Confidence on this exact internal implementation is **medium**. citeturn23search0turn24search2turn24search4turn35search1
 
 The most useful working combat model is:

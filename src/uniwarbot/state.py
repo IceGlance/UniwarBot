@@ -899,6 +899,62 @@ class GameState:
             raise KeyError(f"Unknown player_id: {player_id}")
         self.active_player_id = player_id
 
+    def get_possible_moves(self, instance_id: str) -> dict[str, Any]:
+        unit = self.get_unit(instance_id)
+        if unit is None:
+            raise KeyError(f"Unknown unit_id: {instance_id}")
+
+        move_points = self._movement_points_for_unit(unit)
+        move_destinations = (
+            self._reachable_move_destinations(unit, move_points)
+            if self._can_query_unit_movement(unit)
+            else []
+        )
+        move_destination_keys = self._sorted_coord_keys(move_destinations)
+        move_attack_targets = self._move_attack_targets_for_destinations(
+            unit,
+            move_destinations,
+        )
+
+        if self._requires_surface_move_attack_lock(unit):
+            legal_move_destinations = self._sorted_coord_keys(
+                [
+                    coord
+                    for coord in move_destinations
+                    if move_attack_targets.get(coord.key)
+                ]
+            )
+        else:
+            legal_move_destinations = move_destination_keys
+
+        resurface_attack_targets: list[str] = []
+        if self._can_resurface(unit):
+            resurface_attack_targets = [
+                target.instance_id
+                for target in self._attackable_targets_from_position(
+                    unit,
+                    position=unit.position,
+                    hidden_mode_override=None,
+                )
+            ]
+
+        return {
+            "unit_id": unit.instance_id,
+            "move_points": move_points,
+            "move_destinations": move_destination_keys,
+            "legal_move_destinations": legal_move_destinations,
+            "move_requires_attack": self._requires_surface_move_attack_lock(unit),
+            "move_attack_targets": {
+                key: sorted(targets)
+                for key, targets in sorted(move_attack_targets.items())
+                if targets
+            },
+            "can_bury": self._can_bury(unit),
+            "can_resurface": self._can_resurface(unit),
+            "can_resurface_attack": bool(resurface_attack_targets),
+            "resurface_attack_targets": sorted(resurface_attack_targets),
+        }
+
     def _require_active_player_unit(self, instance_id: str) -> UnitState:
         unit = self.get_unit(instance_id)
         if unit is None:
@@ -1344,6 +1400,239 @@ class GameState:
     def _unit_dictionary_entry(self, unit: UnitState) -> dict[str, Any]:
         return dict(_cached_game_dictionary()["units"].get(unit.unit_id, {}))
 
+    def _movement_points_for_unit(self, unit: UnitState) -> int:
+        if unit.action.move_points_remaining is not None:
+            return max(0, int(unit.action.move_points_remaining))
+        unit_data = self._unit_dictionary_entry(unit)
+        if unit.status.hidden_mode in {HiddenMode.BURIED, HiddenMode.SUBMERGED}:
+            hidden_mode = unit_data.get("hidden_mode") or {}
+            return int(hidden_mode.get("mobility", 0))
+        movement = unit_data.get("movement") or {}
+        return int(movement.get("surface", 0))
+
+    def _can_query_unit_movement(self, unit: UnitState) -> bool:
+        return (
+            unit.action.is_available
+            and unit.action.actions_remaining > 0
+            and not unit.status.movement_blocked
+            and self._movement_points_for_unit(unit) > 0
+        )
+
+    def _reachable_move_destinations(
+        self,
+        unit: UnitState,
+        move_points: int,
+    ) -> list[HexCoord]:
+        best_remaining_by_coord: dict[HexCoord, int] = {unit.position: move_points}
+        queue: list[tuple[HexCoord, int]] = [(unit.position, move_points)]
+        destinations: set[HexCoord] = set()
+
+        while queue:
+            current, remaining = queue.pop(0)
+            if remaining <= 0:
+                continue
+            for neighbor in self._adjacent_hexes(current):
+                tile = self.game_map.get_tile(neighbor)
+                if tile is None:
+                    continue
+                if not self._can_unit_enter_tile(unit, tile):
+                    continue
+
+                movement_cost = self._terrain_movement_cost(unit, tile.terrain_id)
+                if movement_cost is None or movement_cost > remaining:
+                    continue
+
+                next_remaining = remaining - movement_cost
+                can_stop = self._can_unit_stop_on_tile(unit, tile)
+                if can_stop and neighbor != unit.position:
+                    destinations.add(neighbor)
+
+                if self._tile_is_in_enemy_zoc(unit, neighbor):
+                    continue
+                if next_remaining <= best_remaining_by_coord.get(neighbor, -1):
+                    continue
+                best_remaining_by_coord[neighbor] = next_remaining
+                queue.append((neighbor, next_remaining))
+
+        return sorted(destinations, key=lambda coord: (coord.q, coord.r))
+
+    def _can_unit_enter_tile(self, unit: UnitState, tile: TileState) -> bool:
+        if (
+            unit.status.hidden_mode == HiddenMode.BURIED
+            and tile.terrain_id in self._hidden_mode_forbidden_terrains(unit)
+        ):
+            return False
+        if self._terrain_movement_cost(unit, tile.terrain_id) is None:
+            return False
+        return not self._tile_has_enemy_unit(unit, tile)
+
+    def _terrain_movement_cost(self, unit: UnitState, terrain_id: str) -> int | None:
+        effect = self._unit_terrain_effect(unit, terrain_id)
+        if effect is None:
+            return None
+        cost = effect.get("mobility_cost")
+        return None if cost is None else int(cost)
+
+    def _unit_terrain_effect(
+        self,
+        unit: UnitState,
+        terrain_id: str,
+    ) -> dict[str, Any] | None:
+        unit_data = self._unit_dictionary_entry(unit)
+        if unit.status.hidden_mode in {HiddenMode.BURIED, HiddenMode.SUBMERGED}:
+            hidden_mode = unit_data.get("hidden_mode") or {}
+            hidden_costs = hidden_mode.get("terrain_movement_costs") or {}
+            if terrain_id in hidden_costs:
+                cost = hidden_costs.get(terrain_id)
+                return {
+                    "mobility_cost": cost,
+                    "attack_bonus": None,
+                    "defense_bonus": None,
+                }
+        effects = unit_data.get("terrain_effects") or {}
+        effect = effects.get(terrain_id)
+        return dict(effect) if effect is not None else None
+
+    def _can_unit_stop_on_tile(self, unit: UnitState, tile: TileState) -> bool:
+        occupied_slot = self._tile_slot_for_unit(tile, unit)
+        return occupied_slot in (None, unit.instance_id)
+
+    def _tile_has_enemy_unit(self, unit: UnitState, tile: TileState) -> bool:
+        for other_unit_id in (tile.surface_unit_id, tile.hidden_unit_id):
+            if other_unit_id is None or other_unit_id == unit.instance_id:
+                continue
+            other = self.units.get(other_unit_id)
+            if other is not None and other.owner_id != unit.owner_id:
+                return True
+        return False
+
+    def _tile_is_in_enemy_zoc(self, unit: UnitState, coord: HexCoord) -> bool:
+        for adjacent in self._adjacent_hexes(coord):
+            tile = self.game_map.get_tile(adjacent)
+            if tile is None:
+                continue
+            for other_unit_id in (tile.surface_unit_id, tile.hidden_unit_id):
+                if other_unit_id is None or other_unit_id == unit.instance_id:
+                    continue
+                other = self.units.get(other_unit_id)
+                if other is None or other.owner_id == unit.owner_id:
+                    continue
+                if self._unit_exerts_zoc(other):
+                    return True
+        return False
+
+    def _unit_exerts_zoc(self, unit: UnitState) -> bool:
+        if unit.status.hidden_mode in {HiddenMode.BURIED, HiddenMode.SUBMERGED}:
+            return False
+        return not unit.status.control_zones_suppressed
+
+    @staticmethod
+    def _sorted_coord_keys(coords: list[HexCoord]) -> list[str]:
+        return [
+            coord.key
+            for coord in sorted(coords, key=lambda item: (item.q, item.r))
+        ]
+
+    def _move_attack_targets_for_destinations(
+        self,
+        unit: UnitState,
+        destinations: list[HexCoord],
+    ) -> dict[str, list[str]]:
+        return {
+            coord.key: [
+                target.instance_id
+                for target in self._attackable_targets_from_position(
+                    unit,
+                    position=coord,
+                    hidden_mode_override=unit.status.hidden_mode,
+                )
+            ]
+            for coord in destinations
+        }
+
+    def _attackable_targets_from_position(
+        self,
+        unit: UnitState,
+        *,
+        position: HexCoord,
+        hidden_mode_override: HiddenMode | None,
+    ) -> list[UnitState]:
+        targets: list[UnitState] = []
+        for defender in self.units.values():
+            if defender.owner_id == unit.owner_id:
+                continue
+            if self._can_unit_attack_target_from_position(
+                unit,
+                defender,
+                position=position,
+                hidden_mode_override=hidden_mode_override,
+            ):
+                targets.append(defender)
+        return sorted(targets, key=lambda target: target.instance_id)
+
+    def _can_unit_attack_target_from_position(
+        self,
+        attacker: UnitState,
+        defender: UnitState,
+        *,
+        position: HexCoord,
+        hidden_mode_override: HiddenMode | None,
+    ) -> bool:
+        attack_range = self._attack_range_for_hidden_mode(
+            attacker,
+            hidden_mode_override,
+        )
+        if attack_range is None:
+            return False
+        distance = self._hex_distance(position, defender.position)
+        range_min, range_max = attack_range
+        if distance < range_min or distance > range_max:
+            return False
+        published_base_attack = self._published_base_attack_strength_for_hidden_mode(
+            attacker,
+            defender,
+            hidden_mode_override,
+        )
+        if defender.status.hidden_mode == HiddenMode.SUBMERGED:
+            return published_base_attack is not None
+        if published_base_attack is None:
+            return False
+        return int(published_base_attack) > 0
+
+    def _attack_range_for_hidden_mode(
+        self,
+        unit: UnitState,
+        hidden_mode: HiddenMode | None,
+    ) -> tuple[int, int] | None:
+        if hidden_mode == HiddenMode.BURIED:
+            return None
+        attack_range = self._unit_dictionary_entry(unit).get("attack_range", {})
+        range_data = (
+            attack_range.get("hidden")
+            if hidden_mode == HiddenMode.SUBMERGED
+            else attack_range.get("surface")
+        )
+        if not range_data:
+            return None
+        return int(range_data["min"]), int(range_data["max"])
+
+    def _published_base_attack_strength_for_hidden_mode(
+        self,
+        attacker: UnitState,
+        defender: UnitState,
+        hidden_mode: HiddenMode | None,
+    ) -> int | None:
+        attacker_data = self._unit_dictionary_entry(attacker)
+        if defender.status.hidden_mode == HiddenMode.SUBMERGED:
+            submerged_target_attack = attacker_data.get("submerged_target_attack", {})
+            if hidden_mode == HiddenMode.SUBMERGED:
+                return submerged_target_attack.get("hidden_mode_effective_strength")
+            return submerged_target_attack.get("surface_mode_effective_strength")
+        if defender.status.hidden_mode == HiddenMode.BURIED:
+            return None
+        target_class = self._target_class_for_unit(defender)
+        return int(attacker_data["attack_strength_by_target_class"][target_class])
+
     def _hidden_mode_resurface_bonus(self, unit: UnitState) -> int:
         hidden_mode = self._unit_dictionary_entry(unit).get("hidden_mode") or {}
         return int(hidden_mode.get("resurface_bonus", 0))
@@ -1357,6 +1646,30 @@ class GameState:
 
     def _requires_surface_move_attack_lock(self, unit: UnitState) -> bool:
         return self._is_underling_family(unit) and unit.status.hidden_mode is None
+
+    def _can_bury(self, unit: UnitState) -> bool:
+        if not self._is_underling_family(unit):
+            return False
+        if unit.status.hidden_mode is not None:
+            return False
+        if not unit.action.is_available or unit.action.actions_remaining <= 0:
+            return False
+        tile = self.game_map.get_tile(unit.position)
+        if tile is None:
+            return False
+        if tile.hidden_unit_id not in (None, unit.instance_id):
+            return False
+        return tile.terrain_id not in self._hidden_mode_forbidden_terrains(unit)
+
+    def _can_resurface(self, unit: UnitState) -> bool:
+        if unit.status.hidden_mode != HiddenMode.BURIED:
+            return False
+        if not unit.action.is_available or unit.action.actions_remaining <= 0:
+            return False
+        tile = self.game_map.get_tile(unit.position)
+        if tile is None:
+            return False
+        return tile.surface_unit_id in (None, unit.instance_id)
 
     def _assert_no_pending_atomic_actions(self, player_id: str) -> None:
         for unit in self.units.values():
@@ -1393,6 +1706,15 @@ class GameState:
         tile = self.game_map.get_tile(unit.position)
         if tile is None:
             return 0, 0
+        unit_effect = self._unit_terrain_effect(unit, tile.terrain_id)
+        if unit_effect is not None:
+            attack_bonus = unit_effect.get("attack_bonus")
+            defense_bonus = unit_effect.get("defense_bonus")
+            if attack_bonus is not None or defense_bonus is not None:
+                return (
+                    0 if attack_bonus is None else int(attack_bonus),
+                    0 if defense_bonus is None else int(defense_bonus),
+                )
         terrain_data = _cached_game_dictionary()["terrains"].get(tile.terrain_id, {})
         for example in terrain_data.get("community_examples", []):
             if str(example.get("unit_id")) == unit.unit_id:

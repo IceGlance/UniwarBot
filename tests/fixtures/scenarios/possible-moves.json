@@ -1,0 +1,268 @@
+{
+  "name": "Possible Moves",
+  "cases": [
+    {
+      "name": "movement treats unlisted terrain matrix entries as impassable",
+      "input_state_data": {
+        "active_player_id": "p1",
+        "players": [
+          {"player_id": "p1", "faction": "sapiens"},
+          {"player_id": "p2", "faction": "titans"}
+        ],
+        "tiles": [
+          {"coord": "0:0", "terrain_id": "plain"},
+          {"coord": "1:0", "terrain_id": "mountain"},
+          {"coord": "0:1", "terrain_id": "plain"},
+          {"coord": "0:2", "terrain_id": "plain"}
+        ],
+        "units": [
+          {
+            "instance_id": "u_tank",
+            "unit_id": "tank",
+            "owner_id": "p1",
+            "coord": "0:0",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "move_points_remaining": 8,
+              "attacks_remaining": 1
+            }
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_tank",
+          "expected": {
+            "unit_id": "u_tank",
+            "move_points": 8,
+            "move_destinations": ["0:1", "0:2"],
+            "legal_move_destinations": ["0:1", "0:2"],
+            "move_requires_attack": false,
+            "move_attack_targets": {},
+            "can_bury": false,
+            "can_resurface": false,
+            "can_resurface_attack": false,
+            "resurface_attack_targets": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "surface movement consumes screenshot terrain mobility costs",
+      "input_state_data": {
+        "active_player_id": "p1",
+        "players": [
+          {"player_id": "p1", "faction": "sapiens"},
+          {"player_id": "p2", "faction": "titans"}
+        ],
+        "tiles": [
+          {"coord": "0:0", "terrain_id": "plain"},
+          {"coord": "1:0", "terrain_id": "plain"},
+          {"coord": "2:0", "terrain_id": "desert"},
+          {"coord": "3:0", "terrain_id": "plain"},
+          {"coord": "0:1", "terrain_id": "mountain"},
+          {"coord": "0:2", "terrain_id": "plain"},
+          {"coord": "1:1", "terrain_id": "forest"},
+          {"coord": "2:1", "terrain_id": "plain"}
+        ],
+        "units": [
+          {
+            "instance_id": "u_marine",
+            "unit_id": "marine",
+            "owner_id": "p1",
+            "coord": "0:0",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "move_points_remaining": 9,
+              "attacks_remaining": 1
+            }
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_marine",
+          "expected": {
+            "unit_id": "u_marine",
+            "move_points": 9,
+            "move_destinations": ["0:1", "0:2", "1:0", "1:1", "2:0"],
+            "legal_move_destinations": ["0:1", "0:2", "1:0", "1:1", "2:0"],
+            "move_requires_attack": false,
+            "move_attack_targets": {},
+            "can_bury": false,
+            "can_resurface": false,
+            "can_resurface_attack": false,
+            "resurface_attack_targets": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "surface unit respects enemy zoc but can pass through friendly units",
+      "input_state": "states/possible-moves-zoc-ready.json",
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_mover",
+          "expected": {
+            "unit_id": "u_mover",
+            "move_points": 9,
+            "move_destinations": [
+              "0:0",
+              "0:1",
+              "0:3",
+              "0:4",
+              "1:0",
+              "1:1",
+              "1:3",
+              "1:4",
+              "2:0",
+              "2:2",
+              "3:0"
+            ],
+            "legal_move_destinations": [
+              "0:0",
+              "0:1",
+              "0:3",
+              "0:4",
+              "1:0",
+              "1:1",
+              "1:3",
+              "1:4",
+              "2:0",
+              "2:2",
+              "3:0"
+            ],
+            "move_requires_attack": false,
+            "move_attack_targets": {
+              "1:3": ["u_enemy_teleport"],
+              "1:4": ["u_enemy_teleport"],
+              "2:2": ["u_enemy_teleport", "u_enemy_zoc"]
+            },
+            "can_bury": false,
+            "can_resurface": false,
+            "can_resurface_attack": false,
+            "resurface_attack_targets": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "surface underling exposes bury and only legal move attack destinations",
+      "input_state": "states/surface-move-attack-ready.json",
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_underling",
+          "expected": {
+            "unit_id": "u_underling",
+            "move_points": 11,
+            "move_destinations": ["0:1", "1:0"],
+            "legal_move_destinations": ["0:1", "1:0"],
+            "move_requires_attack": true,
+            "move_attack_targets": {
+              "0:1": ["u_defender"],
+              "1:0": ["u_defender"]
+            },
+            "can_bury": true,
+            "can_resurface": false,
+            "can_resurface_attack": false,
+            "resurface_attack_targets": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "surface underling without attack target can bury but has no legal move action",
+      "input_state": "states/surface-bury-ready.json",
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_underling",
+          "expected": {
+            "unit_id": "u_underling",
+            "move_points": 11,
+            "move_destinations": [
+              "0:1",
+              "0:2",
+              "1:0",
+              "1:1",
+              "1:2",
+              "2:0",
+              "2:1"
+            ],
+            "legal_move_destinations": [],
+            "move_requires_attack": true,
+            "move_attack_targets": {},
+            "can_bury": true,
+            "can_resurface": false,
+            "can_resurface_attack": false,
+            "resurface_attack_targets": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "buried underling can move underground or unbury",
+      "input_state": "states/buried-resurface-ready.json",
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_underling",
+          "expected": {
+            "unit_id": "u_underling",
+            "move_points": 7,
+            "move_destinations": [
+              "0:1",
+              "0:2",
+              "1:0",
+              "1:1",
+              "2:0"
+            ],
+            "legal_move_destinations": [
+              "0:1",
+              "0:2",
+              "1:0",
+              "1:1",
+              "2:0"
+            ],
+            "move_requires_attack": false,
+            "move_attack_targets": {},
+            "can_bury": false,
+            "can_resurface": true,
+            "can_resurface_attack": false,
+            "resurface_attack_targets": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "buried underling can unbury attack when a target is in range",
+      "input_state": "states/buried-resurface-attack-ready.json",
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_underling",
+          "expected": {
+            "unit_id": "u_underling",
+            "move_points": 7,
+            "move_destinations": ["0:1"],
+            "legal_move_destinations": ["0:1"],
+            "move_requires_attack": false,
+            "move_attack_targets": {},
+            "can_bury": false,
+            "can_resurface": true,
+            "can_resurface_attack": true,
+            "resurface_attack_targets": ["u_defender"]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -3,7 +3,8 @@
   "generated_from": {
     "report": "Uniwar-game-mechanics-deep-research-report.md",
     "report_date_context": "2026-04-18",
-    "generation_date": "2026-04-24"
+    "generation_date": "2026-04-24",
+    "unit_screenshots": "UnitsScreenshots/ user-provided in-game info screenshots, OCR-normalized 2026-05-02"
   },
   "purpose": "Machine-readable units and terrains dictionary for a UniWar engine, bot, and training pipeline.",
   "null_policy": "null means unknown, unpublished, unresolved, or intentionally not guessed from incomplete public sources.",
@@ -104,12 +105,13 @@
       "production_role": null,
       "repair_multiplier": 1,
       "numeric_combat_modifiers_published": false,
-      "numeric_movement_costs_published": false,
+      "numeric_movement_costs_published": true,
       "terrain_specific_los_rules_published": false,
       "favored_unit_types": [],
       "blocked_unit_types": [],
       "notes": [
-        "Baseline neutral land terrain."
+        "Baseline neutral land terrain.",
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
       ]
     },
     "base": {
@@ -121,7 +123,7 @@
       "production_role": "land",
       "repair_multiplier": 1,
       "numeric_combat_modifiers_published": false,
-      "numeric_movement_costs_published": false,
+      "numeric_movement_costs_published": true,
       "terrain_specific_los_rules_published": false,
       "favored_unit_types": [
         "ground_light"
@@ -138,7 +140,8 @@
       "notes": [
         "Provides credits.",
         "Required for land production.",
-        "The exact numeric income per base is not stated in the report."
+        "The exact numeric income per base is not stated in the report.",
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
       ]
     },
     "forest": {
@@ -150,7 +153,7 @@
       "production_role": null,
       "repair_multiplier": 1,
       "numeric_combat_modifiers_published": false,
-      "numeric_movement_costs_published": false,
+      "numeric_movement_costs_published": true,
       "terrain_specific_los_rules_published": false,
       "favored_unit_types": [
         "ground_light"
@@ -165,7 +168,8 @@
         }
       ],
       "notes": [
-        "The report says forest terrain is strong for ground light units."
+        "The report says forest terrain is strong for ground light units.",
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
       ]
     },
     "mountain": {
@@ -177,7 +181,7 @@
       "production_role": null,
       "repair_multiplier": 1,
       "numeric_combat_modifiers_published": false,
-      "numeric_movement_costs_published": false,
+      "numeric_movement_costs_published": true,
       "terrain_specific_los_rules_published": false,
       "favored_unit_types": [
         "ground_light"
@@ -194,7 +198,8 @@
         }
       ],
       "notes": [
-        "The report says mountain terrain is strong for ground light units and blocked for ground heavy units."
+        "The report says mountain terrain is strong for ground light units and blocked for ground heavy units.",
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
       ]
     },
     "swamp": {
@@ -206,12 +211,13 @@
       "production_role": null,
       "repair_multiplier": 1,
       "numeric_combat_modifiers_published": false,
-      "numeric_movement_costs_published": false,
+      "numeric_movement_costs_published": true,
       "terrain_specific_los_rules_published": false,
       "favored_unit_types": [],
       "blocked_unit_types": [],
       "notes": [
-        "The report calls swamp unfavorable terrain by community consensus."
+        "The report calls swamp unfavorable terrain by community consensus.",
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
       ]
     },
     "desert": {
@@ -223,14 +229,15 @@
       "production_role": null,
       "repair_multiplier": 1,
       "numeric_combat_modifiers_published": false,
-      "numeric_movement_costs_published": false,
+      "numeric_movement_costs_published": true,
       "terrain_specific_los_rules_published": false,
       "favored_unit_types": [
         "ground_heavy"
       ],
       "blocked_unit_types": [],
       "notes": [
-        "The report says desert is open terrain preferred by ground heavy units."
+        "The report says desert is open terrain preferred by ground heavy units.",
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
       ]
     },
     "water": {
@@ -242,14 +249,15 @@
       "production_role": null,
       "repair_multiplier": 1,
       "numeric_combat_modifiers_published": false,
-      "numeric_movement_costs_published": false,
+      "numeric_movement_costs_published": true,
       "terrain_specific_los_rules_published": false,
       "favored_unit_types": [
         "aquatic"
       ],
       "blocked_unit_types": [],
       "notes": [
-        "Water is the sea domain terrain."
+        "Water is the sea domain terrain.",
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
       ]
     },
     "harbor": {
@@ -261,7 +269,7 @@
       "production_role": "aquatic",
       "repair_multiplier": 1,
       "numeric_combat_modifiers_published": false,
-      "numeric_movement_costs_published": false,
+      "numeric_movement_costs_published": true,
       "terrain_specific_los_rules_published": false,
       "favored_unit_types": [
         "aquatic"
@@ -269,7 +277,8 @@
       "blocked_unit_types": [],
       "notes": [
         "Harbor is required for aquatic production.",
-        "Harbor does not generate credits."
+        "Harbor does not generate credits.",
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
       ]
     },
     "medical": {
@@ -281,13 +290,116 @@
       "production_role": null,
       "repair_multiplier": 3,
       "numeric_combat_modifiers_published": false,
-      "numeric_movement_costs_published": false,
+      "numeric_movement_costs_published": true,
       "terrain_specific_los_rules_published": false,
       "favored_unit_types": [],
       "blocked_unit_types": [],
       "notes": [
         "Medical terrain cannot be captured.",
-        "Medical terrain increases repair rate by 3x."
+        "Medical terrain increases repair rate by 3x.",
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
+      ]
+    },
+    "ocean": {
+      "display_name": "Ocean",
+      "capturable": false,
+      "provides_income": false,
+      "income_amount": 0,
+      "supports_production": false,
+      "production_role": null,
+      "repair_multiplier": 1,
+      "numeric_movement_costs_published": true,
+      "numeric_combat_modifiers_published": true,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [],
+      "blocked_unit_types": [],
+      "notes": [
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
+      ]
+    },
+    "reef": {
+      "display_name": "Reef",
+      "capturable": false,
+      "provides_income": false,
+      "income_amount": 0,
+      "supports_production": false,
+      "production_role": null,
+      "repair_multiplier": 1,
+      "numeric_movement_costs_published": true,
+      "numeric_combat_modifiers_published": true,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [],
+      "blocked_unit_types": [],
+      "notes": [
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
+      ]
+    },
+    "road_water": {
+      "display_name": "Water Road / Bridge",
+      "capturable": false,
+      "provides_income": false,
+      "income_amount": 0,
+      "supports_production": false,
+      "production_role": null,
+      "repair_multiplier": 1,
+      "numeric_movement_costs_published": true,
+      "numeric_combat_modifiers_published": true,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [],
+      "blocked_unit_types": [],
+      "notes": [
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
+      ]
+    },
+    "road_land": {
+      "display_name": "Land Road",
+      "capturable": false,
+      "provides_income": false,
+      "income_amount": 0,
+      "supports_production": false,
+      "production_role": null,
+      "repair_multiplier": 1,
+      "numeric_movement_costs_published": true,
+      "numeric_combat_modifiers_published": true,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [],
+      "blocked_unit_types": [],
+      "notes": [
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
+      ]
+    },
+    "city": {
+      "display_name": "City",
+      "capturable": true,
+      "provides_income": true,
+      "income_amount": null,
+      "supports_production": false,
+      "production_role": null,
+      "repair_multiplier": 1,
+      "numeric_movement_costs_published": true,
+      "numeric_combat_modifiers_published": true,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [],
+      "blocked_unit_types": [],
+      "notes": [
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
+      ]
+    },
+    "chasm": {
+      "display_name": "Chasm",
+      "capturable": false,
+      "provides_income": false,
+      "income_amount": 0,
+      "supports_production": false,
+      "production_role": null,
+      "repair_multiplier": 1,
+      "numeric_movement_costs_published": true,
+      "numeric_combat_modifiers_published": true,
+      "terrain_specific_los_rules_published": false,
+      "favored_unit_types": [],
+      "blocked_unit_types": [],
+      "notes": [
+        "Movement costs and displayed attack/defense modifiers were OCR-normalized from user-provided in-game unit info screenshots in UnitsScreenshots/."
       ]
     }
   },
@@ -351,7 +463,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 6,
+          "attack_bonus": 2,
+          "defense_bonus": 4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 5,
+          "attack_bonus": -1,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 6,
+          "attack_bonus": -2,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 6,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "engineer": {
       "display_name": "Engineer",
@@ -429,7 +634,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 6,
+          "attack_bonus": 2,
+          "defense_bonus": 4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 5,
+          "attack_bonus": -1,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 6,
+          "attack_bonus": -2,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 6,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "mecha_ii": {
       "display_name": "Mecha II",
@@ -496,7 +794,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 6,
+          "attack_bonus": 2,
+          "defense_bonus": 4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 5,
+          "attack_bonus": -1,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 6,
+          "attack_bonus": -2,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 6,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "marauder": {
       "display_name": "Marauder",
@@ -558,7 +949,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 6,
+          "attack_bonus": 0,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "road_water": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "bopper": {
       "display_name": "Bopper",
@@ -613,7 +1097,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 6,
+          "attack_bonus": 2,
+          "defense_bonus": 4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 5,
+          "attack_bonus": -1,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 6,
+          "attack_bonus": -2,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 6,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "tank": {
       "display_name": "Tank",
@@ -670,7 +1247,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 6,
+          "attack_bonus": 0,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "road_water": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "helicopter": {
       "display_name": "Helicopter",
@@ -730,7 +1400,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "battery": {
       "display_name": "Battery",
@@ -794,7 +1557,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 6,
+          "attack_bonus": 0,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "road_water": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "destroyer": {
       "display_name": "Destroyer",
@@ -851,7 +1707,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "base": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "forest": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "desert": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "ocean": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "reef": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "city": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "fuze": {
       "display_name": "Fuze",
@@ -906,7 +1855,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 1,
+          "defense_bonus": 1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 4,
+          "attack_bonus": 1,
+          "defense_bonus": 1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "ocean": {
+          "mobility_cost": 4,
+          "attack_bonus": -1,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 1,
+          "defense_bonus": 1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "submarine": {
       "display_name": "Submarine",
@@ -934,7 +1976,15 @@
         "defense_strength": 8,
         "attack_from_hidden_penalty": -2,
         "resurface_bonus": null,
-        "detection_rules_published": false
+        "detection_rules_published": false,
+        "terrain_movement_costs": {
+          "water": 3,
+          "ocean": 3,
+          "harbor": 3,
+          "reef": 5,
+          "road_water": 4
+        },
+        "terrain_movement_costs_source": "Uses the displayed submerged aquatic terrain table with the submerged mobility pool."
       },
       "attack_range": {
         "surface": {
@@ -982,7 +2032,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "base": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "forest": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "desert": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "ocean": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "reef": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "city": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "underling": {
       "display_name": "Underling",
@@ -1014,7 +2157,23 @@
           "water"
         ],
         "ground_heavy_passover_damage": 1,
-        "confidence": "community_consensus"
+        "confidence": "community_consensus",
+        "terrain_movement_costs": {
+          "plain": 3,
+          "base": 4,
+          "forest": 4,
+          "mountain": 6,
+          "swamp": 6,
+          "desert": 5,
+          "harbor": 3,
+          "medical": 3,
+          "reef": 6,
+          "road_water": 3,
+          "road_land": 3,
+          "city": 5,
+          "chasm": 6
+        },
+        "terrain_movement_costs_source": "Uses the displayed Underling-family terrain table with the separate underground mobility pool."
       },
       "attack_range": {
         "surface": {
@@ -1059,7 +2218,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 6,
+          "attack_bonus": 2,
+          "defense_bonus": 4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 5,
+          "attack_bonus": -1,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 6,
+          "attack_bonus": -2,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 6,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "infector": {
       "display_name": "Infector",
@@ -1131,7 +2383,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 6,
+          "attack_bonus": 2,
+          "defense_bonus": 4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 5,
+          "attack_bonus": -1,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 6,
+          "attack_bonus": -2,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 6,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "infected_marine": {
       "display_name": "Infected Marine",
@@ -1188,7 +2533,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 6,
+          "attack_bonus": 2,
+          "defense_bonus": 4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 5,
+          "attack_bonus": -1,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 6,
+          "attack_bonus": -2,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 6,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "swarmer": {
       "display_name": "Swarmer",
@@ -1245,7 +2683,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "borfly": {
       "display_name": "Borfly",
@@ -1305,7 +2836,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "garuda": {
       "display_name": "Garuda",
@@ -1362,7 +2986,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "pinzer": {
       "display_name": "Pinzer",
@@ -1419,7 +3136,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 6,
+          "attack_bonus": 0,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "road_water": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "wyrm": {
       "display_name": "Wyrm",
@@ -1482,7 +3292,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 6,
+          "attack_bonus": 0,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "road_water": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "leviathan": {
       "display_name": "Leviathan",
@@ -1539,7 +3442,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "base": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "forest": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "desert": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "ocean": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "reef": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "city": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "salamander": {
       "display_name": "Salamander",
@@ -1600,7 +3596,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 1,
+          "defense_bonus": 1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 4,
+          "attack_bonus": 1,
+          "defense_bonus": 1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "ocean": {
+          "mobility_cost": 4,
+          "attack_bonus": -1,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 1,
+          "defense_bonus": 1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "kraken": {
       "display_name": "Kraken",
@@ -1628,7 +3717,15 @@
         "defense_strength": 12,
         "attack_from_hidden_penalty": -2,
         "resurface_bonus": 3,
-        "detection_rules_published": false
+        "detection_rules_published": false,
+        "terrain_movement_costs": {
+          "water": 3,
+          "ocean": 3,
+          "harbor": 3,
+          "reef": 5,
+          "road_water": 4
+        },
+        "terrain_movement_costs_source": "Uses the displayed submerged aquatic terrain table with the submerged mobility pool."
       },
       "attack_range": {
         "surface": {
@@ -1676,7 +3773,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "base": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "forest": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "desert": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "ocean": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "reef": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "city": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "mecha": {
       "display_name": "Mecha",
@@ -1741,7 +3931,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 6,
+          "attack_bonus": 2,
+          "defense_bonus": 4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 5,
+          "attack_bonus": -1,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 6,
+          "attack_bonus": -2,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 6,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "assimilator": {
       "display_name": "Assimilator",
@@ -1818,7 +4101,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 6,
+          "attack_bonus": 2,
+          "defense_bonus": 4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 5,
+          "attack_bonus": -1,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 6,
+          "attack_bonus": -2,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 6,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "cyber_underling": {
       "display_name": "Cyber Underling",
@@ -1850,7 +4226,23 @@
           "water"
         ],
         "ground_heavy_passover_damage": 1,
-        "confidence": "community_consensus"
+        "confidence": "community_consensus",
+        "terrain_movement_costs": {
+          "plain": 3,
+          "base": 4,
+          "forest": 4,
+          "mountain": 6,
+          "swamp": 6,
+          "desert": 5,
+          "harbor": 3,
+          "medical": 3,
+          "reef": 6,
+          "road_water": 3,
+          "road_land": 3,
+          "city": 5,
+          "chasm": 6
+        },
+        "terrain_movement_costs_source": "Uses the displayed Underling-family terrain table with the separate underground mobility pool."
       },
       "attack_range": {
         "surface": {
@@ -1895,7 +4287,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 6,
+          "attack_bonus": 2,
+          "defense_bonus": 4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 5,
+          "attack_bonus": -1,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 6,
+          "attack_bonus": -2,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 6,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "speeder": {
       "display_name": "Speeder",
@@ -1955,7 +4440,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 6,
+          "attack_bonus": 0,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "road_water": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "guardian": {
       "display_name": "Guardian",
@@ -2020,7 +4598,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 4,
+          "attack_bonus": 2,
+          "defense_bonus": 3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": 6,
+          "attack_bonus": 2,
+          "defense_bonus": 4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 5,
+          "attack_bonus": -1,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 6,
+          "attack_bonus": -2,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": 6,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "eclipse": {
       "display_name": "Eclipse",
@@ -2085,7 +4756,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 6,
+          "attack_bonus": 0,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "road_water": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "plasma_tank": {
       "display_name": "Plasma Tank",
@@ -2142,7 +4906,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 6,
+          "attack_bonus": 0,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "road_water": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "walker": {
       "display_name": "Walker",
@@ -2204,7 +5061,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 6,
+          "attack_bonus": 0,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": 6,
+          "attack_bonus": -1,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "ocean": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "road_water": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 2,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "hydronaut": {
       "display_name": "Hydronaut",
@@ -2263,7 +5213,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "base": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "forest": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "desert": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "ocean": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "reef": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "city": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "mantisse": {
       "display_name": "Mantisse",
@@ -2318,7 +5361,100 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "base": {
+          "mobility_cost": 4,
+          "attack_bonus": 1,
+          "defense_bonus": 1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "forest": {
+          "mobility_cost": 4,
+          "attack_bonus": 1,
+          "defense_bonus": 1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 3,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "desert": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "ocean": {
+          "mobility_cost": 4,
+          "attack_bonus": -1,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 1,
+          "defense_bonus": 1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "reef": {
+          "mobility_cost": 3,
+          "attack_bonus": 2,
+          "defense_bonus": 2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "city": {
+          "mobility_cost": 5,
+          "attack_bonus": -2,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     },
     "skimmer": {
       "display_name": "Skimmer",
@@ -2346,7 +5482,15 @@
         "defense_strength": 9,
         "attack_from_hidden_penalty": -2,
         "resurface_bonus": null,
-        "detection_rules_published": false
+        "detection_rules_published": false,
+        "terrain_movement_costs": {
+          "water": 3,
+          "ocean": 3,
+          "harbor": 3,
+          "reef": 5,
+          "road_water": 4
+        },
+        "terrain_movement_costs_source": "Uses the displayed submerged aquatic terrain table with the submerged mobility pool."
       },
       "attack_range": {
         "surface": {
@@ -2392,13 +5536,107 @@
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
         ]
-      }
+      },
+      "terrain_effects": {
+        "plain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "base": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "forest": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "mountain": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "swamp": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "desert": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "water": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "ocean": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": 0,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "harbor": {
+          "mobility_cost": 3,
+          "attack_bonus": 0,
+          "defense_bonus": -1,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "medical": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "reef": {
+          "mobility_cost": 5,
+          "attack_bonus": -3,
+          "defense_bonus": -4,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_water": {
+          "mobility_cost": 4,
+          "attack_bonus": 0,
+          "defense_bonus": -2,
+          "source": "UnitsScreenshots OCR, 2026-05-02"
+        },
+        "road_land": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "city": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        },
+        "chasm": {
+          "mobility_cost": null,
+          "attack_bonus": null,
+          "defense_bonus": null,
+          "source": "not_listed_in_unit_info_screenshot"
+        }
+      },
+      "terrain_effects_source": "OCR-normalized from UnitsScreenshots in-game info tables; values are per terrain row shown by the current client."
     }
   },
   "known_gaps": [
     {
       "id": "terrain_matrix",
-      "description": "The full unit x terrain movement-cost and combat-modifier matrix is not published in the public web sources cited by the report."
+      "description": "Movement costs and displayed attack/defense modifiers are now populated from user-provided in-game unit info screenshots; remaining validation is exact naming of newer terrain variants such as road_water, road_land, ocean, reef, city, and chasm against server map serialization.",
+      "status": "partially_resolved_from_screenshots"
     },
     {
       "id": "teleport_recharge_rounds",
@@ -2428,6 +5666,28 @@
         "A penalty of -100 is treated as cannot attack submerged targets in that mode."
       ],
       "confidence": "official_with_explicit_derivation"
+    },
+    "terrain_effect_matrix": {
+      "source": "UnitsScreenshots/*.jpg, OCR-normalized from the current in-game unit info terrain tables.",
+      "blocked_semantics": "A null mobility_cost means the terrain row is not available for that unit class in the screenshot table and is treated as impassable by movement generation.",
+      "terrain_order": [
+        "plain",
+        "base",
+        "forest",
+        "mountain",
+        "swamp",
+        "desert",
+        "water",
+        "ocean",
+        "harbor",
+        "medical",
+        "reef",
+        "road_water",
+        "road_land",
+        "city",
+        "chasm"
+      ],
+      "confidence": "in_game_screenshot_ocr"
     }
   }
 }
