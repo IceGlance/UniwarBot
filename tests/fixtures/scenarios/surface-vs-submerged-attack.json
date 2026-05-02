@@ -1,0 +1,77 @@
+{
+  "name": "surface_vs_submerged_attack_rules",
+  "input_state": "states/surface-vs-submerged-attack-ready.json",
+  "cases": [
+    {
+      "name": "bopper_zero_submerged_strength_can_attack_when_bonused",
+      "actions": [
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_bopper",
+          "defender_id": "u_sub_bopper",
+          "attack_bonus": 2,
+          "defender_damage": 1,
+          "attacker_damage": 0
+        }
+      ],
+      "expected_changes": {
+        "units.u_bopper.action.actions_remaining": 0,
+        "units.u_bopper.action.has_attacked_this_turn": true,
+        "units.u_sub_bopper.hp": 9
+      }
+    },
+    {
+      "name": "borfly_zero_submerged_strength_can_attack_when_bonused",
+      "actions": [
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_borfly",
+          "defender_id": "u_sub_borfly",
+          "attack_bonus": 2,
+          "defender_damage": 1,
+          "attacker_damage": 0
+        }
+      ],
+      "expected_changes": {
+        "units.u_borfly.action.actions_remaining": 0,
+        "units.u_borfly.action.has_attacked_this_turn": true,
+        "units.u_sub_borfly.hp": 9
+      }
+    },
+    {
+      "name": "guardian_zero_submerged_strength_can_attack_when_bonused",
+      "actions": [
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_guardian",
+          "defender_id": "u_sub_guardian",
+          "attack_bonus": 2,
+          "defender_damage": 1,
+          "attacker_damage": 0
+        }
+      ],
+      "expected_changes": {
+        "units.u_guardian.action.actions_remaining": 0,
+        "units.u_guardian.action.has_attacked_this_turn": true,
+        "units.u_sub_guardian.hp": 9
+      }
+    },
+    {
+      "name": "marine_zero_submerged_strength_cannot_attack",
+      "actions": [
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_marine",
+          "defender_id": "u_sub_marine",
+          "attack_bonus": 2,
+          "expect_error": "Attacker cannot attack the selected target"
+        }
+      ],
+      "expected_changes": {
+        "units.u_marine.action.actions_remaining": 1,
+        "units.u_marine.action.has_attacked_this_turn": false,
+        "units.u_sub_marine.hp": 10
+      }
+    }
+  ]
+}

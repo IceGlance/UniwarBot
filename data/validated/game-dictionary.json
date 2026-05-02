@@ -454,15 +454,18 @@
       ],
       "submerged_target_attack": {
         "surface_mode_penalty": -100,
-        "surface_mode_effective_strength": null,
+        "surface_mode_effective_strength": 0,
         "surface_mode_can_attack": false,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -625,15 +628,18 @@
       ],
       "submerged_target_attack": {
         "surface_mode_penalty": null,
-        "surface_mode_effective_strength": null,
+        "surface_mode_effective_strength": 0,
         "surface_mode_can_attack": false,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -785,15 +791,18 @@
       ],
       "submerged_target_attack": {
         "surface_mode_penalty": -100,
-        "surface_mode_effective_strength": null,
+        "surface_mode_effective_strength": 0,
         "surface_mode_can_attack": false,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -940,15 +949,18 @@
       "notes": [],
       "submerged_target_attack": {
         "surface_mode_penalty": -8,
-        "surface_mode_effective_strength": -4,
-        "surface_mode_can_attack": true,
+        "surface_mode_effective_strength": 0,
+        "surface_mode_can_attack": false,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -1088,15 +1100,18 @@
       "notes": [],
       "submerged_target_attack": {
         "surface_mode_penalty": -8,
-        "surface_mode_effective_strength": -3,
+        "surface_mode_effective_strength": 0,
         "surface_mode_can_attack": true,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -1244,9 +1259,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 1,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -1397,9 +1415,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 3,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -1554,9 +1575,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 2,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -1704,9 +1728,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 7,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -1852,9 +1879,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 3,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -1984,7 +2014,9 @@
           "reef": 5,
           "road_water": 4
         },
-        "terrain_movement_costs_source": "Uses the displayed submerged aquatic terrain table with the submerged mobility pool."
+        "terrain_movement_costs_source": "Uses the displayed submerged aquatic terrain table with the submerged mobility pool.",
+        "can_attack_ground_air_from_hidden": true,
+        "can_attack_ground_air_from_hidden_source": "UnitsScreenshots OCR Attack Ground/Air Units From Underwater line, 2026-05-02"
       },
       "attack_range": {
         "surface": {
@@ -2023,15 +2055,18 @@
       ],
       "submerged_target_attack": {
         "surface_mode_penalty": null,
-        "surface_mode_effective_strength": null,
-        "surface_mode_can_attack": false,
+        "surface_mode_effective_strength": 8,
+        "surface_mode_can_attack": true,
         "hidden_mode_penalty": -2,
         "hidden_mode_effective_strength": 6,
         "hidden_mode_can_attack": true,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 8,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -2209,15 +2244,18 @@
       ],
       "submerged_target_attack": {
         "surface_mode_penalty": -100,
-        "surface_mode_effective_strength": null,
+        "surface_mode_effective_strength": 0,
         "surface_mode_can_attack": false,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -2374,15 +2412,18 @@
       ],
       "submerged_target_attack": {
         "surface_mode_penalty": null,
-        "surface_mode_effective_strength": null,
+        "surface_mode_effective_strength": 0,
         "surface_mode_can_attack": false,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -2524,15 +2565,18 @@
       ],
       "submerged_target_attack": {
         "surface_mode_penalty": -100,
-        "surface_mode_effective_strength": null,
+        "surface_mode_effective_strength": 0,
         "surface_mode_can_attack": false,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -2680,9 +2724,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 1,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -2827,15 +2874,18 @@
       "notes": [],
       "submerged_target_attack": {
         "surface_mode_penalty": -8,
-        "surface_mode_effective_strength": -4,
+        "surface_mode_effective_strength": 0,
         "surface_mode_can_attack": true,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -2983,9 +3033,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 3,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -3133,9 +3186,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 2,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -3289,9 +3345,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 2,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -3439,9 +3498,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 3,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -3593,9 +3655,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 4,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -3725,7 +3790,9 @@
           "reef": 5,
           "road_water": 4
         },
-        "terrain_movement_costs_source": "Uses the displayed submerged aquatic terrain table with the submerged mobility pool."
+        "terrain_movement_costs_source": "Uses the displayed submerged aquatic terrain table with the submerged mobility pool.",
+        "can_attack_ground_air_from_hidden": false,
+        "can_attack_ground_air_from_hidden_source": "UnitsScreenshots OCR Attack Ground/Air Units From Underwater line, 2026-05-02"
       },
       "attack_range": {
         "surface": {
@@ -3764,15 +3831,18 @@
       ],
       "submerged_target_attack": {
         "surface_mode_penalty": null,
-        "surface_mode_effective_strength": null,
-        "surface_mode_can_attack": false,
+        "surface_mode_effective_strength": 6,
+        "surface_mode_can_attack": true,
         "hidden_mode_penalty": -2,
         "hidden_mode_effective_strength": 4,
         "hidden_mode_can_attack": true,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 6,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -3922,15 +3992,18 @@
       "notes": [],
       "submerged_target_attack": {
         "surface_mode_penalty": -100,
-        "surface_mode_effective_strength": null,
+        "surface_mode_effective_strength": 0,
         "surface_mode_can_attack": false,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -4092,15 +4165,18 @@
       "notes": [],
       "submerged_target_attack": {
         "surface_mode_penalty": null,
-        "surface_mode_effective_strength": null,
+        "surface_mode_effective_strength": 0,
         "surface_mode_can_attack": false,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -4278,15 +4354,18 @@
       ],
       "submerged_target_attack": {
         "surface_mode_penalty": -100,
-        "surface_mode_effective_strength": null,
+        "surface_mode_effective_strength": 0,
         "surface_mode_can_attack": false,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -4431,15 +4510,18 @@
       "notes": [],
       "submerged_target_attack": {
         "surface_mode_penalty": -8,
-        "surface_mode_effective_strength": -3,
-        "surface_mode_can_attack": true,
+        "surface_mode_effective_strength": 0,
+        "surface_mode_can_attack": false,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -4589,15 +4671,18 @@
       "notes": [],
       "submerged_target_attack": {
         "surface_mode_penalty": -8,
-        "surface_mode_effective_strength": -3,
+        "surface_mode_effective_strength": 0,
         "surface_mode_can_attack": true,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -4747,15 +4832,18 @@
       "notes": [],
       "submerged_target_attack": {
         "surface_mode_penalty": -8,
-        "surface_mode_effective_strength": -3,
-        "surface_mode_can_attack": true,
+        "surface_mode_effective_strength": 0,
+        "surface_mode_can_attack": false,
         "hidden_mode_penalty": null,
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 0,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -4903,9 +4991,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 3,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -5058,9 +5149,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 2,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -5210,9 +5304,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 4,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -5358,9 +5455,12 @@
         "hidden_mode_effective_strength": null,
         "hidden_mode_can_attack": false,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 3,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -5490,7 +5590,9 @@
           "reef": 5,
           "road_water": 4
         },
-        "terrain_movement_costs_source": "Uses the displayed submerged aquatic terrain table with the submerged mobility pool."
+        "terrain_movement_costs_source": "Uses the displayed submerged aquatic terrain table with the submerged mobility pool.",
+        "can_attack_ground_air_from_hidden": false,
+        "can_attack_ground_air_from_hidden_source": "UnitsScreenshots OCR Attack Ground/Air Units From Underwater line, 2026-05-02"
       },
       "attack_range": {
         "surface": {
@@ -5527,15 +5629,18 @@
       "notes": [],
       "submerged_target_attack": {
         "surface_mode_penalty": null,
-        "surface_mode_effective_strength": null,
-        "surface_mode_can_attack": false,
+        "surface_mode_effective_strength": 9,
+        "surface_mode_can_attack": true,
         "hidden_mode_penalty": -2,
         "hidden_mode_effective_strength": 7,
         "hidden_mode_can_attack": true,
         "source_notes": [
+          "Surface-mode submerged target strength is the explicit Submerged attack row from current in-game unit screenshots, not a derived aquatic-minus-penalty value.",
           "Surface-mode values are derived from the official Aquatic attack stat plus the official Attack Underwater units penalty when that penalty is published.",
           "Hidden-mode values are derived from the official Aquatic attack stat plus the official Attack from Underwater penalty when that penalty is published."
-        ]
+        ],
+        "surface_mode_explicit_strength": 9,
+        "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02"
       },
       "terrain_effects": {
         "plain": {
@@ -5657,15 +5762,18 @@
   ],
   "derived_rules": {
     "submerged_target_attack_strength": {
-      "surface_formula": "attack_strength_by_target_class.aquatic + attack_against_submerged_units_penalty",
-      "hidden_formula": "attack_strength_by_target_class.aquatic + hidden_mode.attack_from_hidden_penalty",
-      "null_meaning": "The public official unit page does not publish the required input for that mode/target pairing, or the unit cannot attack submerged targets in that mode.",
+      "surface_formula": null,
+      "surface_source": "UnitsScreenshots explicit Submerged attack row per unit.",
+      "hidden_formula": "submerged_target_attack.surface_mode_explicit_strength + hidden_mode.attack_from_hidden_penalty",
+      "can_attack_flag_semantics": "surface_mode_can_attack and hidden_mode_can_attack are authoritative legality flags; zero strength can still be legal for selected units when the flag is true and terrain/gang-up bonuses apply.",
+      "null_meaning": "No screenshot-backed value or the unit cannot attack submerged targets in that mode.",
       "notes": [
-        "For most non-submerged attackers, official unit pages publish Attack Underwater units penalty.",
-        "For Submarine, Kraken, and Skimmer, official unit pages publish Attack from Underwater penalty for their submerged attack mode instead of a separate surface-versus-submerged penalty.",
-        "A penalty of -100 is treated as cannot attack submerged targets in that mode."
+        "Surface values were reconciled against user-provided current in-game screenshots on 2026-05-02.",
+        "Bopper, Borfly, and Guardian have explicit 0 submerged strength but can attack submerged units when bonuses raise effective attack.",
+        "Support units with all-zero direct attacks remain unable to attack even though the UI row displays 0.",
+        "Submarine can attack ground/air units while underwater; Kraken and Skimmer cannot, per the screenshot line Attack Ground/Air Units From Underwater."
       ],
-      "confidence": "official_with_explicit_derivation"
+      "confidence": "in_game_screenshot_ocr"
     },
     "terrain_effect_matrix": {
       "source": "UnitsScreenshots/*.jpg, OCR-normalized from the current in-game unit info terrain tables.",

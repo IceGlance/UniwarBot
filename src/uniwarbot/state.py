@@ -1588,13 +1588,18 @@ class GameState:
         range_min, range_max = attack_range
         if distance < range_min or distance > range_max:
             return False
+        if not self._submerged_attacker_can_target(attacker, defender, hidden_mode_override):
+            return False
         published_base_attack = self._published_base_attack_strength_for_hidden_mode(
             attacker,
             defender,
             hidden_mode_override,
         )
         if defender.status.hidden_mode == HiddenMode.SUBMERGED:
-            return published_base_attack is not None
+            return (
+                published_base_attack is not None
+                and self._can_attack_submerged_target(attacker, hidden_mode_override)
+            )
         if published_base_attack is None:
             return False
         return int(published_base_attack) > 0
@@ -1632,6 +1637,35 @@ class GameState:
             return None
         target_class = self._target_class_for_unit(defender)
         return int(attacker_data["attack_strength_by_target_class"][target_class])
+
+    def _can_attack_submerged_target(
+        self,
+        attacker: UnitState,
+        hidden_mode: HiddenMode | None,
+    ) -> bool:
+        submerged_target_attack = (
+            self._unit_dictionary_entry(attacker).get("submerged_target_attack") or {}
+        )
+        if hidden_mode == HiddenMode.SUBMERGED:
+            return bool(submerged_target_attack.get("hidden_mode_can_attack", False))
+        return bool(submerged_target_attack.get("surface_mode_can_attack", False))
+
+    def _submerged_attacker_can_target(
+        self,
+        attacker: UnitState,
+        defender: UnitState,
+        hidden_mode: HiddenMode | None,
+    ) -> bool:
+        if hidden_mode != HiddenMode.SUBMERGED:
+            return True
+        hidden_data = self._unit_dictionary_entry(attacker).get("hidden_mode") or {}
+        if hidden_data.get("can_attack_ground_air_from_hidden") is not False:
+            return True
+        return self._target_class_for_unit(defender) not in {
+            "ground_light",
+            "ground_heavy",
+            "air",
+        }
 
     def _hidden_mode_resurface_bonus(self, unit: UnitState) -> int:
         hidden_mode = self._unit_dictionary_entry(unit).get("hidden_mode") or {}
@@ -1823,9 +1857,18 @@ class GameState:
         range_min, range_max = attack_range
         if distance < range_min or distance > range_max:
             return False
+        if not self._submerged_attacker_can_target(
+            attacker,
+            defender,
+            attacker.status.hidden_mode,
+        ):
+            return False
         published_base_attack = self._published_base_attack_strength(attacker, defender)
         if defender.status.hidden_mode == HiddenMode.SUBMERGED:
-            return published_base_attack is not None
+            return (
+                published_base_attack is not None
+                and self._can_attack_submerged_target(attacker, attacker.status.hidden_mode)
+            )
         if published_base_attack is None:
             return False
         return int(published_base_attack) > 0
