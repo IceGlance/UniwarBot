@@ -1635,6 +1635,8 @@ class GameState:
     ) -> int | None:
         attacker_data = self._unit_dictionary_entry(attacker)
         if defender.status.hidden_mode == HiddenMode.SUBMERGED:
+            # Screenshot-derived submerged targeting uses the explicit "Submerged"
+            # attack row stored in the dictionary, not a reconstructed range hack.
             submerged_target_attack = attacker_data.get("submerged_target_attack", {})
             if hidden_mode == HiddenMode.SUBMERGED:
                 return submerged_target_attack.get("hidden_mode_effective_strength")
@@ -1751,6 +1753,8 @@ class GameState:
     ) -> int | None:
         attacker_data = self._unit_dictionary_entry(attacker)
         if defender.status.hidden_mode == HiddenMode.SUBMERGED:
+            # Screenshot-derived submerged targeting uses the explicit "Submerged"
+            # attack row stored in the dictionary, not a reconstructed range hack.
             submerged_target_attack = attacker_data.get("submerged_target_attack", {})
             if attacker.status.hidden_mode == HiddenMode.SUBMERGED:
                 return submerged_target_attack.get("hidden_mode_effective_strength")

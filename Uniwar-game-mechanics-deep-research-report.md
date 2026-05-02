@@ -212,61 +212,61 @@ Veterancy is community-documented rather than official-web-documented. The commu
 
 ## Units and faction arsenals
 
-The following tables compile the base surface stats for every currently accessible official unit page. `Surf` is surface mobility. `Atk` is shown as `GL/GH/Air/Aq/Am`. Buried, submerged, armor-piercing, and other override values are summarized immediately afterward. Base tables are **high confidence** because they come directly from official unit pages.
+The following tables compile the base surface stats for every currently accessible official unit page. `Surf` is surface mobility. `Atk` is shown as `GL/GH/Air/Aq/Am/Sub`, where `Sub` is the screenshot-derived surface attack strength against a submerged hidden target. Buried, underwater-mode, armor-piercing, and other overrides are summarized immediately afterward. Base tables are **high confidence** because they come directly from official unit pages.
 
 Range needs one interpretation note for hidden sea targets. The usual printed range is the visible-target range, but current screenshots also use `0` to mean "this unit may attack a submerged hidden target sharing the same hex." So melee `1` behaves as `0-1` against submerged targets, and Fuze's screenshot explicitly shows `0-2`. The bot dictionary represents this as normal surface range plus a same-hex submerged-target override, rather than widening ordinary visible-target range rules.
 
 ### Sapiens
 
-| Unit | Type | Cost | Surf | Range | Vis | Rep | Def | Atk GL/GH/Air/Aq/Am | Role |
+| Unit | Type | Cost | Surf | Range | Vis | Rep | Def | Atk GL/GH/Air/Aq/Am/Sub | Role |
 |---|---:|---:|---:|---:|---:|---:|---:|---|---|
-| Marine | GL | 100 | 9 | 1 | 4 | 1 | 5 | 6/3/3/2/6 | Cheap capture infantry; best in Forest/Mountain/Base |
-| Engineer | GL | 200 | 6 | 1 | 3 | 1 | 0 | 0/0/0/0/0 | Support, EMP, Mecha conversion |
-| Mecha II | GL | 0 | 8 | 1 | 3 | 1 | 8 | 7/4/4/2/7 | Transformed infantry with teleport |
-| Marauder | GH | 250 | 12 | 1 | 5 | 1 | 7 | 8/4/4/4/8 | Tempo striker; 2 actions |
-| Bopper | GL | 300 | 7 | 3 | 3 | 1 | 0 | 3/5/1/5/3 | Anti-heavy blaster with AP |
-| Tank | GH | 400 | 8 | 1 | 3 | 2 | 13 | 10/10/0/9/10 | Heavy anchor |
-| Helicopter | Air | 500 | 12 | 1 | 5 | 1 | 10 | 12/7/10/8/12 | Generalist air control |
-| Battery | GH | 600 | 5 | 2-4 | 4 | 1 | 4 | 10/6/5/10/10 | Long-range artillery |
-| Destroyer | Aq | 800 | 12 | 3 | 5 | 2 | 12 | 10/10/12/16/10 | Capital ship, strongest anti-sea |
-| Fuze | Amphi | 200 | 9 | 0-2 | 4 | 1 | 2 | 5/4/1/4/6 | Amphibious harasser |
-| Submarine | Aq | 400 | 9 | 3 | 3 | 1 | 5 | 5/5/3/8/4 | Submersible skirmisher |
+| Marine | GL | 100 | 9 | 1 | 4 | 1 | 5 | 6/3/3/2/6/0 | Cheap capture infantry; best in Forest/Mountain/Base |
+| Engineer | GL | 200 | 6 | 1 | 3 | 1 | 0 | 0/0/0/0/0/0 | Support, EMP, Mecha conversion |
+| Mecha II | GL | 0 | 8 | 1 | 3 | 1 | 8 | 7/4/4/2/7/0 | Transformed infantry with teleport |
+| Marauder | GH | 250 | 12 | 1 | 5 | 1 | 7 | 8/4/4/4/8/0 | Tempo striker; 2 actions |
+| Bopper | GL | 300 | 7 | 3 | 3 | 1 | 0 | 3/5/1/5/3/0 | Anti-heavy blaster with AP |
+| Tank | GH | 400 | 8 | 1 | 3 | 2 | 13 | 10/10/0/9/10/1 | Heavy anchor |
+| Helicopter | Air | 500 | 12 | 1 | 5 | 1 | 10 | 12/7/10/8/12/3 | Generalist air control |
+| Battery | GH | 600 | 5 | 2-4 | 4 | 1 | 4 | 10/6/5/10/10/2 | Long-range artillery |
+| Destroyer | Aq | 800 | 12 | 3 | 5 | 2 | 12 | 10/10/12/16/10/7 | Capital ship, strongest anti-sea |
+| Fuze | Amphi | 200 | 9 | 0-2 | 4 | 1 | 2 | 5/4/1/4/6/3 | Amphibious harasser |
+| Submarine | Aq | 400 | 9 | 3 | 3 | 1 | 5 | 5/5/3/8/4/8 | Submersible skirmisher |
 
 ### Khraleans
 
 These base stats are compiled from the official unit pages for Underling through Kraken.
 
-| Unit | Type | Cost | Surf | Range | Vis | Rep | Def | Atk GL/GH/Air/Aq/Am | Role |
+| Unit | Type | Cost | Surf | Range | Vis | Rep | Def | Atk GL/GH/Air/Aq/Am/Sub | Role |
 |---|---:|---:|---:|---:|---:|---:|---:|---|---|
-| Underling | GL | 100 | 11 | 1 | 3 | 1 | 5 | 6/3/0/2/6 | Fast capture/scout; bury threat |
-| Infector | GL | 250 | 8 | 1 | 3 | 1 | 0 | 0/0/0/0/0 | Support, plague, Marine conversion |
-| Infected Marine | GL | 0 | 10 | 1 | 4 | 1 | 6 | 7/4/4/2/7 | Transformed infantry |
-| Swarmer | Air | 250 | 9 | 1-2 | 5 | 1 | 4 | 8/4/3/6/7 | Cheap ranged air pressure |
-| Borfly | Air | 200 | 6 | 2-3 | 3 | 1 | 2 | 4/6/1/4/4 | Anti-heavy blaster |
-| Garuda | Air | 350 | 12 | 1 | 5 | 2 | 9 | 7/8/9/8/7 | Durable air superiority / bruiser |
-| Pinzer | GH | 450 | 8 | 1 | 3 | 2 | 13 | 12/10/3/10/12 | Heavy front-liner |
-| Wyrm | GH | 550 | 6 | 1-3 | 3 | 1 | 4 | 10/9/12/10/10 | Mobile support artillery |
-| Leviathan | Aq | 600 | 11 | 3 | 4 | 2 | 12 | 10/10/9/12/10 | Budget capital ship |
-| Salamander | Amphi | 200 | 9 | 1 | 4 | 2 | 8 | 6/4/3/5/6 | Tanky amphibian with plague |
-| Kraken | Aq | 350 | 10 | 2 | 3 | 2 | 8 | 6/6/0/6/6 | Cheap stealth sea threat |
+| Underling | GL | 100 | 11 | 1 | 3 | 1 | 5 | 6/3/0/2/6/0 | Fast capture/scout; bury threat |
+| Infector | GL | 250 | 8 | 1 | 3 | 1 | 0 | 0/0/0/0/0/0 | Support, plague, Marine conversion |
+| Infected Marine | GL | 0 | 10 | 1 | 4 | 1 | 6 | 7/4/4/2/7/0 | Transformed infantry |
+| Swarmer | Air | 250 | 9 | 1-2 | 5 | 1 | 4 | 8/4/3/6/7/1 | Cheap ranged air pressure |
+| Borfly | Air | 200 | 6 | 2-3 | 3 | 1 | 2 | 4/6/1/4/4/0 | Anti-heavy blaster |
+| Garuda | Air | 350 | 12 | 1 | 5 | 2 | 9 | 7/8/9/8/7/3 | Durable air superiority / bruiser |
+| Pinzer | GH | 450 | 8 | 1 | 3 | 2 | 13 | 12/10/3/10/12/2 | Heavy front-liner |
+| Wyrm | GH | 550 | 6 | 1-3 | 3 | 1 | 4 | 10/9/12/10/10/2 | Mobile support artillery |
+| Leviathan | Aq | 600 | 11 | 3 | 4 | 2 | 12 | 10/10/9/12/10/3 | Budget capital ship |
+| Salamander | Amphi | 200 | 9 | 1 | 4 | 2 | 8 | 6/4/3/5/6/4 | Tanky amphibian with plague |
+| Kraken | Aq | 350 | 10 | 2 | 3 | 2 | 8 | 6/6/0/6/6/6 | Cheap stealth sea threat |
 
 ### Titans
 
 These base stats are compiled from the official unit pages for Mecha through Skimmer.
 
-| Unit | Type | Cost | Surf | Range | Vis | Rep | Def | Atk GL/GH/Air/Aq/Am | Role |
+| Unit | Type | Cost | Surf | Range | Vis | Rep | Def | Atk GL/GH/Air/Aq/Am/Sub | Role |
 |---|---:|---:|---:|---:|---:|---:|---:|---|---|
-| Mecha | GL | 100 | 8 | 1 | 4 | 1 | 6 | 6/3/4/2/6 | Teleport infantry |
-| Assimilator | GL | 200 | 6 | 1 | 3 | 1 | 0 | 0/0/0/0/0 | Support, UV, Underling conversion |
-| Cyber Underling | GL | 0 | 10 | 1 | 4 | 1 | 6 | 7/4/2/2/7 | Transformed burrower |
-| Speeder | GH | 250 | 16 | 1 | 5 | 2 | 8 | 10/5/5/5/8 | High-tempo raider |
-| Guardian | GL | 350 | 10 | 1-2 | 2 | 0 | 3 | 7/5/7/5/7 | AP blaster; no self-repair |
-| Eclipse | GH | 400 | 10 | 1-2 | 4 | 2 | 10 | 10/6/12/5/11 | Anti-air / anti-light / anti-amphibian |
-| Plasma Tank | GH | 500 | 7 | 1 | 3 | 1 | 14 | 10/12/5/11/10 | Hardest land wall |
-| Walker | GH | 700 | 6 | 3-5 | 5 | 1 | 5 | 10/10/11/10/10 | Longest-range artillery |
-| Hydronaut | Aq | 800 | 11 | 2-4 | 6 | 2 | 10 | 12/10/12/13/12 | Naval artillery |
-| Mantisse | Amphi | 250 | 11 | 2 | 4 | 1 | 4 | 6/4/2/4/7 | Amphibious ranged harasser |
-| Skimmer | Aq | 450 | 10 | 3 | 4 | 1 | 6 | 5/5/5/9/5 | Submersible naval skirmisher |
+| Mecha | GL | 100 | 8 | 1 | 4 | 1 | 6 | 6/3/4/2/6/0 | Teleport infantry |
+| Assimilator | GL | 200 | 6 | 1 | 3 | 1 | 0 | 0/0/0/0/0/0 | Support, UV, Underling conversion |
+| Cyber Underling | GL | 0 | 10 | 1 | 4 | 1 | 6 | 7/4/2/2/7/0 | Transformed burrower |
+| Speeder | GH | 250 | 16 | 1 | 5 | 2 | 8 | 10/5/5/5/8/0 | High-tempo raider |
+| Guardian | GL | 350 | 10 | 1-2 | 2 | 0 | 3 | 7/5/7/5/7/0 | AP blaster; no self-repair |
+| Eclipse | GH | 400 | 10 | 1-2 | 4 | 2 | 10 | 10/6/12/5/11/0 | Anti-air / anti-light / anti-amphibian |
+| Plasma Tank | GH | 500 | 7 | 1 | 3 | 1 | 14 | 10/12/5/11/10/3 | Hardest land wall |
+| Walker | GH | 700 | 6 | 3-5 | 5 | 1 | 5 | 10/10/11/10/10/2 | Longest-range artillery |
+| Hydronaut | Aq | 800 | 11 | 2-4 | 6 | 2 | 10 | 12/10/12/13/12/4 | Naval artillery |
+| Mantisse | Amphi | 250 | 11 | 2 | 4 | 1 | 4 | 6/4/2/4/7/3 | Amphibious ranged harasser |
+| Skimmer | Aq | 450 | 10 | 3 | 4 | 1 | 6 | 5/5/5/9/5/9 | Submersible naval skirmisher |
 
 ### Overrides, underwater states, armor piercing, and practical counters
 

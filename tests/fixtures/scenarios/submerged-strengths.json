@@ -1,0 +1,70 @@
+{
+  "name": "submerged_screenshot_strengths_drive_real_damage",
+  "input_state": "states/submerged-strengths-ready.json",
+  "cases": [
+    {
+      "name": "marine_uses_screenshot_submerged_strength_0_plus_harbor_bonus",
+      "actions": [
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_marine",
+          "defender_id": "u_sub_marine"
+        }
+      ],
+      "expected_changes": {
+        "units.u_marine.hp": 10,
+        "units.u_marine.action.actions_remaining": 0,
+        "units.u_sub_marine.hp": 9,
+        "current_rseed": -2030036310202079615
+      }
+    },
+    {
+      "name": "fuze_uses_screenshot_submerged_strength_3",
+      "actions": [
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_fuze",
+          "defender_id": "u_sub_fuze"
+        }
+      ],
+      "expected_changes": {
+        "units.u_fuze.hp": 10,
+        "units.u_fuze.action.actions_remaining": 0,
+        "units.u_sub_fuze.hp": 7,
+        "current_rseed": -2030036310202079615
+      }
+    },
+    {
+      "name": "walker_uses_screenshot_submerged_strength_2_at_range_3",
+      "actions": [
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_walker",
+          "defender_id": "u_sub_walker"
+        }
+      ],
+      "expected_changes": {
+        "units.u_walker.hp": 10,
+        "units.u_walker.action.actions_remaining": 0,
+        "units.u_sub_walker.hp": 9,
+        "current_rseed": -2030036310202079615
+      }
+    },
+    {
+      "name": "engineer_still_has_no_direct_submerged_attack",
+      "actions": [
+        {
+          "type": "attack_unit",
+          "attacker_id": "u_engineer",
+          "defender_id": "u_sub_engineer",
+          "expect_error": "Attacker cannot attack the selected target"
+        }
+      ],
+      "expected_changes": {
+        "units.u_engineer.action.actions_remaining": 1,
+        "units.u_sub_engineer.hp": 10,
+        "current_rseed": 12345
+      }
+    }
+  ]
+}
