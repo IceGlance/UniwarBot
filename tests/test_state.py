@@ -166,6 +166,14 @@ class GameStateScenarioTestCase(unittest.TestCase):
                     continue
                 state.resurface_unit(str(action["unit_id"]), **kwargs)
                 continue
+            if action_type == "bury_unit":
+                expected_error = action.get("expect_error")
+                if expected_error is not None:
+                    with self.assertRaisesRegex(ValueError, str(expected_error)):
+                        state.bury_unit(str(action["unit_id"]))
+                    continue
+                state.bury_unit(str(action["unit_id"]))
+                continue
             if action_type == "attack_unit":
                 kwargs: dict[str, Any] = {}
                 if "attack_bonus" in action:
@@ -201,6 +209,11 @@ class GameStateScenarioTestCase(unittest.TestCase):
                 )
                 continue
             if action_type == "end_turn":
+                expected_error = action.get("expect_error")
+                if expected_error is not None:
+                    with self.assertRaisesRegex(ValueError, str(expected_error)):
+                        state.end_turn()
+                    continue
                 state.end_turn()
                 continue
             if action_type == "set_metadata":

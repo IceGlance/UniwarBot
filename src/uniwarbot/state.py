@@ -915,10 +915,11 @@ class GameState:
     ) -> None:
         if (
             acting_unit.action.atomic_action_locked
-            and acting_unit.action.atomic_action_label == "resurface_attack"
+            and acting_unit.action.atomic_action_label
+            in {"resurface_attack", "surface_move_attack"}
             and action_kind != "attack"
         ):
-            raise ValueError("Unit must finish its resurface-attack action with an attack")
+            raise ValueError("Unit must finish its move-attack or resurface-attack action with an attack")
         for other_unit in self.units.values():
             if other_unit.owner_id != self.active_player_id:
                 continue
@@ -953,6 +954,9 @@ class GameState:
         unit.position = destination
         self._place_unit_on_tile(destination_tile, unit, strict=True)
         unit.action.has_moved_this_turn = True
+        if self._requires_surface_move_attack_lock(unit):
+            unit.action.atomic_action_locked = True
+            unit.action.atomic_action_label = "surface_move_attack"
         current_window = unit.action.current_action_window
         if current_window is not None:
             current_window.in_progress = True
@@ -965,6 +969,32 @@ class GameState:
                     segment.completed = True
                     segment.mobility_points_remaining = 0
                     break
+
+    def bury_unit(self, instance_id: str) -> None:
+        unit = self._require_active_player_unit(instance_id)
+        self._enforce_atomic_action_lock(unit, action_kind="special")
+        if not self._is_underling_family(unit):
+            raise ValueError("Only Underling-family units can bury")
+        if unit.status.hidden_mode is not None:
+            raise ValueError("Only surface units can bury")
+
+        tile = self.game_map.get_tile(unit.position)
+        if tile is None:
+            raise ValueError("Unit tile does not exist")
+        if tile.hidden_unit_id not in (None, unit.instance_id):
+            raise ValueError("Cannot bury into an occupied hidden slot")
+        if tile.terrain_id in self._hidden_mode_forbidden_terrains(unit):
+            raise ValueError("Unit cannot bury on this terrain")
+
+        self._consume_action_if_needed(unit)
+        unit.action.has_used_special_this_turn = True
+        unit.action.atomic_action_locked = False
+        unit.action.atomic_action_label = None
+
+        if tile.surface_unit_id == unit.instance_id:
+            tile.surface_unit_id = None
+        tile.hidden_unit_id = unit.instance_id
+        unit.status.hidden_mode = HiddenMode.BURIED
 
     def resurface_unit(
         self,
@@ -1094,7 +1124,10 @@ class GameState:
         defender.hp = max(0, defender_original_hp - max(0, resolved_defender_damage))
         attacker.hp = max(0, attacker_original_hp - max(0, resolved_attacker_damage))
         attacker.status.buried_resurface_bonus = 0
-        if attacker.action.atomic_action_label == "resurface_attack":
+        if attacker.action.atomic_action_label in {
+            "resurface_attack",
+            "surface_move_attack",
+        }:
             attacker.action.atomic_action_locked = False
             attacker.action.atomic_action_label = None
 
@@ -1132,6 +1165,7 @@ class GameState:
 
     def end_turn(self) -> str:
         outgoing_player_id = self.active_player_id
+        self._assert_no_pending_atomic_actions(outgoing_player_id)
         self._apply_end_of_turn_effects(outgoing_player_id)
         next_player_id = self._next_player_id(outgoing_player_id)
         self.active_player_id = next_player_id
@@ -1313,6 +1347,31 @@ class GameState:
     def _hidden_mode_resurface_bonus(self, unit: UnitState) -> int:
         hidden_mode = self._unit_dictionary_entry(unit).get("hidden_mode") or {}
         return int(hidden_mode.get("resurface_bonus", 0))
+
+    def _hidden_mode_forbidden_terrains(self, unit: UnitState) -> set[str]:
+        hidden_mode = self._unit_dictionary_entry(unit).get("hidden_mode") or {}
+        return {str(item) for item in hidden_mode.get("forbidden_terrains", [])}
+
+    def _is_underling_family(self, unit: UnitState) -> bool:
+        return unit.unit_id in {"underling", "cyber_underling"}
+
+    def _requires_surface_move_attack_lock(self, unit: UnitState) -> bool:
+        return self._is_underling_family(unit) and unit.status.hidden_mode is None
+
+    def _assert_no_pending_atomic_actions(self, player_id: str) -> None:
+        for unit in self.units.values():
+            if unit.owner_id != player_id:
+                continue
+            if not unit.action.atomic_action_locked:
+                continue
+            if unit.action.atomic_action_label == "surface_move_attack":
+                raise ValueError(
+                    f"Unit {unit.instance_id} must finish its move+attack action before ending the turn"
+                )
+            if unit.action.atomic_action_label == "resurface_attack":
+                raise ValueError(
+                    f"Unit {unit.instance_id} must finish its unbury+attack action before ending the turn"
+                )
 
     def _published_base_attack_strength(
         self,
