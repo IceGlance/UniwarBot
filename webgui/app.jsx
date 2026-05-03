@@ -1,7 +1,7 @@
 const { useEffect, useMemo, useState } = React;
 
-const HEX_SIZE = 46;
-const API_BASE = "http://127.0.0.1:8000/api";
+const BASE_HEX_SIZE = 32;
+const API_BASE = `${window.location.origin}/api`;
 const TERRAIN_FALLBACKS = {
   plain: "#d7c7a1",
   base: "#d9c7ae",
@@ -24,6 +24,10 @@ function coordKey(coord) {
   return `${coord.q}:${coord.r}`;
 }
 
+function clipPathId(coord) {
+  return `tile-clip-${coord.q}-${coord.r}`;
+}
+
 function titleFromAction(action) {
   const type = String(action?.type ?? "action");
   if (type === "attack_unit") {
@@ -39,17 +43,17 @@ function titleFromAction(action) {
 }
 
 function axialToPixel(coord) {
-  const x = HEX_SIZE * Math.sqrt(3) * (coord.q + coord.r / 2);
-  const y = HEX_SIZE * 1.5 * coord.r;
+  const x = BASE_HEX_SIZE * Math.sqrt(3) * (coord.q + coord.r / 2);
+  const y = BASE_HEX_SIZE * 1.5 * coord.r;
   return { x, y };
 }
 
-function hexPoints(centerX, centerY) {
+function hexPoints(centerX, centerY, hexSize) {
   const points = [];
   for (let i = 0; i < 6; i += 1) {
     const angle = ((60 * i) - 30) * (Math.PI / 180);
-    const x = centerX + HEX_SIZE * Math.cos(angle);
-    const y = centerY + HEX_SIZE * Math.sin(angle);
+    const x = centerX + hexSize * Math.cos(angle);
+    const y = centerY + hexSize * Math.sin(angle);
     points.push(`${x},${y}`);
   }
   return points.join(" ");
@@ -77,6 +81,7 @@ function App() {
   const [selectedUnitId, setSelectedUnitId] = useState(null);
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
+  const [zoom, setZoom] = useState(0.9);
 
   useEffect(() => {
     fetch(`${API_BASE}/scenarios`)
@@ -156,17 +161,33 @@ function App() {
   const selectedUnit = selectedUnitId ? units[selectedUnitId] ?? null : null;
   const selectedUnitGameId = selectedUnit ? String(selectedUnit.unit_id ?? selectedUnitId ?? "") : "";
 
+  const clampZoom = (value) => Math.max(0.45, Math.min(2.2, value));
+  const adjustZoom = (delta) => setZoom((current) => clampZoom(Number((current + delta).toFixed(2))));
+
   const boardBounds = useMemo(() => {
     if (tiles.length === 0) {
       return { minX: 0, minY: 0, width: 600, height: 420 };
     }
     const centers = tiles.map((tile) => axialToPixel(tile.coord));
-    const minX = Math.min(...centers.map((center) => center.x)) - HEX_SIZE - 18;
-    const maxX = Math.max(...centers.map((center) => center.x)) + HEX_SIZE + 18;
-    const minY = Math.min(...centers.map((center) => center.y)) - HEX_SIZE - 18;
-    const maxY = Math.max(...centers.map((center) => center.y)) + HEX_SIZE + 18;
+    const minX = Math.min(...centers.map((center) => center.x)) - BASE_HEX_SIZE - 34;
+    const maxX = Math.max(...centers.map((center) => center.x)) + BASE_HEX_SIZE + 34;
+    const minY = Math.min(...centers.map((center) => center.y)) - BASE_HEX_SIZE - 34;
+    const maxY = Math.max(...centers.map((center) => center.y)) + BASE_HEX_SIZE + 34;
     return { minX, minY, width: maxX - minX, height: maxY - minY };
   }, [tiles]);
+
+  const zoomedViewBox = useMemo(() => {
+    const centerX = boardBounds.minX + boardBounds.width / 2;
+    const centerY = boardBounds.minY + boardBounds.height / 2;
+    const width = boardBounds.width / zoom;
+    const height = boardBounds.height / zoom;
+    return {
+      minX: centerX - width / 2,
+      minY: centerY - height / 2,
+      width,
+      height,
+    };
+  }, [boardBounds, zoom]);
 
   return (
     <div className="app-shell">
@@ -253,6 +274,18 @@ function App() {
           </div>
 
           <div className="step-strip">
+            <div className="zoom-controls">
+              <button className="zoom-chip" onClick={() => adjustZoom(-0.15)} title="Zoom out">
+                -
+              </button>
+              <span className="zoom-readout">{Math.round(zoom * 100)}%</span>
+              <button className="zoom-chip" onClick={() => adjustZoom(0.15)} title="Zoom in">
+                +
+              </button>
+              <button className="zoom-chip" onClick={() => setZoom(0.9)} title="Reset zoom">
+                Reset
+              </button>
+            </div>
             <button
               className={`step-chip ${selectedStepIndex < 0 ? "selected" : ""}`}
               onClick={() => setSelectedStepIndex(-1)}
@@ -272,10 +305,26 @@ function App() {
           </div>
 
           <div className="board-card">
+            <div
+              className="board-viewport"
+              onWheel={(event) => {
+                event.preventDefault();
+                adjustZoom(event.deltaY < 0 ? 0.08 : -0.08);
+              }}
+            >
             <svg
               className="board-svg"
-              viewBox={`${boardBounds.minX} ${boardBounds.minY} ${boardBounds.width} ${boardBounds.height}`}
+              viewBox={`${zoomedViewBox.minX} ${zoomedViewBox.minY} ${zoomedViewBox.width} ${zoomedViewBox.height}`}
             >
+              <defs>
+                {tiles.map((tile) => {
+                  return (
+                    <clipPath id={clipPathId(tile.coord)} key={clipPathId(tile.coord)} clipPathUnits="userSpaceOnUse">
+                      <polygon points={hexPoints(0, 0, BASE_HEX_SIZE)} />
+                    </clipPath>
+                  );
+                })}
+              </defs>
               {tiles.map((tile) => {
                 const center = axialToPixel(tile.coord);
                 const surfaceUnitId = tile.surface_unit_id;
@@ -292,17 +341,18 @@ function App() {
                     transform={`translate(${center.x}, ${center.y})`}
                   >
                     <polygon
-                      points={hexPoints(0, 0)}
+                      points={hexPoints(0, 0, BASE_HEX_SIZE)}
                       fill={TERRAIN_FALLBACKS[tile.terrain_id] ?? "#d8d8d8"}
                       stroke={isSelected ? "#fef3c7" : "#22304a"}
                       strokeWidth={isSelected ? 4 : 2}
                     />
                     <image
                       href={terrainAsset(tile.terrain_id)}
-                      x={-52}
-                      y={-52}
-                      width={104}
-                      height={104}
+                      x={-34}
+                      y={-34}
+                      width={68}
+                      height={68}
+                      clipPath={`url(#${clipPathId(tile.coord)})`}
                       preserveAspectRatio="xMidYMid meet"
                     />
 
@@ -328,17 +378,17 @@ function App() {
                           setSelectedUnitId(surfaceUnitId);
                         }}
                       >
-                        <rect className="unit-frame surface" x="-35" y="-28" width="70" height="58" rx="10" />
+                        <rect className="unit-frame surface" x="-25" y="-20" width="50" height="40" rx="8" />
                         <image
                           href={unitAsset(String(surfaceUnit.unit_id ?? ""))}
-                          x={-33}
-                          y={-26}
-                          width={66}
-                          height={54}
+                          x={-24}
+                          y={-19}
+                          width={48}
+                          height={38}
                           preserveAspectRatio="xMidYMid slice"
                         />
-                        <g transform="translate(24,20)">
-                          <circle className="hp-disc" r="12" />
+                        <g transform="translate(18,13)">
+                          <circle className="hp-disc" r="9" />
                           <text className="hp-text" x="0" y="1">
                             {String(surfaceUnit.hp)}
                           </text>
@@ -355,24 +405,24 @@ function App() {
                           setSelectedUnitId(hiddenUnitId);
                         }}
                       >
-                        <rect className="unit-frame hidden" x="-35" y="-28" width="70" height="58" rx="10" />
+                        <rect className="unit-frame hidden" x="-25" y="-20" width="50" height="40" rx="8" />
                         <image
                           href={unitAsset(String(hiddenUnit.unit_id ?? ""))}
-                          x={-33}
-                          y={-26}
-                          width={66}
-                          height={54}
+                          x={-24}
+                          y={-19}
+                          width={48}
+                          height={38}
                           preserveAspectRatio="xMidYMid slice"
                           opacity="0.82"
                         />
-                        <g transform="translate(-23,-17)">
-                          <rect className="hidden-flag" x="-8" y="-8" width="16" height="16" rx="4" />
+                        <g transform="translate(-17,-12)">
+                          <rect className="hidden-flag" x="-7" y="-7" width="14" height="14" rx="4" />
                           <text className="hidden-flag-text" x="0" y="1">
                             H
                           </text>
                         </g>
-                        <g transform="translate(24,20)">
-                          <circle className="hp-disc" r="12" />
+                        <g transform="translate(18,13)">
+                          <circle className="hp-disc" r="9" />
                           <text className="hp-text" x="0" y="1">
                             {String(hiddenUnit.hp)}
                           </text>
@@ -383,6 +433,7 @@ function App() {
                 );
               })}
             </svg>
+            </div>
           </div>
         </section>
 

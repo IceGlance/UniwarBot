@@ -4,7 +4,8 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from .scenario_inspector import ROOT, build_scenario_report, list_scenario_summaries, load_scenario_by_id
@@ -18,6 +19,43 @@ app = FastAPI(
     version="0.1.0",
     description="Local API for browsing UniwarBot scenario fixtures and state transitions.",
 )
+
+LANDING_PAGE = """<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UniwarBot</title>
+    <style>
+      :root {
+        font-family: "Segoe UI", sans-serif;
+        background: linear-gradient(180deg, #0b1322 0%, #101a2e 100%);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      a {
+        display: inline-block;
+        padding: 16px 22px;
+        border-radius: 14px;
+        color: white;
+        text-decoration: none;
+        font-weight: 700;
+        background: linear-gradient(135deg, #2563eb, #0f766e);
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+      }
+    </style>
+  </head>
+  <body>
+    <a href="/scenario-inspector/">Scenario Inspector</a>
+  </body>
+</html>
+"""
 
 app.add_middleware(
     CORSMiddleware,
@@ -61,10 +99,33 @@ def gui_status() -> Response:
     return JSONResponse({"status": "missing"})
 
 
+@app.get("/", response_class=HTMLResponse)
+def landing() -> str:
+    return LANDING_PAGE
+
+
+@app.get("/scenario-inspector", include_in_schema=False)
+def scenario_inspector_redirect() -> Response:
+    return RedirectResponse(url="/scenario-inspector/")
+
+
+@app.get("/scenario-inspector/", include_in_schema=False)
+def scenario_inspector_index() -> Response:
+    base_dir = WEB_DIST if WEB_DIST.exists() else WEB_APP
+    return FileResponse(base_dir / "index.html")
+
+
+@app.get("/scenario-inspector/app.jsx", include_in_schema=False)
+def scenario_inspector_app() -> Response:
+    return FileResponse(WEB_APP / "app.jsx")
+
+
 if WEB_DIST.exists():
-    app.mount("/", StaticFiles(directory=WEB_DIST, html=True), name="webgui")
-elif WEB_APP.exists():
-    app.mount("/", StaticFiles(directory=WEB_APP, html=True), name="webgui")
+    app.mount("/scenario-inspector/assets", StaticFiles(directory=WEB_DIST / "assets"), name="webgui-assets")
+else:
+    app.mount("/scenario-inspector/public", StaticFiles(directory=WEB_APP / "public"), name="webgui-public")
+    app.mount("/scenario-inspector/src", StaticFiles(directory=WEB_APP / "src"), name="webgui-src")
+    app.mount("/scenario-inspector/vendor", StaticFiles(directory=WEB_APP / "vendor"), name="webgui-vendor")
 
 
 def main() -> None:

@@ -259,7 +259,8 @@ Important:
 
 - `http://127.0.0.1:8000/api/...` endpoints are raw JSON data sources for the frontend.
 - They are not the GUI itself.
-- Use the frontend URL below for the actual visual scenario inspector.
+- `http://127.0.0.1:8000/` is now a minimal landing page.
+- Use `http://127.0.0.1:8000/scenario-inspector/` for the actual visual scenario inspector.
 
 Useful endpoints:
 
@@ -275,6 +276,7 @@ Simplest option:
 
 - start only the FastAPI backend,
 - then open `http://127.0.0.1:8000/`
+- click `Scenario Inspector`
 
 Optional separate frontend server on `5173`:
 
@@ -295,6 +297,7 @@ The GUI currently provides:
 - a scenario dropdown populated from `tests/fixtures/scenarios/`,
 - step selection per scenario action,
 - a rendered board with locally stored UniCalc terrain and unit sprites,
+- zoom in, zoom out, reset zoom, and mouse-wheel zoom on the board,
 - clickable tile and unit inspection panels,
 - action payload and changed-field diff panels.
 
@@ -312,6 +315,12 @@ The Vite dev server proxies `/api` requests to the FastAPI backend on port `8000
 
 ```text
 http://127.0.0.1:8000/
+```
+
+3. Click:
+
+```text
+Scenario Inspector
 ```
 
 Optional split-server workflow:
