@@ -66,6 +66,10 @@ function pretty(value) {
   return JSON.stringify(value ?? null, null, 2);
 }
 
+function compact(value) {
+  return JSON.stringify(value ?? null);
+}
+
 function terrainAsset(terrainId) {
   return `./public/gui-assets/terrains/${terrainId}.png`;
 }
@@ -214,12 +218,21 @@ function App() {
   const selectedStep = report && selectedStepIndex >= 0 ? report.steps[selectedStepIndex] ?? null : null;
   const currentState =
     report == null ? null : selectedStep == null ? report.initial_state : selectedStep.after_state;
-  const diffEntries = Object.entries(
-    selectedStep == null ? report?.final_changes ?? {} : selectedStep.actual_changes,
-  );
+  const diffObject = selectedStep == null ? report?.final_changes ?? {} : selectedStep.actual_changes;
 
   const tiles = currentState?.game_map?.tiles ?? [];
   const units = currentState?.units ?? {};
+  const hiddenRenderItems = useMemo(
+    () =>
+      tiles
+        .filter((tile) => tile.hidden_unit_id != null && units[tile.hidden_unit_id] != null)
+        .map((tile) => ({
+          tile,
+          unitId: tile.hidden_unit_id,
+          unit: units[tile.hidden_unit_id],
+        })),
+    [tiles, units],
+  );
 
   const tileByKey = useMemo(() => {
     const map = new Map();
@@ -324,7 +337,7 @@ function App() {
           </div>
           <div className="status-card">
             <span>Diff Paths</span>
-            <strong>{diffEntries.length}</strong>
+            <strong>{Object.keys(diffObject).length}</strong>
           </div>
         </div>
       </header>
@@ -469,9 +482,7 @@ function App() {
               {tiles.map((tile) => {
                 const center = axialToPixel(tile.coord);
                 const surfaceUnitId = tile.surface_unit_id;
-                const hiddenUnitId = tile.hidden_unit_id;
                 const surfaceUnit = surfaceUnitId ? units[surfaceUnitId] : null;
-                const hiddenUnit = hiddenUnitId ? units[hiddenUnitId] : null;
                 const key = coordKey(tile.coord);
                 return (
                   <g
@@ -505,10 +516,6 @@ function App() {
                       </g>
                     ) : null}
 
-                    <text className="coord-label" x="0" y="22">
-                      {key}
-                    </text>
-
                     {surfaceUnitId && surfaceUnit ? (
                       <g
                         className="unit-token"
@@ -538,44 +545,59 @@ function App() {
                         </g>
                       </g>
                     ) : null}
-
-                    {hiddenUnitId && hiddenUnit ? (
-                      <g
-                        className="unit-token"
-                        transform="translate(0,34)"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                          setSelectedTileKey(key);
-                          setSelectedUnitId(hiddenUnitId);
-                        }}
-                      >
-                        <ellipse className="hidden-ring" cx="0" cy="0" rx="25" ry="19" />
-                        <image
-                          className="unit-sprite hidden"
-                          href={unitAsset(String(hiddenUnit.unit_id ?? ""))}
-                          x={-23}
-                          y={-18}
-                          width={46}
-                          height={36}
-                          draggable="false"
-                          preserveAspectRatio="xMidYMid slice"
-                          opacity="0.82"
-                        />
-                        {renderVeterancy(hiddenUnit)}
-                        <g transform="translate(-17,-12)">
-                          <rect className="hidden-flag" x="-7" y="-7" width="14" height="14" rx="4" />
-                          <text className="hidden-flag-text" x="0" y="1">
-                            H
-                          </text>
-                        </g>
-                        <g transform="translate(18,13)">
-                          <text className="hp-text" x="0" y="1">
-                            {String(hiddenUnit.hp)}
-                          </text>
-                        </g>
-                      </g>
-                    ) : null}
+                  </g>
+                );
+              })}
+              {hiddenRenderItems.map(({ tile, unitId, unit }) => {
+                const center = axialToPixel(tile.coord);
+                const key = coordKey(tile.coord);
+                return (
+                  <g
+                    key={`hidden-${unitId}`}
+                    className="unit-token hidden-token-layer"
+                    transform={`translate(${center.x}, ${center.y + 24})`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      setSelectedTileKey(key);
+                      setSelectedUnitId(unitId);
+                    }}
+                    opacity="0.65"
+                  >
+                    <ellipse className="hidden-ring" cx="0" cy="0" rx="19" ry="14" />
+                    <image
+                      className="unit-sprite hidden"
+                      href={unitAsset(String(unit.unit_id ?? ""))}
+                      x={-17}
+                      y={-13}
+                      width={34}
+                      height={27}
+                      draggable="false"
+                      preserveAspectRatio="xMidYMid slice"
+                    />
+                    {renderVeterancy(unit)}
+                    <g transform="translate(-13,-9)">
+                      <rect className="hidden-flag" x="-6" y="-6" width="12" height="12" rx="4" />
+                      <text className="hidden-flag-text" x="0" y="1">
+                        H
+                      </text>
+                    </g>
+                    <g transform="translate(13,10)">
+                      <text className="hp-text" x="0" y="1">
+                        {String(unit.hp)}
+                      </text>
+                    </g>
+                  </g>
+                );
+              })}
+              {tiles.map((tile) => {
+                const center = axialToPixel(tile.coord);
+                const key = coordKey(tile.coord);
+                return (
+                  <g key={`coord-${key}`} className="coord-overlay" transform={`translate(${center.x}, ${center.y})`}>
+                    <text className="coord-label" x="0" y="22">
+                      {key}
+                    </text>
                   </g>
                 );
               })}
@@ -602,18 +624,11 @@ function App() {
 
             <div className="detail-card">
               <h2>Changed Fields</h2>
-              <div className="diff-list">
-                {diffEntries.length === 0 ? (
-                  <span className="muted">No changes for the selected view.</span>
-                ) : (
-                  diffEntries.map(([path, value]) => (
-                    <div key={path} className="diff-row">
-                      <code>{path}</code>
-                      <pre>{pretty(value)}</pre>
-                    </div>
-                  ))
-                )}
-              </div>
+              {Object.keys(diffObject).length === 0 ? (
+                <span className="muted">No changes for the selected view.</span>
+              ) : (
+                <pre>{pretty(diffObject)}</pre>
+              )}
             </div>
 
             <div className="detail-card">

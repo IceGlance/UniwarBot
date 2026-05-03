@@ -417,6 +417,11 @@ select {
   color: #1d4ed8;
 }
 
+.compact-json {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .visual-inspector {
   display: flex;
   align-items: center;
