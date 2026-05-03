@@ -303,7 +303,8 @@
         },
         "terrain_id": "plain",
         "owner_id": null,
-        "occupying_unit_id": "u_mecha",
+        "occupying_unit_id": null,
+        "hidden_unit_id": "u_underling",
         "capture_state": null,
         "metadata": {}
       },
@@ -726,9 +727,9 @@
         "note": "mid-activation"
       }
     },
-    "u_mecha": {
-      "instance_id": "u_mecha",
-      "unit_id": "mecha",
+    "u_underling": {
+      "instance_id": "u_underling",
+      "unit_id": "underling",
       "owner_id": "p2",
       "position": {
         "q": 1,
@@ -742,7 +743,7 @@
         "hidden_mode": "buried",
         "emp_disabled_rounds": 0,
         "teleport_disabled_rounds": 2,
-        "buried_resurface_bonus": 3,
+        "buried_resurface_bonus": 4,
         "submerged_attack_penalty": 0,
         "ability_cooldowns": {
           "bury": 1
@@ -809,7 +810,7 @@
     }
   },
   "fight_context": {
-    "last_attacked_unit_id": "u_mecha",
+    "last_attacked_unit_id": "u_underling",
     "previous_attack_origin": {
       "q": 0,
       "r": 0

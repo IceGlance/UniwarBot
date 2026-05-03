@@ -75,6 +75,14 @@ function unitAsset(unitId) {
   return `./public/gui-assets/units/${mapped}.png`;
 }
 
+function scenarioGroupName(scenario) {
+  return String(scenario?.suite_name ?? scenario?.name ?? "Scenario");
+}
+
+function scenarioCaseName(scenario) {
+  return String(scenario?.case_name ?? scenario?.name ?? "Scenario");
+}
+
 function renderVeterancy(unit) {
   const level = Number(unit?.veterancy_level ?? 0);
   if (level <= 0) {
@@ -93,6 +101,7 @@ function renderVeterancy(unit) {
 
 function App() {
   const [scenarios, setScenarios] = useState([]);
+  const [selectedGroupName, setSelectedGroupName] = useState("");
   const [selectedScenarioId, setSelectedScenarioId] = useState("");
   const [report, setReport] = useState(null);
   const [selectedStepIndex, setSelectedStepIndex] = useState(-1);
@@ -113,6 +122,7 @@ function App() {
       .then((payload) => {
         setScenarios(payload);
         if (payload.length > 0) {
+          setSelectedGroupName(scenarioGroupName(payload[0]));
           setSelectedScenarioId(payload[0].scenario_id);
         }
       })
@@ -156,8 +166,51 @@ function App() {
     );
   }, [scenarios, search]);
 
+  const groupedScenarios = useMemo(() => {
+    const groups = new Map();
+    for (const scenario of filteredScenarios) {
+      const groupName = scenarioGroupName(scenario);
+      if (!groups.has(groupName)) {
+        groups.set(groupName, []);
+      }
+      groups.get(groupName).push(scenario);
+    }
+    return Array.from(groups.entries())
+      .map(([groupName, items]) => ({
+        groupName,
+        items: items.slice().sort((left, right) =>
+          scenarioCaseName(left).localeCompare(scenarioCaseName(right)),
+        ),
+      }))
+      .sort((left, right) => left.groupName.localeCompare(right.groupName));
+  }, [filteredScenarios]);
+
+  useEffect(() => {
+    if (groupedScenarios.length === 0) {
+      if (selectedGroupName !== "") {
+        setSelectedGroupName("");
+      }
+      if (selectedScenarioId !== "") {
+        setSelectedScenarioId("");
+      }
+      return;
+    }
+    const matchingGroup =
+      groupedScenarios.find((group) => group.groupName === selectedGroupName) ?? groupedScenarios[0];
+    if (matchingGroup.groupName !== selectedGroupName) {
+      setSelectedGroupName(matchingGroup.groupName);
+      return;
+    }
+    const selectedExists = matchingGroup.items.some((scenario) => scenario.scenario_id === selectedScenarioId);
+    if (!selectedExists) {
+      setSelectedScenarioId(matchingGroup.items[0].scenario_id);
+    }
+  }, [groupedScenarios, selectedGroupName, selectedScenarioId]);
+
   const selectedScenarioSummary =
     scenarios.find((scenario) => scenario.scenario_id === selectedScenarioId) ?? null;
+  const selectedGroup =
+    groupedScenarios.find((group) => group.groupName === selectedGroupName) ?? null;
   const selectedStep = report && selectedStepIndex >= 0 ? report.steps[selectedStepIndex] ?? null : null;
   const currentState =
     report == null ? null : selectedStep == null ? report.initial_state : selectedStep.after_state;
@@ -179,6 +232,51 @@ function App() {
   const selectedTile = selectedTileKey ? tileByKey.get(selectedTileKey) ?? null : null;
   const selectedUnit = selectedUnitId ? units[selectedUnitId] ?? null : null;
   const selectedUnitGameId = selectedUnit ? String(selectedUnit.unit_id ?? selectedUnitId ?? "") : "";
+  const selectedTileSurfaceUnit =
+    selectedTile?.surface_unit_id != null ? units[selectedTile.surface_unit_id] ?? null : null;
+  const selectedTileHiddenUnit =
+    selectedTile?.hidden_unit_id != null ? units[selectedTile.hidden_unit_id] ?? null : null;
+  const selectedUnitTile = useMemo(() => {
+    if (!selectedUnitId) {
+      return null;
+    }
+    for (const tile of tiles) {
+      if (tile.surface_unit_id === selectedUnitId || tile.hidden_unit_id === selectedUnitId) {
+        return tile;
+      }
+    }
+    return null;
+  }, [selectedUnitId, tiles]);
+  const selectedUnitLayer =
+    selectedUnitTile == null || selectedUnitId == null
+      ? null
+      : selectedUnitTile.hidden_unit_id === selectedUnitId
+        ? "hidden"
+        : "surface";
+
+  const selectTileAndOccupant = (tile) => {
+    const key = coordKey(tile.coord);
+    const surfaceUnitId = tile.surface_unit_id ?? null;
+    const hiddenUnitId = tile.hidden_unit_id ?? null;
+    setSelectedTileKey(key);
+    if (surfaceUnitId && hiddenUnitId) {
+      if (selectedTileKey === key && selectedUnitId === surfaceUnitId) {
+        setSelectedUnitId(hiddenUnitId);
+        return;
+      }
+      setSelectedUnitId(surfaceUnitId);
+      return;
+    }
+    if (surfaceUnitId) {
+      setSelectedUnitId(surfaceUnitId);
+      return;
+    }
+    if (hiddenUnitId) {
+      setSelectedUnitId(hiddenUnitId);
+      return;
+    }
+    setSelectedUnitId(null);
+  };
 
   const clampZoom = (value) => Math.max(0.45, Math.min(2.2, value));
   const adjustZoom = (delta) => setZoom((current) => clampZoom(Number((current + delta).toFixed(2))));
@@ -252,16 +350,38 @@ function App() {
             />
 
             <label className="field-label" htmlFor="scenario-select">
-              Scenario List
+              Group
+            </label>
+            <select
+              id="scenario-group-select"
+              value={selectedGroupName}
+              onChange={(event) => {
+                const nextGroupName = event.target.value;
+                setSelectedGroupName(nextGroupName);
+                const nextGroup = groupedScenarios.find((group) => group.groupName === nextGroupName);
+                if (nextGroup?.items?.length) {
+                  setSelectedScenarioId(nextGroup.items[0].scenario_id);
+                }
+              }}
+            >
+              {groupedScenarios.map((group) => (
+                <option key={group.groupName} value={group.groupName}>
+                  {group.groupName}
+                </option>
+              ))}
+            </select>
+
+            <label className="field-label" htmlFor="scenario-select">
+              Subgroup
             </label>
             <select
               id="scenario-select"
               value={selectedScenarioId}
               onChange={(event) => setSelectedScenarioId(event.target.value)}
             >
-              {filteredScenarios.map((scenario) => (
+              {(selectedGroup?.items ?? []).map((scenario) => (
                 <option key={scenario.scenario_id} value={scenario.scenario_id}>
-                  {scenario.name}
+                  {scenarioCaseName(scenario)}
                 </option>
               ))}
             </select>
@@ -274,6 +394,8 @@ function App() {
             </div>
 
             <div className="summary-card">
+              <span className="summary-label">Selected Case</span>
+              <strong>{selectedScenarioSummary ? scenarioCaseName(selectedScenarioSummary) : "-"}</strong>
               <span className="summary-label">Current View</span>
               <strong>{selectedStep ? titleFromAction(selectedStep.action) : "Initial state"}</strong>
             </div>
@@ -355,7 +477,7 @@ function App() {
                   <g
                     key={key}
                     className="hex-group"
-                    onClick={() => setSelectedTileKey(key)}
+                    onClick={() => selectTileAndOccupant(tile)}
                     transform={`translate(${center.x}, ${center.y})`}
                   >
                     <polygon
@@ -497,17 +619,46 @@ function App() {
             <div className="detail-card">
               <h2>Tile Inspector</h2>
               {selectedTile ? (
-                <div className="visual-inspector">
-                  <img
-                    className="terrain-inspector-sprite"
-                    src={terrainAsset(selectedTile.terrain_id)}
-                    alt={selectedTile.terrain_id}
-                  />
-                  <div className="visual-copy">
-                    <strong>{selectedTile.terrain_id}</strong>
-                    <span>{selectedTile.owner_id ? `Owner: ${selectedTile.owner_id}` : "Neutral terrain"}</span>
+                <>
+                  <div className="visual-inspector">
+                    <img
+                      className="terrain-inspector-sprite"
+                      src={terrainAsset(selectedTile.terrain_id)}
+                      alt={selectedTile.terrain_id}
+                    />
+                    <div className="visual-copy">
+                      <strong>{selectedTile.terrain_id}</strong>
+                      <span>{selectedTile.owner_id ? `Owner: ${selectedTile.owner_id}` : "Neutral terrain"}</span>
+                    </div>
                   </div>
-                </div>
+                  <div className="occupant-card">
+                    <span className="summary-label">Occupants</span>
+                    <div className="occupant-list">
+                      <button
+                        className={`occupant-chip ${selectedTileSurfaceUnit ? "" : "empty"} ${
+                          selectedUnitId != null && selectedTile?.surface_unit_id === selectedUnitId ? "selected" : ""
+                        }`}
+                        disabled={!selectedTileSurfaceUnit}
+                        onClick={() => setSelectedUnitId(selectedTile?.surface_unit_id ?? null)}
+                      >
+                        {selectedTileSurfaceUnit
+                          ? `Surface: ${String(selectedTileSurfaceUnit.unit_id ?? selectedTile.surface_unit_id)}`
+                          : "Surface: empty"}
+                      </button>
+                      <button
+                        className={`occupant-chip ${selectedTileHiddenUnit ? "" : "empty"} ${
+                          selectedUnitId != null && selectedTile?.hidden_unit_id === selectedUnitId ? "selected" : ""
+                        }`}
+                        disabled={!selectedTileHiddenUnit}
+                        onClick={() => setSelectedUnitId(selectedTile?.hidden_unit_id ?? null)}
+                      >
+                        {selectedTileHiddenUnit
+                          ? `Hidden: ${String(selectedTileHiddenUnit.unit_id ?? selectedTile.hidden_unit_id)}`
+                          : "Hidden: empty"}
+                      </button>
+                    </div>
+                  </div>
+                </>
               ) : null}
               <pre>{pretty(selectedTile ?? null)}</pre>
             </div>
@@ -521,6 +672,10 @@ function App() {
                     <strong>{selectedUnitGameId}</strong>
                     <span>Owner: {String(selectedUnit.owner_id ?? "-")}</span>
                     <span>HP: {String(selectedUnit.hp ?? "-")}</span>
+                    <span>
+                      Layer: {selectedUnitLayer ?? "unknown"}
+                      {selectedUnit?.status?.hidden_mode ? ` (${String(selectedUnit.status.hidden_mode)})` : ""}
+                    </span>
                   </div>
                 </div>
               ) : null}

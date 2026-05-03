@@ -439,6 +439,43 @@ select {
   font-size: 13px;
 }
 
+.occupant-card {
+  margin-bottom: 12px;
+}
+
+.occupant-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.occupant-chip {
+  width: 100%;
+  text-align: left;
+  border: 1px solid #c7d3e2;
+  background: #fff;
+  color: #334155;
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.occupant-chip.selected {
+  border-color: #0f172a;
+  background: #0f172a;
+  color: #fff;
+}
+
+.occupant-chip.empty {
+  color: #94a3b8;
+  cursor: default;
+}
+
+.occupant-chip:disabled {
+  opacity: 1;
+}
+
 .terrain-inspector-sprite {
   width: 88px;
   height: 88px;
