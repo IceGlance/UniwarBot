@@ -50,6 +50,12 @@ That ordering is intentional. A strong bot depends on a correct simulator, and a
 - `data/validated/game-dictionary.json`
   Machine-readable dictionary of terrains and units for the engine and bot pipeline.
 
+- `src/uniwarbot/gui_api.py`
+  FastAPI backend for the local scenario inspector GUI.
+
+- `webgui/`
+  React + TypeScript frontend for browsing scenario fixtures, actions, states, and diffs.
+
 ## Design Principles
 
 - `Rules fidelity first`
@@ -134,7 +140,7 @@ $env:TMP = $env:TEMP
 python -m pip install -r requirements-dev.txt
 ```
 
-Right now the project has no third-party runtime dependencies declared in `pyproject.toml`. So `requirements-dev.txt` only installs the local package in editable mode:
+The Python package now declares GUI runtime dependencies in [pyproject.toml](/C:/CodexProjects/Uniwar/pyproject.toml), currently `fastapi` and `uvicorn`. `requirements-dev.txt` still installs the project in editable mode:
 
 ```text
 -e .
@@ -145,6 +151,7 @@ That means:
 - imports resolve from `src/`,
 - local code edits are immediately visible,
 - you do not need to reinstall after every Python code change.
+- FastAPI and Uvicorn are installed together with the editable package.
 
 ### If Python Is Not On PATH
 
@@ -208,3 +215,97 @@ The current test suite has been verified from that environment with:
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
+
+## Scenario Inspector GUI
+
+The repository now includes a first local web GUI for visualizing UT scenarios, actions, state transitions, and changed fields.
+
+Current GUI scope:
+
+- choose any JSON scenario case from `tests/fixtures/scenarios/`,
+- step through actions one by one,
+- render the map as a clickable hex board,
+- inspect tile and unit JSON,
+- view actual changed fields after each action.
+
+Architecture:
+
+- `FastAPI` backend in `src/uniwarbot/gui_api.py`
+- `React + TypeScript` frontend in `webgui/`
+
+### Start The Backend
+
+From the activated virtual environment:
+
+```powershell
+python -m uniwarbot.gui_api
+```
+
+Or without activating the environment first:
+
+```powershell
+.\.venv\Scripts\python.exe -m uniwarbot.gui_api
+```
+
+The API starts on:
+
+```text
+http://127.0.0.1:8000
+```
+
+Useful endpoints:
+
+- `GET /api/health`
+- `GET /api/scenarios`
+- `GET /api/scenarios/{scenario_id}`
+
+### Start The React Frontend
+
+The frontend uses Vite. You need a normal local Node.js installation with `npm` available on PATH. The Codex app's bundled `node.exe` is not enough by itself because it does not expose `npm`.
+
+From the repository root:
+
+```powershell
+Set-Location webgui
+npm install
+npm run dev
+```
+
+The frontend dev server starts on:
+
+```text
+http://127.0.0.1:5173
+```
+
+Open that URL in your browser. The Vite dev server proxies `/api` requests to the FastAPI backend on port `8000`.
+
+### Typical Local Workflow
+
+1. Start the backend:
+
+```powershell
+.\.venv\Scripts\python.exe -m uniwarbot.gui_api
+```
+
+2. In a second terminal, start the frontend:
+
+```powershell
+Set-Location webgui
+npm install
+npm run dev
+```
+
+3. Open:
+
+```text
+http://127.0.0.1:5173
+```
+
+### Future Extension Path
+
+This GUI is intentionally structured as a scenario inspector first, so it can grow into a full game GUI later without replacing the stack:
+
+- keep Python as the single source of truth for rules,
+- add legal-move overlays and action generation next,
+- add manual state editing after that,
+- then add human-vs-engine play and replay tooling on the same backend/frontend foundation.
