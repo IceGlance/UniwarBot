@@ -4,13 +4,14 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from .scenario_inspector import ROOT, build_scenario_report, list_scenario_summaries, load_scenario_by_id
 
 
 WEB_DIST = ROOT / "webgui" / "dist"
+WEB_APP = ROOT / "webgui"
 
 app = FastAPI(
     title="UniwarBot Scenario Inspector API",
@@ -51,20 +52,19 @@ def scenario_detail(scenario_id: str) -> dict[str, object]:
     return build_scenario_report(scenario)
 
 
-@app.get("/", response_model=None)
-def root() -> Response:
-    index_path = WEB_DIST / "index.html"
-    if index_path.exists():
-        return FileResponse(index_path)
-    return JSONResponse(
-        {
-            "message": "Scenario Inspector API is running. Start the React dev server in webgui/ or build the frontend to serve it from FastAPI.",
-        }
-    )
+@app.get("/gui-status", response_model=None)
+def gui_status() -> Response:
+    if WEB_DIST.exists():
+        return JSONResponse({"status": "ok", "mode": "dist", "path": str(WEB_DIST)})
+    if WEB_APP.exists():
+        return JSONResponse({"status": "ok", "mode": "static-webgui", "path": str(WEB_APP)})
+    return JSONResponse({"status": "missing"})
 
 
 if WEB_DIST.exists():
     app.mount("/", StaticFiles(directory=WEB_DIST, html=True), name="webgui")
+elif WEB_APP.exists():
+    app.mount("/", StaticFiles(directory=WEB_APP, html=True), name="webgui")
 
 
 def main() -> None:

@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
-import type { Coord, GameStateSnapshot, JsonValue, ScenarioReport, ScenarioStep, ScenarioSummary, TileState } from "./types";
+const { useEffect, useMemo, useState } = React;
 
 const HEX_SIZE = 46;
-const TERRAIN_FALLBACKS: Record<string, string> = {
+const API_BASE = "http://127.0.0.1:8000/api";
+const TERRAIN_FALLBACKS = {
   plain: "#d7c7a1",
   base: "#d9c7ae",
   forest: "#6f8f5f",
@@ -20,12 +20,12 @@ const TERRAIN_FALLBACKS: Record<string, string> = {
   chasm: "#6d5f57",
 };
 
-function coordKey(coord: Coord): string {
+function coordKey(coord) {
   return `${coord.q}:${coord.r}`;
 }
 
-function titleFromAction(action: Record<string, JsonValue>): string {
-  const type = String(action.type ?? "action");
+function titleFromAction(action) {
+  const type = String(action?.type ?? "action");
   if (type === "attack_unit") {
     return `${type} ${String(action.attacker_id)} -> ${String(action.defender_id)}`;
   }
@@ -38,14 +38,14 @@ function titleFromAction(action: Record<string, JsonValue>): string {
   return type;
 }
 
-function axialToPixel(coord: Coord): { x: number; y: number } {
+function axialToPixel(coord) {
   const x = HEX_SIZE * Math.sqrt(3) * (coord.q + coord.r / 2);
   const y = HEX_SIZE * 1.5 * coord.r;
   return { x, y };
 }
 
-function hexPoints(centerX: number, centerY: number): string {
-  const points: string[] = [];
+function hexPoints(centerX, centerY) {
+  const points = [];
   for (let i = 0; i < 6; i += 1) {
     const angle = ((60 * i) - 30) * (Math.PI / 180);
     const x = centerX + HEX_SIZE * Math.cos(angle);
@@ -55,36 +55,36 @@ function hexPoints(centerX: number, centerY: number): string {
   return points.join(" ");
 }
 
-function pretty(value: JsonValue | Record<string, JsonValue> | null | undefined): string {
+function pretty(value) {
   return JSON.stringify(value ?? null, null, 2);
 }
 
-function terrainAsset(terrainId: string): string {
-  return `/gui-assets/terrains/${terrainId}.png`;
+function terrainAsset(terrainId) {
+  return `./public/gui-assets/terrains/${terrainId}.png`;
 }
 
-function unitAsset(unitId: string): string {
+function unitAsset(unitId) {
   const mapped = unitId === "mecha_ii" ? "mecha_2" : unitId;
-  return `/gui-assets/units/${mapped}.png`;
+  return `./public/gui-assets/units/${mapped}.png`;
 }
 
 function App() {
-  const [scenarios, setScenarios] = useState<ScenarioSummary[]>([]);
-  const [selectedScenarioId, setSelectedScenarioId] = useState<string>("");
-  const [report, setReport] = useState<ScenarioReport | null>(null);
-  const [selectedStepIndex, setSelectedStepIndex] = useState<number>(-1);
-  const [selectedTileKey, setSelectedTileKey] = useState<string | null>(null);
-  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
-  const [search, setSearch] = useState<string>("");
-  const [error, setError] = useState<string>("");
+  const [scenarios, setScenarios] = useState([]);
+  const [selectedScenarioId, setSelectedScenarioId] = useState("");
+  const [report, setReport] = useState(null);
+  const [selectedStepIndex, setSelectedStepIndex] = useState(-1);
+  const [selectedTileKey, setSelectedTileKey] = useState(null);
+  const [selectedUnitId, setSelectedUnitId] = useState(null);
+  const [search, setSearch] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    void fetch("/api/scenarios")
+    fetch(`${API_BASE}/scenarios`)
       .then(async (response) => {
         if (!response.ok) {
           throw new Error(`Failed to load scenarios: ${response.status}`);
         }
-        return (await response.json()) as ScenarioSummary[];
+        return response.json();
       })
       .then((payload) => {
         setScenarios(payload);
@@ -92,7 +92,7 @@ function App() {
           setSelectedScenarioId(payload[0].scenario_id);
         }
       })
-      .catch((reason: unknown) => {
+      .catch((reason) => {
         setError(reason instanceof Error ? reason.message : String(reason));
       });
   }, []);
@@ -106,15 +106,15 @@ function App() {
     setSelectedStepIndex(-1);
     setSelectedTileKey(null);
     setSelectedUnitId(null);
-    void fetch(`/api/scenarios/${selectedScenarioId}`)
+    fetch(`${API_BASE}/scenarios/${selectedScenarioId}`)
       .then(async (response) => {
         if (!response.ok) {
           throw new Error(`Failed to load scenario: ${response.status}`);
         }
-        return (await response.json()) as ScenarioReport;
+        return response.json();
       })
       .then((payload) => setReport(payload))
-      .catch((reason: unknown) => {
+      .catch((reason) => {
         setError(reason instanceof Error ? reason.message : String(reason));
       });
   }, [selectedScenarioId]);
@@ -134,18 +134,18 @@ function App() {
 
   const selectedScenarioSummary =
     scenarios.find((scenario) => scenario.scenario_id === selectedScenarioId) ?? null;
-  const selectedStep: ScenarioStep | null =
-    report && selectedStepIndex >= 0 ? report.steps[selectedStepIndex] ?? null : null;
-  const currentState: GameStateSnapshot | null =
+  const selectedStep = report && selectedStepIndex >= 0 ? report.steps[selectedStepIndex] ?? null : null;
+  const currentState =
     report == null ? null : selectedStep == null ? report.initial_state : selectedStep.after_state;
   const diffEntries = Object.entries(
     selectedStep == null ? report?.final_changes ?? {} : selectedStep.actual_changes,
   );
 
-  const tiles = currentState?.game_map.tiles ?? [];
-  const units = (currentState?.units ?? {}) as Record<string, Record<string, JsonValue>>;
+  const tiles = currentState?.game_map?.tiles ?? [];
+  const units = currentState?.units ?? {};
+
   const tileByKey = useMemo(() => {
-    const map = new Map<string, TileState>();
+    const map = new Map();
     for (const tile of tiles) {
       map.set(coordKey(tile.coord), tile);
     }
@@ -259,7 +259,7 @@ function App() {
             >
               Initial
             </button>
-            {report?.steps.map((step, index) => (
+            {report?.steps?.map((step, index) => (
               <button
                 key={step.index}
                 className={`step-chip ${selectedStepIndex === index ? "selected" : ""}`}
@@ -391,7 +391,7 @@ function App() {
             <div className="detail-card">
               <h2>Action</h2>
               <pre>{pretty(selectedStep?.action ?? null)}</pre>
-              {selectedStep ? <pre>{pretty(selectedStep.result as Record<string, JsonValue>)}</pre> : null}
+              {selectedStep ? <pre>{pretty(selectedStep.result ?? null)}</pre> : null}
             </div>
 
             <div className="detail-card">
@@ -425,7 +425,7 @@ function App() {
                   </div>
                 </div>
               ) : null}
-              <pre>{pretty(selectedTile as unknown as Record<string, JsonValue> | null)}</pre>
+              <pre>{pretty(selectedTile ?? null)}</pre>
             </div>
 
             <div className="detail-card">
@@ -440,7 +440,7 @@ function App() {
                   </div>
                 </div>
               ) : null}
-              <pre>{pretty(selectedUnit as Record<string, JsonValue> | null)}</pre>
+              <pre>{pretty(selectedUnit ?? null)}</pre>
             </div>
           </div>
         </section>
@@ -449,4 +449,4 @@ function App() {
   );
 }
 
-export default App;
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);

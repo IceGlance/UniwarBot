@@ -222,9 +222,11 @@ The repository now includes a first local web GUI for visualizing UT scenarios, 
 
 Current GUI scope:
 
-- choose any JSON scenario case from `tests/fixtures/scenarios/`,
+- choose any JSON scenario case from a dropdown list,
 - step through actions one by one,
 - render the map as a clickable hex board,
+- render terrain tiles from locally downloaded UniCalc terrain sprites,
+- render unit markers from locally downloaded UniCalc unit sprites,
 - inspect tile and unit JSON,
 - view actual changed fields after each action.
 
@@ -253,31 +255,50 @@ The API starts on:
 http://127.0.0.1:8000
 ```
 
+Important:
+
+- `http://127.0.0.1:8000/api/...` endpoints are raw JSON data sources for the frontend.
+- They are not the GUI itself.
+- Use the frontend URL below for the actual visual scenario inspector.
+
 Useful endpoints:
 
 - `GET /api/health`
 - `GET /api/scenarios`
 - `GET /api/scenarios/{scenario_id}`
 
-### Start The React Frontend
+### Start The GUI Frontend
 
-The frontend uses Vite. You need a normal local Node.js installation with `npm` available on PATH. The Codex app's bundled `node.exe` is not enough by itself because it does not expose `npm`.
+The current GUI no longer depends on `npm` or a Vite dev server.
 
-From the repository root:
+Simplest option:
+
+- start only the FastAPI backend,
+- then open `http://127.0.0.1:8000/`
+
+Optional separate frontend server on `5173`:
 
 ```powershell
-Set-Location webgui
-npm install
-npm run dev
+.\.venv\Scripts\python.exe -m http.server 5173 -d webgui
 ```
 
-The frontend dev server starts on:
+Then open:
 
 ```text
 http://127.0.0.1:5173
 ```
 
-Open that URL in your browser. The Vite dev server proxies `/api` requests to the FastAPI backend on port `8000`.
+That static frontend talks to the FastAPI backend on `8000`.
+
+The GUI currently provides:
+
+- a scenario dropdown populated from `tests/fixtures/scenarios/`,
+- step selection per scenario action,
+- a rendered board with locally stored UniCalc terrain and unit sprites,
+- clickable tile and unit inspection panels,
+- action payload and changed-field diff panels.
+
+The Vite dev server proxies `/api` requests to the FastAPI backend on port `8000`.
 
 ### Typical Local Workflow
 
@@ -287,19 +308,25 @@ Open that URL in your browser. The Vite dev server proxies `/api` requests to th
 .\.venv\Scripts\python.exe -m uniwarbot.gui_api
 ```
 
-2. In a second terminal, start the frontend:
+2. Open the GUI directly from FastAPI:
 
-```powershell
-Set-Location webgui
-npm install
-npm run dev
+```text
+http://127.0.0.1:8000/
 ```
 
-3. Open:
+Optional split-server workflow:
+
+```powershell
+.\.venv\Scripts\python.exe -m http.server 5173 -d webgui
+```
+
+Then open:
 
 ```text
 http://127.0.0.1:5173
 ```
+
+Do not open `/api/scenarios/{scenario_id}` directly unless you specifically want the raw JSON that drives the GUI.
 
 ### Future Extension Path
 
@@ -309,3 +336,18 @@ This GUI is intentionally structured as a scenario inspector first, so it can gr
 - add legal-move overlays and action generation next,
 - add manual state editing after that,
 - then add human-vs-engine play and replay tooling on the same backend/frontend foundation.
+
+### Local GUI Assets
+
+The current board visuals use local copies of the UniCalc sprites downloaded into the repository.
+
+Local asset locations:
+
+- `webgui/public/gui-assets/terrains/`
+- `webgui/public/gui-assets/units/`
+
+To download or refresh those local sprite copies, run:
+
+```powershell
+.\.venv\Scripts\python.exe tools\download_unicalc_assets.py
+```
