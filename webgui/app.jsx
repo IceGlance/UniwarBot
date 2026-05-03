@@ -1,7 +1,10 @@
 const { useEffect, useMemo, useState } = React;
 
 const BASE_HEX_SIZE = 32;
-const API_BASE = `${window.location.origin}/api`;
+const API_BASE =
+  window.location.port === "5173"
+    ? `${window.location.protocol}//${window.location.hostname}:8000/api`
+    : `${window.location.origin}/api`;
 const TERRAIN_FALLBACKS = {
   plain: "#d7c7a1",
   base: "#d9c7ae",
@@ -70,6 +73,22 @@ function terrainAsset(terrainId) {
 function unitAsset(unitId) {
   const mapped = unitId === "mecha_ii" ? "mecha_2" : unitId;
   return `./public/gui-assets/units/${mapped}.png`;
+}
+
+function renderVeterancy(unit) {
+  const level = Number(unit?.veterancy_level ?? 0);
+  if (level <= 0) {
+    return null;
+  }
+  return (
+    <g className="veterancy-badge" transform="translate(-20,-4)">
+      {Array.from({ length: Math.min(level, 2) }).map((_, index) => (
+        <text key={index} className="veterancy-text" x="0" y={index * -8}>
+          ^
+        </text>
+      ))}
+    </g>
+  );
 }
 
 function App() {
@@ -332,7 +351,6 @@ function App() {
                 const surfaceUnit = surfaceUnitId ? units[surfaceUnitId] : null;
                 const hiddenUnit = hiddenUnitId ? units[hiddenUnitId] : null;
                 const key = coordKey(tile.coord);
-                const isSelected = selectedTileKey === key;
                 return (
                   <g
                     key={key}
@@ -343,8 +361,8 @@ function App() {
                     <polygon
                       points={hexPoints(0, 0, BASE_HEX_SIZE)}
                       fill={TERRAIN_FALLBACKS[tile.terrain_id] ?? "#d8d8d8"}
-                      stroke={isSelected ? "#fef3c7" : "#22304a"}
-                      strokeWidth={isSelected ? 4 : 2}
+                      stroke="#22304a"
+                      strokeWidth="2"
                     />
                     <image
                       href={terrainAsset(tile.terrain_id)}
@@ -365,7 +383,7 @@ function App() {
                       </g>
                     ) : null}
 
-                    <text className="coord-label" x="0" y="31">
+                    <text className="coord-label" x="0" y="22">
                       {key}
                     </text>
 
@@ -374,21 +392,24 @@ function App() {
                         className="unit-token"
                         transform="translate(0,-2)"
                         onClick={(event) => {
+                          event.preventDefault();
                           event.stopPropagation();
+                          setSelectedTileKey(key);
                           setSelectedUnitId(surfaceUnitId);
                         }}
                       >
-                        <rect className="unit-frame surface" x="-25" y="-20" width="50" height="40" rx="8" />
                         <image
+                          className="unit-sprite"
                           href={unitAsset(String(surfaceUnit.unit_id ?? ""))}
-                          x={-24}
-                          y={-19}
-                          width={48}
-                          height={38}
+                          x={-23}
+                          y={-18}
+                          width={46}
+                          height={36}
+                          draggable="false"
                           preserveAspectRatio="xMidYMid slice"
                         />
+                        {renderVeterancy(surfaceUnit)}
                         <g transform="translate(18,13)">
-                          <circle className="hp-disc" r="9" />
                           <text className="hp-text" x="0" y="1">
                             {String(surfaceUnit.hp)}
                           </text>
@@ -401,20 +422,25 @@ function App() {
                         className="unit-token"
                         transform="translate(0,34)"
                         onClick={(event) => {
+                          event.preventDefault();
                           event.stopPropagation();
+                          setSelectedTileKey(key);
                           setSelectedUnitId(hiddenUnitId);
                         }}
                       >
-                        <rect className="unit-frame hidden" x="-25" y="-20" width="50" height="40" rx="8" />
+                        <ellipse className="hidden-ring" cx="0" cy="0" rx="25" ry="19" />
                         <image
+                          className="unit-sprite hidden"
                           href={unitAsset(String(hiddenUnit.unit_id ?? ""))}
-                          x={-24}
-                          y={-19}
-                          width={48}
-                          height={38}
+                          x={-23}
+                          y={-18}
+                          width={46}
+                          height={36}
+                          draggable="false"
                           preserveAspectRatio="xMidYMid slice"
                           opacity="0.82"
                         />
+                        {renderVeterancy(hiddenUnit)}
                         <g transform="translate(-17,-12)">
                           <rect className="hidden-flag" x="-7" y="-7" width="14" height="14" rx="4" />
                           <text className="hidden-flag-text" x="0" y="1">
@@ -422,7 +448,6 @@ function App() {
                           </text>
                         </g>
                         <g transform="translate(18,13)">
-                          <circle className="hp-disc" r="9" />
                           <text className="hp-text" x="0" y="1">
                             {String(hiddenUnit.hp)}
                           </text>
@@ -432,6 +457,14 @@ function App() {
                   </g>
                 );
               })}
+              {selectedTile ? (
+                <g
+                  className="selected-hex-overlay"
+                  transform={`translate(${axialToPixel(selectedTile.coord).x}, ${axialToPixel(selectedTile.coord).y})`}
+                >
+                  <polygon points={hexPoints(0, 0, BASE_HEX_SIZE)} fill="none" strokeWidth="5" />
+                </g>
+              ) : null}
             </svg>
             </div>
           </div>

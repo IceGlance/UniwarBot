@@ -13,11 +13,155 @@
       "map_id": "gang-up",
       "name": "Gang Up Rules",
       "tags": [],
-      "width": null,
-      "height": null,
+      "width": 7,
+      "height": 5,
       "notes": null
     },
     "tiles": [
+      {
+        "coord": {
+          "q": -3,
+          "r": -2
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": -3,
+          "r": -1
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": -3,
+          "r": 0
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": -3,
+          "r": 1
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": -3,
+          "r": 2
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": -2,
+          "r": -2
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": -2,
+          "r": -1
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": -2,
+          "r": 0
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": -2,
+          "r": 1
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": -2,
+          "r": 2
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": -1,
+          "r": -2
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": -1,
+          "r": -1
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
       {
         "coord": {
           "q": -1,
@@ -27,6 +171,54 @@
         "owner_id": null,
         "occupying_unit_id": "u_curr",
         "surface_unit_id": "u_curr",
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": -1,
+          "r": 1
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": -1,
+          "r": 2
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 0,
+          "r": -2
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 0,
+          "r": -1
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
         "hidden_unit_id": null,
         "capture_state": null,
         "metadata": {}
@@ -46,6 +238,54 @@
       },
       {
         "coord": {
+          "q": 0,
+          "r": 1
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 0,
+          "r": 2
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 1,
+          "r": -2
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 1,
+          "r": -1
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
           "q": 1,
           "r": 0
         },
@@ -53,6 +293,150 @@
         "owner_id": null,
         "occupying_unit_id": "u_prev",
         "surface_unit_id": "u_prev",
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 1,
+          "r": 1
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 1,
+          "r": 2
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 2,
+          "r": -2
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 2,
+          "r": -1
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 2,
+          "r": 0
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 2,
+          "r": 1
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 2,
+          "r": 2
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 3,
+          "r": -2
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 3,
+          "r": -1
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 3,
+          "r": 0
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 3,
+          "r": 1
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
+        "hidden_unit_id": null,
+        "capture_state": null,
+        "metadata": {}
+      },
+      {
+        "coord": {
+          "q": 3,
+          "r": 2
+        },
+        "terrain_id": "plain",
+        "owner_id": null,
+        "occupying_unit_id": null,
         "hidden_unit_id": null,
         "capture_state": null,
         "metadata": {}
@@ -132,7 +516,7 @@
         "r": 0
       },
       "hp": 12,
-      "veterancy_level": 0,
+      "veterancy_level": 2,
       "experience_points": 0,
       "status": {
         "plague_infected": false,

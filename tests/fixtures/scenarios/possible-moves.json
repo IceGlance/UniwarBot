@@ -6,14 +6,184 @@
       "input_state_data": {
         "active_player_id": "p1",
         "players": [
-          {"player_id": "p1", "faction": "sapiens"},
-          {"player_id": "p2", "faction": "titans"}
+          {
+            "player_id": "p1",
+            "faction": "sapiens"
+          },
+          {
+            "player_id": "p2",
+            "faction": "titans"
+          }
         ],
         "tiles": [
-          {"coord": "0:0", "terrain_id": "plain"},
-          {"coord": "1:0", "terrain_id": "mountain"},
-          {"coord": "0:1", "terrain_id": "plain"},
-          {"coord": "0:2", "terrain_id": "plain"}
+          {
+            "coord": "-2:-2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-2:-1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-2:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-2:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-2:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-2:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-2:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-1:-2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-1:-1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-1:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-1:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-1:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-1:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-1:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:-2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:-1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:-2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:-1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:-2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:-1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:-2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:-1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:4",
+            "terrain_id": "plain"
+          }
         ],
         "units": [
           {
@@ -38,8 +208,42 @@
           "expected": {
             "unit_id": "u_tank",
             "move_points": 8,
-            "move_destinations": ["0:1", "0:2"],
-            "legal_move_destinations": ["0:1", "0:2"],
+            "move_destinations": [
+              "-2:0",
+              "-2:1",
+              "-2:2",
+              "-1:-1",
+              "-1:0",
+              "-1:1",
+              "-1:2",
+              "0:-2",
+              "0:-1",
+              "0:1",
+              "0:2",
+              "1:-2",
+              "1:-1",
+              "1:1",
+              "2:-2",
+              "2:-1"
+            ],
+            "legal_move_destinations": [
+              "-2:0",
+              "-2:1",
+              "-2:2",
+              "-1:-1",
+              "-1:0",
+              "-1:1",
+              "-1:2",
+              "0:-2",
+              "0:-1",
+              "0:1",
+              "0:2",
+              "1:-2",
+              "1:-1",
+              "1:1",
+              "2:-2",
+              "2:-1"
+            ],
             "move_requires_attack": false,
             "move_attack_targets": {},
             "can_bury": false,
@@ -55,18 +259,240 @@
       "input_state_data": {
         "active_player_id": "p1",
         "players": [
-          {"player_id": "p1", "faction": "sapiens"},
-          {"player_id": "p2", "faction": "titans"}
+          {
+            "player_id": "p1",
+            "faction": "sapiens"
+          },
+          {
+            "player_id": "p2",
+            "faction": "titans"
+          }
         ],
         "tiles": [
-          {"coord": "0:0", "terrain_id": "plain"},
-          {"coord": "1:0", "terrain_id": "plain"},
-          {"coord": "2:0", "terrain_id": "desert"},
-          {"coord": "3:0", "terrain_id": "plain"},
-          {"coord": "0:1", "terrain_id": "mountain"},
-          {"coord": "0:2", "terrain_id": "plain"},
-          {"coord": "1:1", "terrain_id": "forest"},
-          {"coord": "2:1", "terrain_id": "plain"}
+          {
+            "coord": "-2:-2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-2:-1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-2:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-2:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-2:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-2:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-2:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-1:-2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-1:-1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-1:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-1:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-1:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-1:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "-1:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:-2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:-1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:1",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:-2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:-1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:1",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "1:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:-2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:-1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "2:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:-2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:-1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "4:-2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "4:-1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "4:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "4:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "4:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "4:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "4:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:-2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:-1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:4",
+            "terrain_id": "plain"
+          }
         ],
         "units": [
           {
@@ -91,8 +517,58 @@
           "expected": {
             "unit_id": "u_marine",
             "move_points": 9,
-            "move_destinations": ["0:1", "0:2", "1:0", "1:1", "2:0"],
-            "legal_move_destinations": ["0:1", "0:2", "1:0", "1:1", "2:0"],
+            "move_destinations": [
+              "-2:-1",
+              "-2:0",
+              "-2:1",
+              "-2:2",
+              "-2:3",
+              "-1:-2",
+              "-1:-1",
+              "-1:0",
+              "-1:1",
+              "-1:2",
+              "-1:3",
+              "0:-2",
+              "0:-1",
+              "0:1",
+              "0:2",
+              "1:-2",
+              "1:-1",
+              "1:0",
+              "1:1",
+              "2:-2",
+              "2:-1",
+              "2:0",
+              "3:-2",
+              "3:-1"
+            ],
+            "legal_move_destinations": [
+              "-2:-1",
+              "-2:0",
+              "-2:1",
+              "-2:2",
+              "-2:3",
+              "-1:-2",
+              "-1:-1",
+              "-1:0",
+              "-1:1",
+              "-1:2",
+              "-1:3",
+              "0:-2",
+              "0:-1",
+              "0:1",
+              "0:2",
+              "1:-2",
+              "1:-1",
+              "1:0",
+              "1:1",
+              "2:-2",
+              "2:-1",
+              "2:0",
+              "3:-2",
+              "3:-1"
+            ],
             "move_requires_attack": false,
             "move_attack_targets": {},
             "can_bury": false,
@@ -114,36 +590,75 @@
             "unit_id": "u_mover",
             "move_points": 9,
             "move_destinations": [
+              "-2:1",
+              "-2:2",
+              "-2:3",
+              "-2:4",
+              "-2:5",
+              "-1:0",
+              "-1:1",
+              "-1:2",
+              "-1:3",
+              "-1:4",
+              "-1:5",
+              "0:-1",
               "0:0",
               "0:1",
               "0:3",
               "0:4",
+              "0:5",
+              "1:-1",
               "1:0",
               "1:1",
               "1:3",
               "1:4",
+              "2:-1",
               "2:0",
               "2:2",
+              "3:-1",
               "3:0"
             ],
             "legal_move_destinations": [
+              "-2:1",
+              "-2:2",
+              "-2:3",
+              "-2:4",
+              "-2:5",
+              "-1:0",
+              "-1:1",
+              "-1:2",
+              "-1:3",
+              "-1:4",
+              "-1:5",
+              "0:-1",
               "0:0",
               "0:1",
               "0:3",
               "0:4",
+              "0:5",
+              "1:-1",
               "1:0",
               "1:1",
               "1:3",
               "1:4",
+              "2:-1",
               "2:0",
               "2:2",
+              "3:-1",
               "3:0"
             ],
             "move_requires_attack": false,
             "move_attack_targets": {
-              "1:3": ["u_enemy_teleport"],
-              "1:4": ["u_enemy_teleport"],
-              "2:2": ["u_enemy_teleport", "u_enemy_zoc"]
+              "1:3": [
+                "u_enemy_teleport"
+              ],
+              "1:4": [
+                "u_enemy_teleport"
+              ],
+              "2:2": [
+                "u_enemy_teleport",
+                "u_enemy_zoc"
+              ]
             },
             "can_bury": false,
             "can_resurface": false,
@@ -163,12 +678,51 @@
           "expected": {
             "unit_id": "u_underling",
             "move_points": 11,
-            "move_destinations": ["0:1", "1:0"],
-            "legal_move_destinations": ["0:1", "1:0"],
+            "move_destinations": [
+              "-2:-1",
+              "-2:0",
+              "-2:1",
+              "-2:2",
+              "-2:3",
+              "-1:-2",
+              "-1:-1",
+              "-1:0",
+              "-1:1",
+              "-1:2",
+              "-1:3",
+              "0:-2",
+              "0:-1",
+              "0:1",
+              "0:2",
+              "1:-2",
+              "1:-1",
+              "1:0",
+              "2:-2",
+              "2:-1",
+              "2:0",
+              "3:-2",
+              "3:-1"
+            ],
+            "legal_move_destinations": [
+              "0:1",
+              "0:2",
+              "1:0",
+              "2:0"
+            ],
             "move_requires_attack": true,
             "move_attack_targets": {
-              "0:1": ["u_defender"],
-              "1:0": ["u_defender"]
+              "0:1": [
+                "u_defender"
+              ],
+              "0:2": [
+                "u_defender"
+              ],
+              "1:0": [
+                "u_defender"
+              ],
+              "2:0": [
+                "u_defender"
+              ]
             },
             "can_bury": true,
             "can_resurface": false,
@@ -189,13 +743,34 @@
             "unit_id": "u_underling",
             "move_points": 11,
             "move_destinations": [
+              "-2:-1",
+              "-2:0",
+              "-2:1",
+              "-2:2",
+              "-2:3",
+              "-1:-2",
+              "-1:-1",
+              "-1:0",
+              "-1:1",
+              "-1:2",
+              "-1:3",
+              "0:-2",
+              "0:-1",
               "0:1",
               "0:2",
+              "0:3",
+              "1:-2",
+              "1:-1",
               "1:0",
               "1:1",
               "1:2",
+              "2:-2",
+              "2:-1",
               "2:0",
-              "2:1"
+              "2:1",
+              "3:-2",
+              "3:-1",
+              "3:0"
             ],
             "legal_move_destinations": [],
             "move_requires_attack": true,
@@ -219,17 +794,43 @@
             "unit_id": "u_underling",
             "move_points": 7,
             "move_destinations": [
+              "-2:0",
+              "-2:1",
+              "-2:2",
+              "-1:-1",
+              "-1:0",
+              "-1:1",
+              "-1:2",
+              "0:-2",
+              "0:-1",
               "0:1",
               "0:2",
+              "1:-2",
+              "1:-1",
               "1:0",
               "1:1",
+              "2:-2",
+              "2:-1",
               "2:0"
             ],
             "legal_move_destinations": [
+              "-2:0",
+              "-2:1",
+              "-2:2",
+              "-1:-1",
+              "-1:0",
+              "-1:1",
+              "-1:2",
+              "0:-2",
+              "0:-1",
               "0:1",
               "0:2",
+              "1:-2",
+              "1:-1",
               "1:0",
               "1:1",
+              "2:-2",
+              "2:-1",
               "2:0"
             ],
             "move_requires_attack": false,
@@ -252,14 +853,42 @@
           "expected": {
             "unit_id": "u_underling",
             "move_points": 7,
-            "move_destinations": ["0:1"],
-            "legal_move_destinations": ["0:1"],
+            "move_destinations": [
+              "-2:0",
+              "-2:1",
+              "-2:2",
+              "-1:-1",
+              "-1:0",
+              "-1:1",
+              "-1:2",
+              "0:-2",
+              "0:-1",
+              "0:1",
+              "1:-2",
+              "1:-1"
+            ],
+            "legal_move_destinations": [
+              "-2:0",
+              "-2:1",
+              "-2:2",
+              "-1:-1",
+              "-1:0",
+              "-1:1",
+              "-1:2",
+              "0:-2",
+              "0:-1",
+              "0:1",
+              "1:-2",
+              "1:-1"
+            ],
             "move_requires_attack": false,
             "move_attack_targets": {},
             "can_bury": false,
             "can_resurface": true,
             "can_resurface_attack": true,
-            "resurface_attack_targets": ["u_defender"]
+            "resurface_attack_targets": [
+              "u_defender"
+            ]
           }
         }
       ]
