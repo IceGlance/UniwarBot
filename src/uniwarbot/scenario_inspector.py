@@ -12,6 +12,7 @@ from .state import (
     PlayerState,
     TileState,
     UnitActionState,
+    UnitStatusState,
     UnitState,
     game_state_to_json,
     json_to_game_state,
@@ -80,6 +81,7 @@ def state_from_compact_data(data: dict[str, Any]) -> GameState:
         )
     for unit in list(data.get("units", [])):
         action_data = dict(unit.get("action", {}))
+        status_data = dict(unit.get("status", {}))
         state.add_unit(
             UnitState(
                 instance_id=str(unit["instance_id"]),
@@ -87,6 +89,9 @@ def state_from_compact_data(data: dict[str, Any]) -> GameState:
                 owner_id=str(unit["owner_id"]),
                 position=parse_coord(unit["coord"]),
                 hp=int(unit.get("hp", 10)),
+                veterancy_level=int(unit.get("veterancy_level", 0)),
+                experience_points=int(unit.get("experience_points", 0)),
+                status=UnitStatusState.from_dict(status_data),
                 action=UnitActionState.from_dict(action_data),
                 metadata=dict(unit.get("metadata", {})),
             )
@@ -223,7 +228,13 @@ def _apply_action(state: GameState, action: dict[str, Any]) -> dict[str, Any]:
             unit = UnitState.from_dict(load_json(str(action["unit_fixture"])))
             state.add_unit(unit)
         elif action_type == "move_unit":
-            state.move_unit(str(action["unit_id"]), parse_coord(action["destination"]))
+            state.move_unit(
+                str(action["unit_id"]),
+                parse_coord(action["destination"]),
+                continue_as_atomic_attack=bool(
+                    action.get("continue_as_atomic_attack", False)
+                ),
+            )
         elif action_type == "resurface_unit":
             state.resurface_unit(
                 str(action["unit_id"]),

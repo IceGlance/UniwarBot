@@ -987,7 +987,13 @@ class GameState:
                 f"Unit {other_unit.instance_id} must finish its atomic action before another unit acts"
             )
 
-    def move_unit(self, instance_id: str, destination: HexCoord) -> None:
+    def move_unit(
+        self,
+        instance_id: str,
+        destination: HexCoord,
+        *,
+        continue_as_atomic_attack: bool = False,
+    ) -> None:
         unit = self._require_active_player_unit(instance_id)
         self._enforce_atomic_action_lock(unit, action_kind="move")
         if unit.status.movement_blocked:
@@ -1010,9 +1016,11 @@ class GameState:
         unit.position = destination
         self._place_unit_on_tile(destination_tile, unit, strict=True)
         unit.action.has_moved_this_turn = True
-        if self._requires_surface_move_attack_lock(unit):
+        if continue_as_atomic_attack and self._can_surface_move_continue_as_atomic_attack(unit):
             unit.action.atomic_action_locked = True
             unit.action.atomic_action_label = "surface_move_attack"
+        elif self._is_underling_family(unit) and unit.status.hidden_mode is None:
+            unit.action.attacks_remaining = 0
         current_window = unit.action.current_action_window
         if current_window is not None:
             current_window.in_progress = True
@@ -1099,6 +1107,8 @@ class GameState:
     ) -> None:
         attacker = self._require_active_player_unit(attacker_id)
         self._enforce_atomic_action_lock(attacker, action_kind="attack")
+        if attacker.action.attacks_remaining <= 0:
+            raise ValueError("Unit has no attacks remaining")
         defender = self.get_unit(defender_id)
         if defender is None:
             raise KeyError(f"Unknown defender_id: {defender_id}")
@@ -1464,7 +1474,7 @@ class GameState:
             return False
         if self._terrain_movement_cost(unit, tile.terrain_id) is None:
             return False
-        return not self._tile_has_enemy_unit(unit, tile)
+        return not self._tile_has_enemy_unit_blocking_movement(unit, tile)
 
     def _terrain_movement_cost(self, unit: UnitState, terrain_id: str) -> int | None:
         effect = self._unit_terrain_effect(unit, terrain_id)
@@ -1497,16 +1507,20 @@ class GameState:
         occupied_slot = self._tile_slot_for_unit(tile, unit)
         return occupied_slot in (None, unit.instance_id)
 
-    def _tile_has_enemy_unit(self, unit: UnitState, tile: TileState) -> bool:
-        for other_unit_id in (tile.surface_unit_id, tile.hidden_unit_id):
-            if other_unit_id is None or other_unit_id == unit.instance_id:
-                continue
-            other = self.units.get(other_unit_id)
-            if other is not None and other.owner_id != unit.owner_id:
-                return True
-        return False
+    def _tile_has_enemy_unit_blocking_movement(
+        self,
+        unit: UnitState,
+        tile: TileState,
+    ) -> bool:
+        blocking_unit_id = self._tile_slot_for_unit(tile, unit)
+        if blocking_unit_id is None or blocking_unit_id == unit.instance_id:
+            return False
+        other = self.units.get(blocking_unit_id)
+        return other is not None and other.owner_id != unit.owner_id
 
     def _tile_is_in_enemy_zoc(self, unit: UnitState, coord: HexCoord) -> bool:
+        if self._uses_hidden_slot(unit):
+            return False
         for adjacent in self._adjacent_hexes(coord):
             tile = self.game_map.get_tile(adjacent)
             if tile is None:
@@ -1705,6 +1719,9 @@ class GameState:
         return unit.unit_id in {"underling", "cyber_underling"}
 
     def _requires_surface_move_attack_lock(self, unit: UnitState) -> bool:
+        return False
+
+    def _can_surface_move_continue_as_atomic_attack(self, unit: UnitState) -> bool:
         return self._is_underling_family(unit) and unit.status.hidden_mode is None
 
     def _can_bury(self, unit: UnitState) -> bool:

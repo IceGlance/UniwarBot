@@ -26,6 +26,7 @@ from uniwarbot import (  # noqa: E402
     TileState,
     UnitState,
     UnitActionState,
+    UnitStatusState,
     game_state_to_json,
     json_to_game_state,
 )
@@ -119,6 +120,7 @@ class GameStateScenarioTestCase(unittest.TestCase):
             )
         for unit in list(data.get("units", [])):
             action_data = dict(unit.get("action", {}))
+            status_data = dict(unit.get("status", {}))
             state.add_unit(
                 UnitState(
                     instance_id=str(unit["instance_id"]),
@@ -126,6 +128,9 @@ class GameStateScenarioTestCase(unittest.TestCase):
                     owner_id=str(unit["owner_id"]),
                     position=self.parse_coord(unit["coord"]),
                     hp=int(unit.get("hp", 10)),
+                    veterancy_level=int(unit.get("veterancy_level", 0)),
+                    experience_points=int(unit.get("experience_points", 0)),
+                    status=UnitStatusState.from_dict(status_data),
                     action=UnitActionState.from_dict(action_data),
                     metadata=dict(unit.get("metadata", {})),
                 )
@@ -147,11 +152,16 @@ class GameStateScenarioTestCase(unittest.TestCase):
             if action_type == "move_unit":
                 destination = self.parse_coord(action["destination"])
                 expected_error = action.get("expect_error")
+                kwargs = {
+                    "continue_as_atomic_attack": bool(
+                        action.get("continue_as_atomic_attack", False)
+                    )
+                }
                 if expected_error is not None:
                     with self.assertRaisesRegex(ValueError, str(expected_error)):
-                        state.move_unit(str(action["unit_id"]), destination)
+                        state.move_unit(str(action["unit_id"]), destination, **kwargs)
                     continue
-                state.move_unit(str(action["unit_id"]), destination)
+                state.move_unit(str(action["unit_id"]), destination, **kwargs)
                 continue
             if action_type == "resurface_unit":
                 expected_error = action.get("expect_error")

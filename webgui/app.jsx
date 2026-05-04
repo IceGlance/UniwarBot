@@ -109,6 +109,57 @@ function renderVeterancy(unit) {
   );
 }
 
+function statusMarkerText(unit) {
+  if (Number(unit?.status?.emp_disabled_rounds ?? 0) > 0) {
+    return "E";
+  }
+  return null;
+}
+
+function renderStatusMarker(unit, transform) {
+  const marker = statusMarkerText(unit);
+  if (!marker) {
+    return null;
+  }
+  return (
+    <g className="status-marker" transform={transform}>
+      <rect className="status-badge status-badge-teleport" x="-8" y="-6" width="16" height="12" rx="4" />
+      <text className="status-badge-text" x="0" y="1">
+        {marker}
+      </text>
+    </g>
+  );
+}
+
+function isTeleportDisabled(unit) {
+  return String(unit?.status?.teleport_lock_phase ?? "") !== "";
+}
+
+function renderTeleportDisabledLabel(unit, transform) {
+  if (!isTeleportDisabled(unit)) {
+    return null;
+  }
+  return (
+    <g transform={transform} pointerEvents="none">
+      <text
+        x="0"
+        y="0"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize="9"
+        fontWeight="900"
+        fill="#f97316"
+        stroke="rgba(255, 247, 237, 0.98)"
+        strokeWidth="1.5"
+        paintOrder="stroke"
+        strokeLinejoin="round"
+      >
+        TD
+      </text>
+    </g>
+  );
+}
+
 function App() {
   const [scenarios, setScenarios] = useState([]);
   const [selectedGroupName, setSelectedGroupName] = useState("");
@@ -615,7 +666,7 @@ function App() {
                           setSelectedTileKey(key);
                           setSelectedUnitId(surfaceUnitId);
                         }}
-                      >
+                        >
                         <image
                           className="unit-sprite"
                           href={unitAsset(String(surfaceUnit.unit_id ?? ""), String(surfaceUnit.owner_id ?? ""))}
@@ -626,6 +677,8 @@ function App() {
                           draggable="false"
                           preserveAspectRatio="xMidYMid slice"
                         />
+                        {renderTeleportDisabledLabel(surfaceUnit, "translate(0,-16)")}
+                        {renderStatusMarker(surfaceUnit, "translate(-18,-14)")}
                         {renderVeterancy(surfaceUnit)}
                         <g transform="translate(18,13)">
                           <text className="hp-text" x="0" y="1">
@@ -664,6 +717,8 @@ function App() {
                       draggable="false"
                       preserveAspectRatio="xMidYMid slice"
                     />
+                    {renderTeleportDisabledLabel(unit, "translate(0,-12)")}
+                    {renderStatusMarker(unit, "translate(-15,-11)")}
                     {renderVeterancy(unit)}
                     <g transform="translate(-13,-9)">
                       <rect className="hidden-flag" x="-6" y="-6" width="12" height="12" rx="4" />
@@ -784,6 +839,15 @@ function App() {
                       Layer: {selectedUnitLayer ?? "unknown"}
                       {selectedUnit?.status?.hidden_mode ? ` (${String(selectedUnit.status.hidden_mode)})` : ""}
                     </span>
+                    {selectedUnit?.status?.teleport_lock_phase ? (
+                      <span>
+                        Teleport lock: {String(selectedUnit.status.teleport_lock_phase)} / cooldown{" "}
+                        {String(selectedUnit.status.teleport_cooldown_rounds ?? 0)}
+                      </span>
+                    ) : null}
+                    {Number(selectedUnit?.status?.emp_disabled_rounds ?? 0) > 0 ? (
+                      <span>EMP disabled: {String(selectedUnit.status.emp_disabled_rounds)} rounds</span>
+                    ) : null}
                   </div>
                 </div>
               ) : null}

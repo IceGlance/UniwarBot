@@ -97,8 +97,8 @@
         },
         "terrain_id": "plain",
         "owner_id": null,
-        "occupying_unit_id": null,
-        "hidden_unit_id": null,
+        "occupying_unit_id": "u_enemy_far_2",
+        "hidden_unit_id": "u_enemy_hidden_far",
         "capture_state": null,
         "metadata": {}
       },
@@ -520,7 +520,7 @@
         },
         "terrain_id": "plain",
         "owner_id": null,
-        "occupying_unit_id": null,
+        "occupying_unit_id": "u_enemy_far",
         "hidden_unit_id": null,
         "capture_state": null,
         "metadata": {}
@@ -580,7 +580,7 @@
         },
         "terrain_id": "plain",
         "owner_id": null,
-        "occupying_unit_id": null,
+        "occupying_unit_id": "u_friend_far_surface",
         "hidden_unit_id": null,
         "capture_state": null,
         "metadata": {}
@@ -593,7 +593,7 @@
         "terrain_id": "plain",
         "owner_id": null,
         "occupying_unit_id": null,
-        "hidden_unit_id": null,
+        "hidden_unit_id": "u_friend_hidden",
         "capture_state": null,
         "metadata": {}
       }
@@ -636,6 +636,206 @@
         "hidden_mode": null,
         "emp_disabled_rounds": 0,
         "teleport_disabled_rounds": 0,
+        "buried_resurface_bonus": 0,
+        "submerged_attack_penalty": 0,
+        "ability_cooldowns": {}
+      },
+      "action": {
+        "is_available": true,
+        "configured_action_count": 1,
+        "actions_remaining": 1,
+        "can_interleave_between_action_windows": true,
+        "move_points_remaining": null,
+        "attacks_remaining": 1,
+        "special_actions_remaining": null,
+        "action_phase_index": 0,
+        "current_action_index": 0,
+        "action_windows": [],
+        "has_moved_this_turn": false,
+        "has_attacked_this_turn": false,
+        "has_used_special_this_turn": false
+      },
+      "capture_target": null,
+      "metadata": {}
+    },
+    "u_friend_hidden": {
+      "instance_id": "u_friend_hidden",
+      "unit_id": "underling",
+      "owner_id": "p1",
+      "position": {
+        "q": 4,
+        "r": 4
+      },
+      "hp": 10,
+      "veterancy_level": 0,
+      "experience_points": 0,
+      "status": {
+        "plague_infected": false,
+        "hidden_mode": "buried",
+        "emp_disabled_rounds": 0,
+        "teleport_disabled_rounds": 0,
+        "teleport_lock_phase": null,
+        "teleport_cooldown_rounds": 0,
+        "buried_resurface_bonus": 0,
+        "submerged_attack_penalty": 0,
+        "ability_cooldowns": {}
+      },
+      "action": {
+        "is_available": true,
+        "configured_action_count": 1,
+        "actions_remaining": 1,
+        "can_interleave_between_action_windows": true,
+        "move_points_remaining": null,
+        "attacks_remaining": 1,
+        "special_actions_remaining": null,
+        "action_phase_index": 0,
+        "current_action_index": 0,
+        "action_windows": [],
+        "has_moved_this_turn": false,
+        "has_attacked_this_turn": false,
+        "has_used_special_this_turn": false
+      },
+      "capture_target": null,
+      "metadata": {}
+    },
+    "u_enemy_far": {
+      "instance_id": "u_enemy_far",
+      "unit_id": "marine",
+      "owner_id": "p2",
+      "position": {
+        "q": 4,
+        "r": -2
+      },
+      "hp": 10,
+      "veterancy_level": 0,
+      "experience_points": 0,
+      "status": {
+        "plague_infected": false,
+        "hidden_mode": null,
+        "emp_disabled_rounds": 0,
+        "teleport_disabled_rounds": 0,
+        "teleport_lock_phase": null,
+        "teleport_cooldown_rounds": 0,
+        "buried_resurface_bonus": 0,
+        "submerged_attack_penalty": 0,
+        "ability_cooldowns": {}
+      },
+      "action": {
+        "is_available": true,
+        "configured_action_count": 1,
+        "actions_remaining": 1,
+        "can_interleave_between_action_windows": true,
+        "move_points_remaining": null,
+        "attacks_remaining": 1,
+        "special_actions_remaining": null,
+        "action_phase_index": 0,
+        "current_action_index": 0,
+        "action_windows": [],
+        "has_moved_this_turn": false,
+        "has_attacked_this_turn": false,
+        "has_used_special_this_turn": false
+      },
+      "capture_target": null,
+      "metadata": {}
+    },
+    "u_enemy_far_2": {
+      "instance_id": "u_enemy_far_2",
+      "unit_id": "helicopter",
+      "owner_id": "p2",
+      "position": {
+        "q": -2,
+        "r": 4
+      },
+      "hp": 10,
+      "veterancy_level": 0,
+      "experience_points": 0,
+      "status": {
+        "plague_infected": false,
+        "hidden_mode": null,
+        "emp_disabled_rounds": 0,
+        "teleport_disabled_rounds": 0,
+        "teleport_lock_phase": null,
+        "teleport_cooldown_rounds": 0,
+        "buried_resurface_bonus": 0,
+        "submerged_attack_penalty": 0,
+        "ability_cooldowns": {}
+      },
+      "action": {
+        "is_available": true,
+        "configured_action_count": 1,
+        "actions_remaining": 1,
+        "can_interleave_between_action_windows": true,
+        "move_points_remaining": null,
+        "attacks_remaining": 1,
+        "special_actions_remaining": null,
+        "action_phase_index": 0,
+        "current_action_index": 0,
+        "action_windows": [],
+        "has_moved_this_turn": false,
+        "has_attacked_this_turn": false,
+        "has_used_special_this_turn": false
+      },
+      "capture_target": null,
+      "metadata": {}
+    },
+    "u_friend_far_surface": {
+      "instance_id": "u_friend_far_surface",
+      "unit_id": "garuda",
+      "owner_id": "p1",
+      "position": {
+        "q": 4,
+        "r": 3
+      },
+      "hp": 10,
+      "veterancy_level": 0,
+      "experience_points": 0,
+      "status": {
+        "plague_infected": false,
+        "hidden_mode": null,
+        "emp_disabled_rounds": 0,
+        "teleport_disabled_rounds": 0,
+        "teleport_lock_phase": null,
+        "teleport_cooldown_rounds": 0,
+        "buried_resurface_bonus": 0,
+        "submerged_attack_penalty": 0,
+        "ability_cooldowns": {}
+      },
+      "action": {
+        "is_available": true,
+        "configured_action_count": 1,
+        "actions_remaining": 1,
+        "can_interleave_between_action_windows": true,
+        "move_points_remaining": null,
+        "attacks_remaining": 1,
+        "special_actions_remaining": null,
+        "action_phase_index": 0,
+        "current_action_index": 0,
+        "action_windows": [],
+        "has_moved_this_turn": false,
+        "has_attacked_this_turn": false,
+        "has_used_special_this_turn": false
+      },
+      "capture_target": null,
+      "metadata": {}
+    },
+    "u_enemy_hidden_far": {
+      "instance_id": "u_enemy_hidden_far",
+      "unit_id": "underling",
+      "owner_id": "p2",
+      "position": {
+        "q": -2,
+        "r": 4
+      },
+      "hp": 10,
+      "veterancy_level": 0,
+      "experience_points": 0,
+      "status": {
+        "plague_infected": false,
+        "hidden_mode": "buried",
+        "emp_disabled_rounds": 0,
+        "teleport_disabled_rounds": 0,
+        "teleport_lock_phase": null,
+        "teleport_cooldown_rounds": 0,
         "buried_resurface_bonus": 0,
         "submerged_attack_penalty": 0,
         "ability_cooldowns": {}

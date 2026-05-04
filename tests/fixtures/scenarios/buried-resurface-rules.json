@@ -26,7 +26,8 @@
         {
           "type": "move_unit",
           "unit_id": "u_underling",
-          "destination": "0:1"
+          "destination": "0:1",
+          "continue_as_atomic_attack": true
         },
         {
           "type": "attack_unit",
@@ -48,13 +49,14 @@
       }
     },
     {
-      "name": "surface underling move then another unit action is illegal before attack",
+      "name": "surface underling move+attack cannot be split by another unit action",
       "input_state": "states/surface-move-attack-ready.json",
       "actions": [
         {
           "type": "move_unit",
           "unit_id": "u_underling",
-          "destination": "0:1"
+          "destination": "0:1",
+          "continue_as_atomic_attack": true
         },
         {
           "type": "move_unit",
@@ -76,7 +78,7 @@
       }
     },
     {
-      "name": "surface underling move only cannot end turn",
+      "name": "surface underling move only can end turn",
       "input_state": "states/surface-move-attack-ready.json",
       "actions": [
         {
@@ -85,20 +87,20 @@
           "destination": "0:1"
         },
         {
-          "type": "end_turn",
-          "expect_error": "must finish its move\\+attack action"
+          "type": "end_turn"
         }
       ],
       "expected_changes": {
         "current_rseed": 12345,
-        "active_player_id": "p1",
-        "turn_number": 1,
-        "round_number": 1,
+        "active_player_id": "p2",
+        "turn_number": 2,
+        "round_number": 2,
         "tile.0:0.surface_unit_id": null,
         "tile.0:1.surface_unit_id": "u_underling",
-        "units.u_underling.action.atomic_action_locked": true,
-        "units.u_underling.action.atomic_action_label": "surface_move_attack",
-        "units.u_underling.action.actions_remaining": 0
+        "units.u_underling.action.atomic_action_locked": false,
+        "units.u_underling.action.atomic_action_label": null,
+        "units.u_underling.action.actions_remaining": 0,
+        "units.u_underling.action.attacks_remaining": 0
       }
     },
     {

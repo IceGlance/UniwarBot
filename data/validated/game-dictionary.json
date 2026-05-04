@@ -2208,6 +2208,7 @@
         "attack_from_hidden_penalty": null,
         "resurface_bonus": 4,
         "forbidden_terrains": [
+          "city",
           "medical",
           "base",
           "harbor",
@@ -4344,6 +4345,7 @@
         "attack_from_hidden_penalty": null,
         "resurface_bonus": 4,
         "forbidden_terrains": [
+          "city",
           "medical",
           "base",
           "harbor",
