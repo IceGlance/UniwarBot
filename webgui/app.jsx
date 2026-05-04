@@ -372,7 +372,21 @@ function App() {
     const surfaceUnitId = tile.surface_unit_id ?? null;
     const hiddenUnitId = tile.hidden_unit_id ?? null;
     setSelectedTileKey(key);
+    if (selectedUnitId && legalMoveKeys.has(key)) {
+      return;
+    }
     if (surfaceUnitId && hiddenUnitId) {
+      if (selectedUnitId === surfaceUnitId || selectedUnitId === hiddenUnitId) {
+        if (selectedTileKey === key && selectedUnitId === surfaceUnitId) {
+          setSelectedUnitId(hiddenUnitId);
+          return;
+        }
+        if (selectedTileKey === key && selectedUnitId === hiddenUnitId) {
+          setSelectedUnitId(surfaceUnitId);
+          return;
+        }
+        return;
+      }
       if (selectedTileKey === key && selectedUnitId === surfaceUnitId) {
         setSelectedUnitId(hiddenUnitId);
         return;

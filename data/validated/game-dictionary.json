@@ -1082,7 +1082,7 @@
       "hidden_mode": null,
       "attack_range": {
         "surface": {
-          "min": 3,
+          "min": 0,
           "max": 3
         },
         "hidden": null
@@ -1710,7 +1710,7 @@
       "hidden_mode": null,
       "attack_range": {
         "surface": {
-          "min": 3,
+          "min": 0,
           "max": 3
         },
         "hidden": null

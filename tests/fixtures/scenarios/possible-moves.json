@@ -1715,16 +1715,23 @@
               "2:6": [
                 "u_enemy_hidden"
               ],
+              "3:1": [
+                "u_enemy_far_2"
+              ],
               "3:2": [
+                "u_enemy_far_2",
                 "u_enemy_hidden"
               ],
               "3:3": [
-                "u_enemy_far_2"
+                "u_enemy_far_2",
+                "u_enemy_hidden"
               ],
               "3:4": [
+                "u_enemy_hidden",
                 "u_enemy_surface"
               ],
               "3:5": [
+                "u_enemy_hidden",
                 "u_enemy_surface"
               ],
               "3:6": [
@@ -1735,26 +1742,52 @@
                 "u_enemy_surface"
               ],
               "4:1": [
+                "u_enemy_far_2",
                 "u_enemy_hidden"
               ],
-              "4:6": [
+              "4:2": [
+                "u_enemy_far_2",
                 "u_enemy_hidden"
+              ],
+              "4:5": [
+                "u_enemy_hidden",
+                "u_enemy_surface"
+              ],
+              "4:6": [
+                "u_enemy_hidden",
+                "u_enemy_surface"
               ],
               "4:7": [
                 "u_enemy_surface"
               ],
               "5:0": [
+                "u_enemy_far_2",
+                "u_enemy_hidden"
+              ],
+              "5:1": [
+                "u_enemy_far_2",
                 "u_enemy_hidden"
               ],
               "5:2": [
                 "u_enemy_far_2",
+                "u_enemy_hidden",
                 "u_enemy_surface"
               ],
               "5:3": [
-                "u_enemy_hidden"
+                "u_enemy_hidden",
+                "u_enemy_surface"
+              ],
+              "5:4": [
+                "u_enemy_hidden",
+                "u_enemy_surface"
+              ],
+              "5:5": [
+                "u_enemy_hidden",
+                "u_enemy_surface"
               ],
               "5:6": [
-                "u_enemy_hidden"
+                "u_enemy_hidden",
+                "u_enemy_surface"
               ],
               "5:7": [
                 "u_enemy_far",
@@ -1762,10 +1795,20 @@
                 "u_enemy_surface"
               ],
               "6:0": [
+                "u_enemy_far_2",
                 "u_enemy_hidden"
               ],
               "6:1": [
                 "u_enemy_far_2",
+                "u_enemy_hidden",
+                "u_enemy_surface"
+              ],
+              "6:2": [
+                "u_enemy_hidden",
+                "u_enemy_surface"
+              ],
+              "6:3": [
+                "u_enemy_hidden",
                 "u_enemy_surface"
               ],
               "7:0": [
@@ -1773,6 +1816,15 @@
                 "u_enemy_hidden"
               ],
               "7:1": [
+                "u_enemy_hidden",
+                "u_enemy_surface"
+              ],
+              "7:2": [
+                "u_enemy_hidden",
+                "u_enemy_surface"
+              ],
+              "7:3": [
+                "u_enemy_hidden",
                 "u_enemy_surface"
               ],
               "8:0": [
@@ -1783,7 +1835,8 @@
                 "u_enemy_surface"
               ],
               "8:2": [
-                "u_enemy_hidden"
+                "u_enemy_hidden",
+                "u_enemy_surface"
               ]
             },
             "can_bury": false,

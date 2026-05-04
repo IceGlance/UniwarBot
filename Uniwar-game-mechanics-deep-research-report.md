@@ -228,7 +228,7 @@ Range needs one interpretation note for hidden sea targets. The usual printed ra
 | Tank | GH | 400 | 8 | 1 | 3 | 2 | 13 | 10/10/0/9/10/1 | Heavy anchor |
 | Helicopter | Air | 500 | 12 | 1 | 5 | 1 | 10 | 12/7/10/8/12/3 | Generalist air control |
 | Battery | GH | 600 | 5 | 2-4 | 4 | 1 | 4 | 10/6/5/10/10/2 | Long-range artillery |
-| Destroyer | Aq | 800 | 12 | 3 | 5 | 2 | 12 | 10/10/12/16/10/7 | Capital ship, strongest anti-sea |
+| Destroyer | Aq | 800 | 12 | 0-3 | 5 | 2 | 12 | 10/10/12/16/10/7 | Capital ship, strongest anti-sea |
 | Fuze | Amphi | 200 | 9 | 0-2 | 4 | 1 | 2 | 5/4/1/4/6/3 | Amphibious harasser |
 | Submarine | Aq | 400 | 9 | 3 | 3 | 1 | 5 | 5/5/3/8/4/8 | Submersible skirmisher |
 
