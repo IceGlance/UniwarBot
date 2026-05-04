@@ -74,8 +74,14 @@ function terrainAsset(terrainId) {
   return `./public/gui-assets/terrains/${terrainId}.png`;
 }
 
-function unitAsset(unitId) {
+function unitAsset(unitId, ownerId) {
   const mapped = unitId === "mecha_ii" ? "mecha_2" : unitId;
+  if (ownerId === "p1") {
+    return `./public/gui-assets/units-red/${mapped}.png`;
+  }
+  if (ownerId === "p2") {
+    return `./public/gui-assets/units-blue/${mapped}.png`;
+  }
   return `./public/gui-assets/units/${mapped}.png`;
 }
 
@@ -111,6 +117,8 @@ function App() {
   const [selectedStepIndex, setSelectedStepIndex] = useState(-1);
   const [selectedTileKey, setSelectedTileKey] = useState(null);
   const [selectedUnitId, setSelectedUnitId] = useState(null);
+  const [possibleMoves, setPossibleMoves] = useState(null);
+  const [possibleMovesError, setPossibleMovesError] = useState("");
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
   const [zoom, setZoom] = useState(0.9);
@@ -266,6 +274,47 @@ function App() {
       : selectedUnitTile.hidden_unit_id === selectedUnitId
         ? "hidden"
         : "surface";
+
+  useEffect(() => {
+    if (!report || !selectedUnit) {
+      setPossibleMoves(null);
+      setPossibleMovesError("");
+      return;
+    }
+    if (String(selectedUnit.owner_id ?? "") !== String(currentState?.active_player_id ?? "")) {
+      setPossibleMoves(null);
+      setPossibleMovesError("");
+      return;
+    }
+    const params = new URLSearchParams({
+      unit_id: String(selectedUnitId),
+      step_index: String(selectedStepIndex),
+    });
+    fetch(`${API_BASE}/scenarios/${report.scenario_id}/possible-moves?${params.toString()}`)
+      .then(async (response) => {
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          const detail = payload?.detail ? `: ${String(payload.detail)}` : "";
+          throw new Error(`Failed to load possible moves${detail}`);
+        }
+        return response.json();
+      })
+      .then((payload) => {
+        setPossibleMoves(payload);
+        setPossibleMovesError("");
+      })
+      .catch((reason) => {
+        setPossibleMoves(null);
+        setPossibleMovesError(reason instanceof Error ? reason.message : String(reason));
+      });
+  }, [report, selectedUnit, selectedUnitId, selectedStepIndex, currentState?.active_player_id]);
+
+  const legalMoveKeys = useMemo(
+    () => new Set(possibleMoves?.legal_move_destinations ?? []),
+    [possibleMoves],
+  );
+  const moveAttackTargets = possibleMoves?.move_attack_targets ?? {};
+  const selectedUnitPositionKey = selectedUnitTile ? coordKey(selectedUnitTile.coord) : null;
 
   const selectTileAndOccupant = (tile) => {
     const key = coordKey(tile.coord);
@@ -507,6 +556,46 @@ function App() {
                       preserveAspectRatio="xMidYMid meet"
                     />
 
+                    {legalMoveKeys.has(key) ? (
+                      <g className="move-overlay">
+                        <polygon points={hexPoints(0, 0, BASE_HEX_SIZE - 2)} className="move-overlay-fill" />
+                        <circle className="move-overlay-disc" cx="0" cy="0" r="8" />
+                        {Array.isArray(moveAttackTargets[key]) && moveAttackTargets[key].length > 0 ? (
+                          <text className="move-overlay-count" x="0" y="1">
+                            {String(moveAttackTargets[key].length)}
+                          </text>
+                        ) : null}
+                      </g>
+                    ) : null}
+
+                    {selectedUnitPositionKey === key && possibleMoves ? (
+                      <g className="action-badges" transform="translate(0,18)">
+                        {possibleMoves.can_bury ? (
+                          <g transform="translate(-12,0)">
+                            <rect className="action-badge action-bury" x="-9" y="-7" width="18" height="14" rx="6" />
+                            <text className="action-badge-text" x="0" y="1">
+                              B
+                            </text>
+                          </g>
+                        ) : null}
+                        {possibleMoves.can_resurface ? (
+                          <g transform={`translate(${possibleMoves.can_bury ? 12 : 0},0)`}>
+                            <rect
+                              className="action-badge action-resurface"
+                              x="-9"
+                              y="-7"
+                              width="18"
+                              height="14"
+                              rx="6"
+                            />
+                            <text className="action-badge-text" x="0" y="1">
+                              R
+                            </text>
+                          </g>
+                        ) : null}
+                      </g>
+                    ) : null}
+
                     {tile.owner_id ? (
                       <g transform="translate(26,-28)">
                         <circle r="10" className={`owner-disc owner-${tile.owner_id}`} />
@@ -529,7 +618,7 @@ function App() {
                       >
                         <image
                           className="unit-sprite"
-                          href={unitAsset(String(surfaceUnit.unit_id ?? ""))}
+                          href={unitAsset(String(surfaceUnit.unit_id ?? ""), String(surfaceUnit.owner_id ?? ""))}
                           x={-23}
                           y={-18}
                           width={46}
@@ -567,7 +656,7 @@ function App() {
                     <ellipse className="hidden-ring" cx="0" cy="0" rx="19" ry="14" />
                     <image
                       className="unit-sprite hidden"
-                      href={unitAsset(String(unit.unit_id ?? ""))}
+                      href={unitAsset(String(unit.unit_id ?? ""), String(unit.owner_id ?? ""))}
                       x={-17}
                       y={-13}
                       width={34}
@@ -682,7 +771,11 @@ function App() {
               <h2>Unit Inspector</h2>
               {selectedUnit ? (
                 <div className="visual-inspector">
-                  <img className="unit-inspector-icon" src={unitAsset(selectedUnitGameId)} alt={selectedUnitGameId} />
+                  <img
+                    className="unit-inspector-icon"
+                    src={unitAsset(selectedUnitGameId, String(selectedUnit.owner_id ?? ""))}
+                    alt={selectedUnitGameId}
+                  />
                   <div className="visual-copy">
                     <strong>{selectedUnitGameId}</strong>
                     <span>Owner: {String(selectedUnit.owner_id ?? "-")}</span>
@@ -695,6 +788,17 @@ function App() {
                 </div>
               ) : null}
               <pre>{pretty(selectedUnit ?? null)}</pre>
+            </div>
+
+            <div className="detail-card">
+              <h2>Possible Moves</h2>
+              {selectedUnit == null ? (
+                <span className="muted">Select a unit to inspect its legal move set.</span>
+              ) : possibleMovesError ? (
+                <span className="muted">{possibleMovesError}</span>
+              ) : (
+                <pre>{pretty(possibleMoves ?? null)}</pre>
+              )}
             </div>
           </div>
         </section>

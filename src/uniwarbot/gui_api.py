@@ -2,13 +2,19 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.responses import JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
-from .scenario_inspector import ROOT, build_scenario_report, list_scenario_summaries, load_scenario_by_id
+from .scenario_inspector import (
+    ROOT,
+    build_scenario_report,
+    compute_possible_moves_at_step,
+    list_scenario_summaries,
+    load_scenario_by_id,
+)
 
 
 WEB_DIST = ROOT / "webgui" / "dist"
@@ -88,6 +94,22 @@ def scenario_detail(scenario_id: str) -> dict[str, object]:
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     return build_scenario_report(scenario)
+
+
+@app.get("/api/scenarios/{scenario_id}/possible-moves")
+def scenario_possible_moves(
+    scenario_id: str,
+    unit_id: str = Query(...),
+    step_index: int = Query(-1),
+) -> dict[str, object]:
+    try:
+        return compute_possible_moves_at_step(
+            scenario_id,
+            step_index=step_index,
+            unit_id=unit_id,
+        )
+    except (KeyError, IndexError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @app.get("/gui-status", response_model=None)

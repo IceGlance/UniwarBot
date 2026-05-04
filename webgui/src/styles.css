@@ -260,7 +260,9 @@ select {
 .coord-label,
 .owner-text,
 .hp-text,
-.hidden-flag-text {
+.hidden-flag-text,
+.move-overlay-count,
+.action-badge-text {
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: none;
@@ -278,11 +280,11 @@ select {
 }
 
 .owner-p1 {
-  fill: #1d4ed8;
+  fill: #dc2626;
 }
 
 .owner-p2 {
-  fill: #dc2626;
+  fill: #1d4ed8;
 }
 
 .owner-p3 {
@@ -314,6 +316,51 @@ select {
 .selected-hex-overlay polygon {
   stroke: #fef3c7;
   filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.45));
+}
+
+.move-overlay {
+  pointer-events: none;
+}
+
+.move-overlay-fill {
+  fill: rgba(34, 197, 94, 0.18);
+  stroke: rgba(21, 128, 61, 0.7);
+  stroke-width: 2;
+}
+
+.move-overlay-disc {
+  fill: rgba(22, 163, 74, 0.92);
+  stroke: rgba(240, 253, 244, 0.95);
+  stroke-width: 1.5;
+}
+
+.move-overlay-count {
+  font-size: 8px;
+  font-weight: 800;
+  fill: #f8fafc;
+}
+
+.action-badges {
+  pointer-events: none;
+}
+
+.action-badge {
+  stroke: rgba(15, 23, 42, 0.25);
+  stroke-width: 1;
+}
+
+.action-bury {
+  fill: rgba(120, 53, 15, 0.9);
+}
+
+.action-resurface {
+  fill: rgba(8, 145, 178, 0.9);
+}
+
+.action-badge-text {
+  font-size: 8px;
+  font-weight: 900;
+  fill: #f8fafc;
 }
 
 .hidden-ring {
@@ -492,9 +539,9 @@ select {
 .unit-inspector-icon {
   width: 96px;
   height: 80px;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 14px;
-  background: #0f172a;
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.96), rgba(203, 213, 225, 0.58));
 }
 
 .muted {

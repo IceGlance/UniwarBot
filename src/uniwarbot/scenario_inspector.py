@@ -156,6 +156,19 @@ def load_state_from_scenario(scenario: dict[str, Any]) -> GameState:
     return load_state(str(scenario["input_state"]))
 
 
+def build_state_at_step(scenario: dict[str, Any], step_index: int) -> GameState:
+    state = load_state_from_scenario(scenario)
+    if step_index < 0:
+        return state
+    actions = list(scenario.get("actions", []))
+    if step_index >= len(actions):
+        raise IndexError(f"step_index {step_index} out of range for scenario with {len(actions)} actions")
+    for action in actions[: step_index + 1]:
+        apply_result = _apply_action(state, dict(action))
+        state = apply_result["state"]
+    return state
+
+
 def flatten_state_dict(state_dict: dict[str, Any]) -> dict[str, Any]:
     flattened: dict[str, Any] = {}
 
@@ -308,3 +321,14 @@ def list_scenario_summaries() -> list[dict[str, Any]]:
             }
         )
     return summaries
+
+
+def compute_possible_moves_at_step(
+    scenario_id: str,
+    *,
+    step_index: int,
+    unit_id: str,
+) -> dict[str, Any]:
+    scenario = load_scenario_by_id(scenario_id)
+    state = build_state_at_step(scenario, step_index)
+    return state.get_possible_moves(unit_id)
