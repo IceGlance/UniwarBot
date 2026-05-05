@@ -247,6 +247,182 @@
           }
         }
       ]
+    },
+    {
+      "name": "buried underling may occupy reef and move from it",
+      "input_state_data": {
+        "active_player_id": "p1",
+        "players": [
+          {
+            "player_id": "p1",
+            "faction": "khraleans"
+          },
+          {
+            "player_id": "p2",
+            "faction": "sapiens"
+          }
+        ],
+        "tiles": [
+          {
+            "coord": "0:0",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "1:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:1",
+            "terrain_id": "road_water"
+          },
+          {
+            "coord": "-1:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:-1",
+            "terrain_id": "plain"
+          }
+        ],
+        "units": [
+          {
+            "instance_id": "u_underling",
+            "unit_id": "underling",
+            "owner_id": "p1",
+            "coord": "0:0",
+            "status": {
+              "hidden_mode": "buried"
+            },
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "move_points_remaining": 3,
+              "attacks_remaining": 1
+            }
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_underling",
+          "expected": {
+            "unit_id": "u_underling",
+            "move_points": 3,
+            "move_destinations": [
+              "-1:0",
+              "0:1",
+              "1:-1",
+              "1:0"
+            ],
+            "legal_move_destinations": [
+              "-1:0",
+              "0:1",
+              "1:-1",
+              "1:0"
+            ],
+            "move_requires_attack": false,
+            "move_attack_targets": {},
+            "can_bury": false,
+            "can_resurface": true,
+            "can_resurface_attack": false,
+            "resurface_attack_targets": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "submerged submarine cannot move onto reef or harbor",
+      "input_state_data": {
+        "active_player_id": "p1",
+        "players": [
+          {
+            "player_id": "p1",
+            "faction": "sapiens"
+          },
+          {
+            "player_id": "p2",
+            "faction": "titans"
+          }
+        ],
+        "tiles": [
+          {
+            "coord": "0:0",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "1:0",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "0:1",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "-1:1",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "-1:0",
+            "terrain_id": "ocean"
+          },
+          {
+            "coord": "0:-1",
+            "terrain_id": "road_water"
+          },
+          {
+            "coord": "1:-1",
+            "terrain_id": "water"
+          }
+        ],
+        "units": [
+          {
+            "instance_id": "u_submarine",
+            "unit_id": "submarine",
+            "owner_id": "p1",
+            "coord": "0:0",
+            "status": {
+              "hidden_mode": "submerged"
+            },
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "move_points_remaining": 4,
+              "attacks_remaining": 1
+            }
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_submarine",
+          "expected": {
+            "unit_id": "u_submarine",
+            "move_points": 4,
+            "move_destinations": [
+              "-1:0",
+              "-1:1",
+              "0:-1",
+              "1:-1"
+            ],
+            "legal_move_destinations": [
+              "-1:0",
+              "-1:1",
+              "0:-1",
+              "1:-1"
+            ],
+            "move_requires_attack": false,
+            "move_attack_targets": {},
+            "can_bury": false,
+            "can_resurface": false,
+            "can_resurface_attack": false,
+            "resurface_attack_targets": []
+          }
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,3672 @@
+{
+  "name": "Possible Moves Dense Boards",
+  "cases": [
+    {
+      "name": "speeder crosses oasis roads while desert ridges and enemy zoc shape exits",
+      "input_state_data": {
+        "active_player_id": "p1",
+        "width": 11,
+        "height": 11,
+        "players": [
+          {
+            "player_id": "p1",
+            "faction": "sapiens"
+          },
+          {
+            "player_id": "p2",
+            "faction": "titans"
+          }
+        ],
+        "tiles": [
+          {
+            "coord": "0:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "2:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "3:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "4:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "5:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "6:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "7:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "8:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "9:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "10:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:1",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:1",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "2:1",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "3:1",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "4:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "6:1",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "7:1",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "8:1",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "9:1",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "10:1",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:2",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:2",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "2:2",
+            "terrain_id": "city"
+          },
+          {
+            "coord": "3:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "4:2",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "5:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:2",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "7:2",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "8:2",
+            "terrain_id": "city"
+          },
+          {
+            "coord": "9:2",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "10:2",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:3",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:3",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "2:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:3",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "4:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:3",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "9:3",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "10:3",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:4",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:4",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "3:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:4",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "6:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:4",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "9:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "10:4",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:5",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:5",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:5",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "3:5",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:5",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "5:5",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "6:5",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "7:5",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:5",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "9:5",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "10:5",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:6",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:6",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:6",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "3:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:6",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "6:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:6",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "9:6",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "10:6",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:7",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:7",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "2:7",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "3:7",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "4:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:7",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:7",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "9:7",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "10:7",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:8",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:8",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "1:8",
+            "terrain_id": "city"
+          },
+          {
+            "coord": "3:8",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "4:8",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "5:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:8",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "7:8",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "8:8",
+            "terrain_id": "city"
+          },
+          {
+            "coord": "9:8",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "10:8",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:9",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:9",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "2:9",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "3:9",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "4:9",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:9",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "6:9",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "7:9",
+            "terrain_id": "road_land"
+          },
+          {
+            "coord": "8:9",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "9:9",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "10:9",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "2:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "3:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "4:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "5:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "6:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "7:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "8:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "9:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "10:10",
+            "terrain_id": "desert"
+          }
+        ],
+        "units": [
+          {
+            "instance_id": "u_speeder",
+            "unit_id": "speeder",
+            "owner_id": "p1",
+            "coord": "3:2",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "move_points_remaining": 16,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_friend_marine",
+            "unit_id": "marine",
+            "owner_id": "p1",
+            "coord": "2:5",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_friend_tank",
+            "unit_id": "tank",
+            "owner_id": "p1",
+            "coord": "8:6",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_friend_battery",
+            "unit_id": "battery",
+            "owner_id": "p1",
+            "coord": "1:1",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_friend_hidden",
+            "unit_id": "underling",
+            "owner_id": "p1",
+            "coord": "3:7",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "hidden_mode": "buried"
+            }
+          },
+          {
+            "instance_id": "u_enemy_mecha",
+            "unit_id": "mecha",
+            "owner_id": "p2",
+            "coord": "7:3",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_plasma",
+            "unit_id": "plasma_tank",
+            "owner_id": "p2",
+            "coord": "5:3",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_eclipse",
+            "unit_id": "eclipse",
+            "owner_id": "p2",
+            "coord": "4:7",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_speeder",
+            "unit_id": "speeder",
+            "owner_id": "p2",
+            "coord": "8:4",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_locked",
+            "unit_id": "mecha",
+            "owner_id": "p2",
+            "coord": "9:6",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "teleport_lock_phase": "opponent_turn",
+              "teleport_disabled_rounds": 1,
+              "teleport_cooldown_rounds": 2
+            }
+          },
+          {
+            "instance_id": "u_enemy_hidden",
+            "unit_id": "underling",
+            "owner_id": "p2",
+            "coord": "7:7",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "hidden_mode": "buried"
+            }
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_speeder",
+          "expected": {
+            "unit_id": "u_speeder",
+            "move_points": 16,
+            "move_destinations": [
+              "0:0",
+              "0:1",
+              "0:2",
+              "0:5",
+              "0:6",
+              "1:0",
+              "1:2",
+              "1:3",
+              "1:4",
+              "1:5",
+              "1:6",
+              "1:7",
+              "2:0",
+              "2:1",
+              "2:2",
+              "2:3",
+              "2:4",
+              "3:1",
+              "3:3",
+              "4:1",
+              "4:2",
+              "5:1",
+              "6:0",
+              "6:1",
+              "6:2",
+              "7:0",
+              "7:1",
+              "7:2",
+              "8:0",
+              "8:1"
+            ],
+            "legal_move_destinations": [
+              "0:0",
+              "0:1",
+              "0:2",
+              "0:5",
+              "0:6",
+              "1:0",
+              "1:2",
+              "1:3",
+              "1:4",
+              "1:5",
+              "1:6",
+              "1:7",
+              "2:0",
+              "2:1",
+              "2:2",
+              "2:3",
+              "2:4",
+              "3:1",
+              "3:3",
+              "4:1",
+              "4:2",
+              "5:1",
+              "6:0",
+              "6:1",
+              "6:2",
+              "7:0",
+              "7:1",
+              "7:2",
+              "8:0",
+              "8:1"
+            ],
+            "move_requires_attack": false,
+            "move_attack_targets": {
+              "6:2": [
+                "u_enemy_plasma"
+              ],
+              "7:2": [
+                "u_enemy_mecha"
+              ]
+            },
+            "can_bury": false,
+            "can_resurface": false,
+            "can_resurface_attack": false,
+            "resurface_attack_targets": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "salamander navigates marsh basin between mountain rims and oasis pools",
+      "input_state_data": {
+        "active_player_id": "p1",
+        "width": 11,
+        "height": 11,
+        "players": [
+          {
+            "player_id": "p1",
+            "faction": "sapiens"
+          },
+          {
+            "player_id": "p2",
+            "faction": "khraleans"
+          }
+        ],
+        "tiles": [
+          {
+            "coord": "0:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "2:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "3:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "4:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "5:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "6:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "7:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "8:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "9:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "10:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:1",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:1",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "2:1",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "3:1",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "4:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "6:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "7:1",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:1",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "9:1",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "10:1",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:2",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:2",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "2:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:2",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "5:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:2",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "7:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:2",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "10:2",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:3",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:3",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "2:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:3",
+            "terrain_id": "medical"
+          },
+          {
+            "coord": "4:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:3",
+            "terrain_id": "medical"
+          },
+          {
+            "coord": "8:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:3",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "10:3",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:4",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:4",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "3:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:4",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "6:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:4",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "9:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "10:4",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:5",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:5",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:5",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:5",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:5",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "5:5",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "6:5",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "7:5",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:5",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:5",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "10:5",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:6",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:6",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:6",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "3:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:6",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "6:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:6",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "9:6",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "10:6",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:7",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:7",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "2:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "1:7",
+            "terrain_id": "medical"
+          },
+          {
+            "coord": "4:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:7",
+            "terrain_id": "medical"
+          },
+          {
+            "coord": "8:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:7",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "10:7",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:8",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:8",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "2:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:8",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "5:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:8",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "7:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:8",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "10:8",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:9",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:9",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "2:9",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "3:9",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "4:9",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:9",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "6:9",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "7:9",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:9",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "9:9",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "10:9",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "2:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "3:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "4:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "5:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "6:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "7:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "8:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "9:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "10:10",
+            "terrain_id": "mountain"
+          }
+        ],
+        "units": [
+          {
+            "instance_id": "u_salamander",
+            "unit_id": "salamander",
+            "owner_id": "p1",
+            "coord": "5:5",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "move_points_remaining": 9,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_friend_garuda",
+            "unit_id": "garuda",
+            "owner_id": "p1",
+            "coord": "4:4",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_friend_pinzer",
+            "unit_id": "pinzer",
+            "owner_id": "p1",
+            "coord": "6:5",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_friend_hidden",
+            "unit_id": "underling",
+            "owner_id": "p1",
+            "coord": "1:8",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "hidden_mode": "buried"
+            }
+          },
+          {
+            "instance_id": "u_enemy_mecha",
+            "unit_id": "mecha",
+            "owner_id": "p2",
+            "coord": "4:6",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_tank",
+            "unit_id": "tank",
+            "owner_id": "p2",
+            "coord": "7:5",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_marine",
+            "unit_id": "marine",
+            "owner_id": "p2",
+            "coord": "5:3",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_swarm",
+            "unit_id": "swarmer",
+            "owner_id": "p2",
+            "coord": "8:7",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_hidden",
+            "unit_id": "underling",
+            "owner_id": "p2",
+            "coord": "2:9",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "hidden_mode": "buried"
+            }
+          },
+          {
+            "instance_id": "u_enemy_locked",
+            "unit_id": "eclipse",
+            "owner_id": "p2",
+            "coord": "1:4",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "teleport_lock_phase": "opponent_turn",
+              "teleport_disabled_rounds": 1,
+              "teleport_cooldown_rounds": 2
+            }
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_salamander",
+          "expected": {
+            "unit_id": "u_salamander",
+            "move_points": 9,
+            "move_destinations": [
+              "4:5",
+              "5:4",
+              "5:6",
+              "6:3",
+              "6:4",
+              "7:2",
+              "7:3",
+              "7:4",
+              "8:2",
+              "8:3"
+            ],
+            "legal_move_destinations": [
+              "4:5",
+              "5:4",
+              "5:6",
+              "6:3",
+              "6:4",
+              "7:2",
+              "7:3",
+              "7:4",
+              "8:2",
+              "8:3"
+            ],
+            "move_requires_attack": false,
+            "move_attack_targets": {
+              "4:5": [
+                "u_enemy_mecha"
+              ],
+              "5:4": [
+                "u_enemy_marine"
+              ],
+              "5:6": [
+                "u_enemy_mecha"
+              ],
+              "6:3": [
+                "u_enemy_marine"
+              ],
+              "7:4": [
+                "u_enemy_tank"
+              ]
+            },
+            "can_bury": false,
+            "can_resurface": false,
+            "can_resurface_attack": false,
+            "resurface_attack_targets": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "garuda sweeps over mountain marsh crater while blockers and zoc shape landings",
+      "input_state_data": {
+        "active_player_id": "p1",
+        "width": 11,
+        "height": 11,
+        "players": [
+          {
+            "player_id": "p1",
+            "faction": "khraleans"
+          },
+          {
+            "player_id": "p2",
+            "faction": "titans"
+          }
+        ],
+        "tiles": [
+          {
+            "coord": "0:0",
+            "terrain_id": "chasm"
+          },
+          {
+            "coord": "1:0",
+            "terrain_id": "chasm"
+          },
+          {
+            "coord": "2:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "3:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "4:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "5:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "6:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "7:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "8:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "9:0",
+            "terrain_id": "chasm"
+          },
+          {
+            "coord": "10:0",
+            "terrain_id": "chasm"
+          },
+          {
+            "coord": "0:1",
+            "terrain_id": "chasm"
+          },
+          {
+            "coord": "1:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:1",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "3:1",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "4:1",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "5:1",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "6:1",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "7:1",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "8:1",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "9:1",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "10:1",
+            "terrain_id": "chasm"
+          },
+          {
+            "coord": "0:2",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:2",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "2:2",
+            "terrain_id": "medical"
+          },
+          {
+            "coord": "3:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:2",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "6:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:2",
+            "terrain_id": "medical"
+          },
+          {
+            "coord": "9:2",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "10:2",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:3",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:3",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "2:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:3",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "5:3",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "6:3",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:3",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "10:3",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:4",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:4",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "2:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:4",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "4:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "6:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "7:4",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:4",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "10:4",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:5",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:5",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "2:5",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "3:5",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "4:5",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:5",
+            "terrain_id": "base"
+          },
+          {
+            "coord": "6:5",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "7:5",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:5",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "9:5",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "10:5",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:6",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:6",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "2:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:6",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "4:6",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:6",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "6:6",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "7:6",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:6",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "10:6",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:7",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:7",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "2:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:7",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "5:7",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "6:7",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "7:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:7",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "10:7",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:8",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:8",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "2:8",
+            "terrain_id": "medical"
+          },
+          {
+            "coord": "3:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:8",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "6:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:8",
+            "terrain_id": "medical"
+          },
+          {
+            "coord": "9:8",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "10:8",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:9",
+            "terrain_id": "chasm"
+          },
+          {
+            "coord": "1:9",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "2:9",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "3:9",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "4:9",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "5:9",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "6:9",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "7:9",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "8:9",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "9:9",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "10:9",
+            "terrain_id": "chasm"
+          },
+          {
+            "coord": "0:10",
+            "terrain_id": "chasm"
+          },
+          {
+            "coord": "1:10",
+            "terrain_id": "chasm"
+          },
+          {
+            "coord": "2:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "3:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "4:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "5:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "6:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "7:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "8:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "9:10",
+            "terrain_id": "chasm"
+          },
+          {
+            "coord": "10:10",
+            "terrain_id": "chasm"
+          }
+        ],
+        "units": [
+          {
+            "instance_id": "u_garuda",
+            "unit_id": "garuda",
+            "owner_id": "p1",
+            "coord": "5:5",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "move_points_remaining": 12,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_friend_pinzer",
+            "unit_id": "pinzer",
+            "owner_id": "p1",
+            "coord": "4:5",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_friend_salamander",
+            "unit_id": "salamander",
+            "owner_id": "p1",
+            "coord": "6:4",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_friend_hidden",
+            "unit_id": "underling",
+            "owner_id": "p1",
+            "coord": "1:7",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "hidden_mode": "buried"
+            }
+          },
+          {
+            "instance_id": "u_enemy_plasma",
+            "unit_id": "plasma_tank",
+            "owner_id": "p2",
+            "coord": "6:6",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_marine",
+            "unit_id": "marine",
+            "owner_id": "p2",
+            "coord": "3:5",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_eclipse",
+            "unit_id": "eclipse",
+            "owner_id": "p2",
+            "coord": "7:4",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_assimilator",
+            "unit_id": "assimilator",
+            "owner_id": "p2",
+            "coord": "5:3",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_walker",
+            "unit_id": "walker",
+            "owner_id": "p2",
+            "coord": "8:2",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_hidden",
+            "unit_id": "cyber_underling",
+            "owner_id": "p2",
+            "coord": "6:7",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "hidden_mode": "buried"
+            }
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_garuda",
+          "expected": {
+            "unit_id": "u_garuda",
+            "move_points": 12,
+            "move_destinations": [
+              "1:7",
+              "1:8",
+              "1:9",
+              "2:6",
+              "2:7",
+              "2:8",
+              "2:9",
+              "3:6",
+              "3:7",
+              "3:8",
+              "3:9",
+              "4:6",
+              "4:7",
+              "4:8",
+              "4:9",
+              "5:4",
+              "5:6",
+              "5:7",
+              "5:8",
+              "6:5"
+            ],
+            "legal_move_destinations": [
+              "1:7",
+              "1:8",
+              "1:9",
+              "2:6",
+              "2:7",
+              "2:8",
+              "2:9",
+              "3:6",
+              "3:7",
+              "3:8",
+              "3:9",
+              "4:6",
+              "4:7",
+              "4:8",
+              "4:9",
+              "5:4",
+              "5:6",
+              "5:7",
+              "5:8",
+              "6:5"
+            ],
+            "move_requires_attack": false,
+            "move_attack_targets": {
+              "2:6": [
+                "u_enemy_marine"
+              ],
+              "3:6": [
+                "u_enemy_marine"
+              ],
+              "5:4": [
+                "u_enemy_assimilator"
+              ],
+              "5:6": [
+                "u_enemy_plasma"
+              ],
+              "5:7": [
+                "u_enemy_plasma"
+              ],
+              "6:5": [
+                "u_enemy_eclipse",
+                "u_enemy_plasma"
+              ]
+            },
+            "can_bury": false,
+            "can_resurface": false,
+            "can_resurface_attack": false,
+            "resurface_attack_targets": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "destroyer patrols crater lake with reef ring harbors and layered fleet screens",
+      "input_state_data": {
+        "active_player_id": "p1",
+        "width": 11,
+        "height": 11,
+        "players": [
+          {
+            "player_id": "p1",
+            "faction": "sapiens"
+          },
+          {
+            "player_id": "p2",
+            "faction": "titans"
+          }
+        ],
+        "tiles": [
+          {
+            "coord": "0:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "2:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "3:0",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "4:0",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:0",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "6:0",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:0",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "8:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "9:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "10:0",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:1",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:1",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "2:1",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "3:1",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:1",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:1",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:1",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:1",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:1",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "9:1",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "10:1",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:2",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:2",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "2:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:2",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "5:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:2",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "7:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:2",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "10:2",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:3",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "1:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "2:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:3",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "4:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:3",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "8:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "10:3",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "0:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "1:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "2:4",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "3:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:4",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "6:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:4",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "9:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "10:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "0:5",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "1:5",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "2:5",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:5",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:5",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "5:5",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:5",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "7:5",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:5",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:5",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "10:5",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "0:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "1:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "2:6",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "3:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:6",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "6:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:6",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "9:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "10:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "0:7",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "1:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "2:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:7",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "4:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:7",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "8:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "10:7",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "0:8",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:8",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "2:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:8",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "5:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:8",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "7:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:8",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "10:8",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:9",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:9",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "2:9",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "3:9",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:9",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:9",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:9",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:9",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:9",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "9:9",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "10:9",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "0:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "1:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "2:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "3:10",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "4:10",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:10",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "6:10",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:10",
+            "terrain_id": "reef"
+          },
+          {
+            "coord": "8:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "9:10",
+            "terrain_id": "desert"
+          },
+          {
+            "coord": "10:10",
+            "terrain_id": "desert"
+          }
+        ],
+        "units": [
+          {
+            "instance_id": "u_destroyer",
+            "unit_id": "destroyer",
+            "owner_id": "p1",
+            "coord": "5:5",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "move_points_remaining": 12,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_friend_submarine",
+            "unit_id": "submarine",
+            "owner_id": "p1",
+            "coord": "4:4",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "hidden_mode": "submerged"
+            }
+          },
+          {
+            "instance_id": "u_friend_hydronaut",
+            "unit_id": "hydronaut",
+            "owner_id": "p1",
+            "coord": "6:4",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_friend_marine",
+            "unit_id": "marine",
+            "owner_id": "p1",
+            "coord": "0:5",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_kraken",
+            "unit_id": "kraken",
+            "owner_id": "p2",
+            "coord": "7:5",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_leviathan",
+            "unit_id": "leviathan",
+            "owner_id": "p2",
+            "coord": "5:2",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_submarine",
+            "unit_id": "submarine",
+            "owner_id": "p2",
+            "coord": "5:8",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "hidden_mode": "submerged"
+            }
+          },
+          {
+            "instance_id": "u_enemy_submarine_2",
+            "unit_id": "submarine",
+            "owner_id": "p2",
+            "coord": "8:3",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "hidden_mode": "submerged"
+            }
+          },
+          {
+            "instance_id": "u_enemy_skimmer",
+            "unit_id": "skimmer",
+            "owner_id": "p2",
+            "coord": "2:4",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_destroyer",
+            "unit_id": "destroyer",
+            "owner_id": "p2",
+            "coord": "3:7",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_destroyer",
+          "expected": {
+            "unit_id": "u_destroyer",
+            "move_points": 12,
+            "move_destinations": [
+              "2:5",
+              "2:6",
+              "3:4",
+              "3:5",
+              "3:6",
+              "4:3",
+              "4:4",
+              "4:5",
+              "4:6",
+              "4:7",
+              "4:8",
+              "5:3",
+              "5:4",
+              "5:6",
+              "5:7",
+              "5:8",
+              "6:2",
+              "6:3",
+              "6:5",
+              "6:6",
+              "6:7",
+              "7:1",
+              "7:2",
+              "7:3",
+              "7:4",
+              "8:2",
+              "8:3"
+            ],
+            "legal_move_destinations": [
+              "2:5",
+              "2:6",
+              "3:4",
+              "3:5",
+              "3:6",
+              "4:3",
+              "4:4",
+              "4:5",
+              "4:6",
+              "4:7",
+              "4:8",
+              "5:3",
+              "5:4",
+              "5:6",
+              "5:7",
+              "5:8",
+              "6:2",
+              "6:3",
+              "6:5",
+              "6:6",
+              "6:7",
+              "7:1",
+              "7:2",
+              "7:3",
+              "7:4",
+              "8:2",
+              "8:3"
+            ],
+            "move_requires_attack": false,
+            "move_attack_targets": {
+              "2:5": [
+                "u_enemy_destroyer",
+                "u_enemy_leviathan",
+                "u_enemy_skimmer"
+              ],
+              "2:6": [
+                "u_enemy_destroyer",
+                "u_enemy_skimmer"
+              ],
+              "3:4": [
+                "u_enemy_destroyer",
+                "u_enemy_leviathan",
+                "u_enemy_skimmer"
+              ],
+              "3:5": [
+                "u_enemy_destroyer",
+                "u_enemy_leviathan",
+                "u_enemy_skimmer"
+              ],
+              "3:6": [
+                "u_enemy_destroyer",
+                "u_enemy_skimmer"
+              ],
+              "4:3": [
+                "u_enemy_leviathan",
+                "u_enemy_skimmer"
+              ],
+              "4:4": [
+                "u_enemy_destroyer",
+                "u_enemy_leviathan",
+                "u_enemy_skimmer"
+              ],
+              "4:5": [
+                "u_enemy_destroyer",
+                "u_enemy_kraken",
+                "u_enemy_leviathan",
+                "u_enemy_skimmer"
+              ],
+              "4:6": [
+                "u_enemy_destroyer",
+                "u_enemy_kraken",
+                "u_enemy_submarine"
+              ],
+              "4:7": [
+                "u_enemy_destroyer",
+                "u_enemy_kraken",
+                "u_enemy_submarine"
+              ],
+              "4:8": [
+                "u_enemy_destroyer",
+                "u_enemy_kraken",
+                "u_enemy_submarine"
+              ],
+              "5:3": [
+                "u_enemy_leviathan",
+                "u_enemy_skimmer",
+                "u_enemy_submarine_2"
+              ],
+              "5:4": [
+                "u_enemy_destroyer",
+                "u_enemy_kraken",
+                "u_enemy_leviathan",
+                "u_enemy_skimmer",
+                "u_enemy_submarine_2"
+              ],
+              "5:6": [
+                "u_enemy_destroyer",
+                "u_enemy_kraken",
+                "u_enemy_submarine",
+                "u_enemy_submarine_2"
+              ],
+              "5:7": [
+                "u_enemy_destroyer",
+                "u_enemy_kraken",
+                "u_enemy_submarine"
+              ],
+              "5:8": [
+                "u_enemy_destroyer",
+                "u_enemy_kraken",
+                "u_enemy_submarine"
+              ],
+              "6:2": [
+                "u_enemy_leviathan",
+                "u_enemy_submarine_2"
+              ],
+              "6:3": [
+                "u_enemy_kraken",
+                "u_enemy_leviathan",
+                "u_enemy_submarine_2"
+              ],
+              "6:5": [
+                "u_enemy_destroyer",
+                "u_enemy_kraken",
+                "u_enemy_submarine",
+                "u_enemy_submarine_2"
+              ],
+              "6:6": [
+                "u_enemy_destroyer",
+                "u_enemy_kraken",
+                "u_enemy_submarine",
+                "u_enemy_submarine_2"
+              ],
+              "6:7": [
+                "u_enemy_destroyer",
+                "u_enemy_kraken",
+                "u_enemy_submarine"
+              ],
+              "7:1": [
+                "u_enemy_leviathan",
+                "u_enemy_submarine_2"
+              ],
+              "7:2": [
+                "u_enemy_kraken",
+                "u_enemy_leviathan",
+                "u_enemy_submarine_2"
+              ],
+              "7:3": [
+                "u_enemy_kraken",
+                "u_enemy_leviathan",
+                "u_enemy_submarine_2"
+              ],
+              "7:4": [
+                "u_enemy_kraken",
+                "u_enemy_submarine_2"
+              ],
+              "8:2": [
+                "u_enemy_kraken",
+                "u_enemy_leviathan",
+                "u_enemy_submarine_2"
+              ],
+              "8:3": [
+                "u_enemy_kraken",
+                "u_enemy_submarine_2"
+              ]
+            },
+            "can_bury": false,
+            "can_resurface": false,
+            "can_resurface_attack": false,
+            "resurface_attack_targets": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "buried underling threads mountain bog basin with cities it cannot occupy",
+      "input_state_data": {
+        "active_player_id": "p1",
+        "width": 11,
+        "height": 11,
+        "players": [
+          {
+            "player_id": "p1",
+            "faction": "sapiens"
+          },
+          {
+            "player_id": "p2",
+            "faction": "khraleans"
+          }
+        ],
+        "tiles": [
+          {
+            "coord": "0:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "2:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "3:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "4:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "6:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "7:0",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "8:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "9:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "10:0",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:1",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:1",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "2:1",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "3:1",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "4:1",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "5:1",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "6:1",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "7:1",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:1",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "9:1",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "10:1",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:2",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:2",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "2:2",
+            "terrain_id": "city"
+          },
+          {
+            "coord": "3:2",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "4:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:2",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:2",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:2",
+            "terrain_id": "city"
+          },
+          {
+            "coord": "9:2",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "10:2",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:3",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "2:3",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "3:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:3",
+            "terrain_id": "medical"
+          },
+          {
+            "coord": "5:3",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "6:3",
+            "terrain_id": "medical"
+          },
+          {
+            "coord": "7:3",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:3",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "9:3",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "10:3",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:4",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "2:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:4",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "4:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "6:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "7:4",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:4",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:4",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "10:4",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:5",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:5",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "2:5",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "3:5",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "4:5",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:5",
+            "terrain_id": "base"
+          },
+          {
+            "coord": "6:5",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "7:5",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:5",
+            "terrain_id": "harbor"
+          },
+          {
+            "coord": "9:5",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "10:5",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:6",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:6",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "2:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "3:6",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "4:6",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:6",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "6:6",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "7:6",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:6",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "9:6",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "10:6",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:7",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "1:7",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "2:7",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "3:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "4:7",
+            "terrain_id": "medical"
+          },
+          {
+            "coord": "5:7",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "6:7",
+            "terrain_id": "medical"
+          },
+          {
+            "coord": "7:7",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "8:7",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "9:7",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "10:7",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "0:8",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:8",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "2:8",
+            "terrain_id": "city"
+          },
+          {
+            "coord": "3:8",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "4:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "5:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "6:8",
+            "terrain_id": "water"
+          },
+          {
+            "coord": "7:8",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:8",
+            "terrain_id": "city"
+          },
+          {
+            "coord": "9:8",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "10:8",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:9",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:9",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "2:9",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "3:9",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "4:9",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "5:9",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "6:9",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "7:9",
+            "terrain_id": "swamp"
+          },
+          {
+            "coord": "8:9",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "9:9",
+            "terrain_id": "forest"
+          },
+          {
+            "coord": "10:9",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "0:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "1:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "2:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "3:10",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "4:10",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "5:10",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "6:10",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "7:10",
+            "terrain_id": "plain"
+          },
+          {
+            "coord": "8:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "9:10",
+            "terrain_id": "mountain"
+          },
+          {
+            "coord": "10:10",
+            "terrain_id": "mountain"
+          }
+        ],
+        "units": [
+          {
+            "instance_id": "u_underling",
+            "unit_id": "underling",
+            "owner_id": "p1",
+            "coord": "4:5",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "move_points_remaining": 7,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "hidden_mode": "buried"
+            }
+          },
+          {
+            "instance_id": "u_friend_garuda",
+            "unit_id": "garuda",
+            "owner_id": "p1",
+            "coord": "2:5",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_friend_pinzer",
+            "unit_id": "pinzer",
+            "owner_id": "p1",
+            "coord": "6:4",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_friend_hidden_2",
+            "unit_id": "underling",
+            "owner_id": "p1",
+            "coord": "1:9",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "hidden_mode": "buried"
+            }
+          },
+          {
+            "instance_id": "u_enemy_mecha",
+            "unit_id": "mecha",
+            "owner_id": "p2",
+            "coord": "5:4",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_tank",
+            "unit_id": "tank",
+            "owner_id": "p2",
+            "coord": "7:5",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_marine",
+            "unit_id": "marine",
+            "owner_id": "p2",
+            "coord": "3:6",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_eclipse",
+            "unit_id": "eclipse",
+            "owner_id": "p2",
+            "coord": "8:8",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            }
+          },
+          {
+            "instance_id": "u_enemy_hidden",
+            "unit_id": "underling",
+            "owner_id": "p2",
+            "coord": "8:3",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "hidden_mode": "buried"
+            }
+          },
+          {
+            "instance_id": "u_enemy_locked",
+            "unit_id": "mecha",
+            "owner_id": "p2",
+            "coord": "2:3",
+            "action": {
+              "is_available": true,
+              "configured_action_count": 1,
+              "actions_remaining": 1,
+              "attacks_remaining": 1
+            },
+            "status": {
+              "teleport_lock_phase": "opponent_turn",
+              "teleport_disabled_rounds": 1,
+              "teleport_cooldown_rounds": 2
+            }
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_underling",
+          "expected": {
+            "unit_id": "u_underling",
+            "move_points": 7,
+            "move_destinations": [
+              "3:5",
+              "3:6",
+              "4:4",
+              "4:6",
+              "5:4",
+              "5:6",
+              "6:4"
+            ],
+            "legal_move_destinations": [
+              "3:5",
+              "3:6",
+              "4:4",
+              "4:6",
+              "5:4",
+              "5:6",
+              "6:4"
+            ],
+            "move_requires_attack": false,
+            "move_attack_targets": {},
+            "can_bury": false,
+            "can_resurface": true,
+            "can_resurface_attack": true,
+            "resurface_attack_targets": [
+              "u_enemy_marine",
+              "u_enemy_mecha"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

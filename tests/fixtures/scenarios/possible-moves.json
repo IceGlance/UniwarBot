@@ -1583,11 +1583,6 @@
               "configured_action_count": 1,
               "actions_remaining": 1,
               "attacks_remaining": 1
-            },
-            "status": {
-              "teleport_lock_phase": "opponent_turn",
-              "teleport_disabled_rounds": 1,
-              "teleport_cooldown_rounds": 2
             }
           }
         ]
@@ -2185,7 +2180,7 @@
             "terrain_id": "plain"
           },
           {
-            "coord": "8:8",
+            "coord": "6:8",
             "terrain_id": "ocean"
           }
         ],
@@ -2292,7 +2287,7 @@
             "instance_id": "u_friend_hidden_far",
             "unit_id": "underling",
             "owner_id": "p1",
-            "coord": "8:8",
+            "coord": "7:7",
             "action": {
               "is_available": true,
               "configured_action_count": 1,
@@ -2307,7 +2302,7 @@
             "instance_id": "u_enemy_hidden_far",
             "unit_id": "underling",
             "owner_id": "p2",
-            "coord": "0:8",
+            "coord": "1:8",
             "action": {
               "is_available": true,
               "configured_action_count": 1,
@@ -3450,11 +3445,6 @@
               "configured_action_count": 1,
               "actions_remaining": 1,
               "attacks_remaining": 1
-            },
-            "status": {
-              "teleport_lock_phase": "opponent_turn",
-              "teleport_disabled_rounds": 1,
-              "teleport_cooldown_rounds": 2
             }
           }
         ]
@@ -3467,62 +3457,34 @@
             "unit_id": "u_submarine",
             "move_points": 9,
             "move_destinations": [
-              "1:4",
-              "1:5",
               "1:6",
               "1:7",
-              "2:4",
               "2:5",
               "2:6",
               "2:7",
               "3:3",
               "3:4",
               "3:5",
-              "3:6",
-              "3:7",
-              "4:1",
-              "4:2",
               "4:3",
               "4:5",
-              "4:6",
-              "4:7",
-              "5:1",
-              "5:2",
               "5:4",
               "5:5",
-              "6:3",
-              "6:4",
-              "7:3",
-              "7:4"
+              "6:3"
             ],
             "legal_move_destinations": [
-              "1:4",
-              "1:5",
               "1:6",
               "1:7",
-              "2:4",
               "2:5",
               "2:6",
               "2:7",
               "3:3",
               "3:4",
               "3:5",
-              "3:6",
-              "3:7",
-              "4:1",
-              "4:2",
               "4:3",
               "4:5",
-              "4:6",
-              "4:7",
-              "5:1",
-              "5:2",
               "5:4",
               "5:5",
-              "6:3",
-              "6:4",
-              "7:3",
-              "7:4"
+              "6:3"
             ],
             "move_requires_attack": false,
             "move_attack_targets": {
@@ -3551,30 +3513,12 @@
               "3:5": [
                 "u_enemy_hidden"
               ],
-              "3:6": [
-                "u_enemy_far_3"
-              ],
-              "3:7": [
-                "u_enemy_far_3"
-              ],
-              "4:2": [
-                "u_enemy_hidden"
-              ],
               "4:3": [
                 "u_enemy_hidden"
               ],
               "4:5": [
                 "u_enemy_hidden",
                 "u_enemy_surface"
-              ],
-              "4:6": [
-                "u_enemy_surface"
-              ],
-              "5:1": [
-                "u_enemy_hidden"
-              ],
-              "5:2": [
-                "u_enemy_hidden"
               ],
               "5:4": [
                 "u_enemy_hidden",
@@ -3587,22 +3531,29 @@
               "6:3": [
                 "u_enemy_hidden",
                 "u_enemy_surface"
-              ],
-              "6:4": [
-                "u_enemy_hidden"
-              ],
-              "7:3": [
-                "u_enemy_hidden",
-                "u_enemy_surface"
-              ],
-              "7:4": [
-                "u_enemy_surface"
               ]
             },
             "can_bury": false,
             "can_resurface": false,
             "can_resurface_attack": false,
             "resurface_attack_targets": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "borfly shows current submerged targets but no move attack previews",
+      "input_state": "states/surface-vs-submerged-attack-ready.json",
+      "actions": [
+        {
+          "type": "assert_possible_moves",
+          "unit_id": "u_borfly",
+          "expected": {
+            "current_attack_targets": [
+              "u_sub_bopper",
+              "u_sub_borfly"
+            ],
+            "move_attack_targets": {}
           }
         }
       ]

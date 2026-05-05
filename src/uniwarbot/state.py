@@ -905,15 +905,20 @@ class GameState:
             raise KeyError(f"Unknown unit_id: {instance_id}")
 
         move_points = self._movement_points_for_unit(unit)
+        current_attack_targets = self._current_attack_targets(unit)
         move_destinations = (
             self._reachable_move_destinations(unit, move_points)
             if self._can_query_unit_movement(unit)
             else []
         )
         move_destination_keys = self._sorted_coord_keys(move_destinations)
-        move_attack_targets = self._move_attack_targets_for_destinations(
-            unit,
-            move_destinations,
+        move_attack_targets = (
+            self._move_attack_targets_for_destinations(
+                unit,
+                move_destinations,
+            )
+            if self._can_attack_after_move_in_same_action(unit)
+            else {}
         )
 
         if self._requires_surface_move_attack_lock(unit):
@@ -941,6 +946,7 @@ class GameState:
         return {
             "unit_id": unit.instance_id,
             "move_points": move_points,
+            "current_attack_targets": sorted(current_attack_targets),
             "move_destinations": move_destination_keys,
             "legal_move_destinations": legal_move_destinations,
             "move_requires_attack": self._requires_surface_move_attack_lock(unit),
@@ -1428,6 +1434,13 @@ class GameState:
             and self._movement_points_for_unit(unit) > 0
         )
 
+    def _can_query_unit_attack(self, unit: UnitState) -> bool:
+        return (
+            unit.action.is_available
+            and unit.action.attacks_remaining > 0
+            and not unit.status.movement_blocked
+        )
+
     def _reachable_move_destinations(
         self,
         unit: UnitState,
@@ -1468,7 +1481,7 @@ class GameState:
 
     def _can_unit_enter_tile(self, unit: UnitState, tile: TileState) -> bool:
         if (
-            unit.status.hidden_mode == HiddenMode.BURIED
+            unit.status.hidden_mode in {HiddenMode.BURIED, HiddenMode.SUBMERGED}
             and tile.terrain_id in self._hidden_mode_forbidden_terrains(unit)
         ):
             return False
@@ -1563,6 +1576,18 @@ class GameState:
             ]
             for coord in destinations
         }
+
+    def _current_attack_targets(self, unit: UnitState) -> list[str]:
+        if not self._can_query_unit_attack(unit):
+            return []
+        return [
+            target.instance_id
+            for target in self._attackable_targets_from_position(
+                unit,
+                position=unit.position,
+                hidden_mode_override=unit.status.hidden_mode,
+            )
+        ]
 
     def _attackable_targets_from_position(
         self,
@@ -1685,9 +1710,19 @@ class GameState:
             return False
         if distance != 0:
             return False
-        submerged_target_attack = (
-            self._unit_dictionary_entry(attacker).get("submerged_target_attack") or {}
-        )
+        attacker_data = self._unit_dictionary_entry(attacker)
+        submerged_target_attack = attacker_data.get("submerged_target_attack") or {}
+        if not bool(submerged_target_attack.get("surface_same_hex_allowed", False)):
+            return False
+        surface_range = (attacker_data.get("attack_range") or {}).get("surface") or {}
+        range_min = int(surface_range.get("min", 0))
+        range_max = int(surface_range.get("max", 0))
+        if range_min == 0:
+            return True
+        if attacker.unit_id == "fuze":
+            return True
+        if range_min == 1 and range_max == 1:
+            return True
         return bool(submerged_target_attack.get("surface_same_hex_allowed", False))
 
     def _submerged_attacker_can_target(
@@ -1720,6 +1755,13 @@ class GameState:
 
     def _requires_surface_move_attack_lock(self, unit: UnitState) -> bool:
         return False
+
+    def _can_attack_after_move_in_same_action(self, unit: UnitState) -> bool:
+        if not self._can_query_unit_attack(unit):
+            return False
+        if unit.unit_id == "borfly" and unit.status.hidden_mode is None:
+            return False
+        return True
 
     def _can_surface_move_continue_as_atomic_attack(self, unit: UnitState) -> bool:
         return self._is_underling_family(unit) and unit.status.hidden_mode is None

@@ -298,7 +298,7 @@ select {
 
 .owner-disc {
   stroke: rgba(15, 23, 42, 0.3);
-  stroke-width: 1.5;
+  stroke-width: 1.25;
 }
 
 .owner-p1 {
@@ -318,9 +318,9 @@ select {
 }
 
 .owner-text {
-  font-size: 6px;
+  font-size: 5px;
   fill: #fff;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .unit-sprite {

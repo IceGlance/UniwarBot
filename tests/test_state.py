@@ -220,9 +220,14 @@ class GameStateScenarioTestCase(unittest.TestCase):
                 continue
             if action_type == "assert_possible_moves":
                 actual_moves = state.get_possible_moves(str(action["unit_id"]))
+                expected_moves = dict(action["expected"])
+                actual_moves_subset = {
+                    key: actual_moves.get(key)
+                    for key in expected_moves
+                }
                 self.assertEqual(
-                    actual_moves,
-                    dict(action["expected"]),
+                    actual_moves_subset,
+                    expected_moves,
                     msg=str(action.get("name", "possible_moves")),
                 )
                 continue

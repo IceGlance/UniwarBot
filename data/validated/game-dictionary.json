@@ -642,7 +642,7 @@
         ],
         "surface_mode_explicit_strength": 0,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": false,
+        "surface_same_hex_allowed": true,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -1082,7 +1082,7 @@
       "hidden_mode": null,
       "attack_range": {
         "surface": {
-          "min": 0,
+          "min": 3,
           "max": 3
         },
         "hidden": null
@@ -1120,7 +1120,7 @@
         ],
         "surface_mode_explicit_strength": 0,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": true,
+        "surface_same_hex_allowed": false,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -1595,7 +1595,7 @@
         ],
         "surface_mode_explicit_strength": 2,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": true,
+        "surface_same_hex_allowed": false,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -2036,7 +2036,11 @@
         },
         "terrain_movement_costs_source": "Uses the displayed submerged aquatic terrain table with the submerged mobility pool.",
         "can_attack_ground_air_from_hidden": true,
-        "can_attack_ground_air_from_hidden_source": "UnitsScreenshots OCR Attack Ground/Air Units From Underwater line, 2026-05-02"
+        "can_attack_ground_air_from_hidden_source": "UnitsScreenshots OCR Attack Ground/Air Units From Underwater line, 2026-05-02",
+        "forbidden_terrains": [
+          "harbor",
+          "reef"
+        ]
       },
       "attack_range": {
         "surface": {
@@ -2087,7 +2091,7 @@
         ],
         "surface_mode_explicit_strength": 8,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": true,
+        "surface_same_hex_allowed": false,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -2449,7 +2453,7 @@
         ],
         "surface_mode_explicit_strength": 0,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": false,
+        "surface_same_hex_allowed": true,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -2759,7 +2763,7 @@
         ],
         "surface_mode_explicit_strength": 1,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": true,
+        "surface_same_hex_allowed": false,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -2917,7 +2921,7 @@
         ],
         "surface_mode_explicit_strength": 0,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": true,
+        "surface_same_hex_allowed": false,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -3388,7 +3392,7 @@
         ],
         "surface_mode_explicit_strength": 2,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": true,
+        "surface_same_hex_allowed": false,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -3543,7 +3547,7 @@
         ],
         "surface_mode_explicit_strength": 3,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": true,
+        "surface_same_hex_allowed": false,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -3835,7 +3839,11 @@
         },
         "terrain_movement_costs_source": "Uses the displayed submerged aquatic terrain table with the submerged mobility pool.",
         "can_attack_ground_air_from_hidden": false,
-        "can_attack_ground_air_from_hidden_source": "UnitsScreenshots OCR Attack Ground/Air Units From Underwater line, 2026-05-02"
+        "can_attack_ground_air_from_hidden_source": "UnitsScreenshots OCR Attack Ground/Air Units From Underwater line, 2026-05-02",
+        "forbidden_terrains": [
+          "harbor",
+          "reef"
+        ]
       },
       "attack_range": {
         "surface": {
@@ -3886,7 +3894,7 @@
         ],
         "surface_mode_explicit_strength": 6,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": true,
+        "surface_same_hex_allowed": false,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -4224,7 +4232,7 @@
         ],
         "surface_mode_explicit_strength": 0,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": false,
+        "surface_same_hex_allowed": true,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -4737,7 +4745,7 @@
         ],
         "surface_mode_explicit_strength": 0,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": true,
+        "surface_same_hex_allowed": false,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -4900,7 +4908,7 @@
         ],
         "surface_mode_explicit_strength": 0,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": true,
+        "surface_same_hex_allowed": false,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -5215,7 +5223,7 @@
         ],
         "surface_mode_explicit_strength": 2,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": true,
+        "surface_same_hex_allowed": false,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -5372,7 +5380,7 @@
         ],
         "surface_mode_explicit_strength": 4,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": true,
+        "surface_same_hex_allowed": false,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -5525,7 +5533,7 @@
         ],
         "surface_mode_explicit_strength": 3,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": true,
+        "surface_same_hex_allowed": false,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {
@@ -5658,7 +5666,11 @@
         },
         "terrain_movement_costs_source": "Uses the displayed submerged aquatic terrain table with the submerged mobility pool.",
         "can_attack_ground_air_from_hidden": false,
-        "can_attack_ground_air_from_hidden_source": "UnitsScreenshots OCR Attack Ground/Air Units From Underwater line, 2026-05-02"
+        "can_attack_ground_air_from_hidden_source": "UnitsScreenshots OCR Attack Ground/Air Units From Underwater line, 2026-05-02",
+        "forbidden_terrains": [
+          "harbor",
+          "reef"
+        ]
       },
       "attack_range": {
         "surface": {
@@ -5707,7 +5719,7 @@
         ],
         "surface_mode_explicit_strength": 9,
         "surface_mode_source": "UnitsScreenshots OCR explicit Submerged attack row, 2026-05-02",
-        "surface_same_hex_allowed": true,
+        "surface_same_hex_allowed": false,
         "surface_same_hex_source": "Current in-game screenshots: 0 in attack range means same-hex attack against a submerged hidden target, 2026-05-02"
       },
       "terrain_effects": {

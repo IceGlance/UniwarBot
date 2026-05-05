@@ -6,6 +6,7 @@ const API_BASE =
     ? `${window.location.protocol}//${window.location.hostname}:8000/api`
     : `${window.location.origin}/api`;
 const TERRAIN_FALLBACKS = {
+  __void__: "#000000",
   plain: "#d7c7a1",
   base: "#d9c7ae",
   forest: "#6f8f5f",
@@ -71,6 +72,9 @@ function compact(value) {
 }
 
 function terrainAsset(terrainId) {
+  if (terrainId === "__void__") {
+    return null;
+  }
   return `./public/gui-assets/terrains/${terrainId}.png`;
 }
 
@@ -295,6 +299,40 @@ function App() {
 
   const tiles = currentState?.game_map?.tiles ?? [];
   const units = currentState?.units ?? {};
+  const displayTiles = useMemo(() => {
+    if (tiles.length === 0) {
+      return tiles;
+    }
+    const tileMap = new Map(tiles.map((tile) => [coordKey(tile.coord), tile]));
+    const rows = new Map();
+    for (const tile of tiles) {
+      const row = rows.get(tile.coord.r) ?? [];
+      row.push(tile.coord.q);
+      rows.set(tile.coord.r, row);
+    }
+    const expanded = [];
+    const sortedRows = Array.from(rows.keys()).sort((a, b) => a - b);
+    for (const r of sortedRows) {
+      const qs = rows.get(r) ?? [];
+      const minQ = Math.min(...qs);
+      const maxQ = Math.max(...qs);
+      for (let q = minQ; q <= maxQ; q += 1) {
+        const key = `${q}:${r}`;
+        expanded.push(
+          tileMap.get(key) ?? {
+            coord: { q, r },
+            terrain_id: "__void__",
+            owner_id: null,
+            surface_unit_id: null,
+            hidden_unit_id: null,
+            capture_state: null,
+            metadata: { is_void: true },
+          },
+        );
+      }
+    }
+    return expanded;
+  }, [tiles]);
   const hiddenRenderItems = useMemo(
     () =>
       tiles
@@ -449,6 +487,7 @@ function App() {
     () => new Set(possibleMoves?.legal_move_destinations ?? []),
     [possibleMoves],
   );
+  const currentAttackTargets = possibleMoves?.current_attack_targets ?? [];
   const moveAttackTargets = possibleMoves?.move_attack_targets ?? {};
   const selectedUnitPositionKey = selectedUnitTile ? coordKey(selectedUnitTile.coord) : null;
 
@@ -494,16 +533,16 @@ function App() {
   const adjustZoom = (delta) => setZoom((current) => clampZoom(Number((current + delta).toFixed(2))));
 
   const boardBounds = useMemo(() => {
-    if (tiles.length === 0) {
+    if (displayTiles.length === 0) {
       return { minX: 0, minY: 0, width: 600, height: 420 };
     }
-    const centers = tiles.map((tile) => axialToPixel(tile.coord));
+    const centers = displayTiles.map((tile) => axialToPixel(tile.coord));
     const minX = Math.min(...centers.map((center) => center.x)) - BASE_HEX_SIZE - 34;
     const maxX = Math.max(...centers.map((center) => center.x)) + BASE_HEX_SIZE + 34;
     const minY = Math.min(...centers.map((center) => center.y)) - BASE_HEX_SIZE - 34;
     const maxY = Math.max(...centers.map((center) => center.y)) + BASE_HEX_SIZE + 34;
     return { minX, minY, width: maxX - minX, height: maxY - minY };
-  }, [tiles]);
+  }, [displayTiles]);
 
   const zoomedViewBox = useMemo(() => {
     const centerX = boardBounds.minX + boardBounds.width / 2;
@@ -666,7 +705,7 @@ function App() {
               onClickCapture={suppressBoardClickIfNeeded}
             >
               <defs>
-                {tiles.map((tile) => {
+                {displayTiles.map((tile) => {
                   return (
                     <clipPath id={clipPathId(tile.coord)} key={clipPathId(tile.coord)} clipPathUnits="userSpaceOnUse">
                       <polygon points={hexPoints(0, 0, BASE_HEX_SIZE)} />
@@ -674,16 +713,18 @@ function App() {
                   );
                 })}
               </defs>
-              {tiles.map((tile) => {
+              {displayTiles.map((tile) => {
                 const center = axialToPixel(tile.coord);
                 const surfaceUnitId = tile.surface_unit_id;
                 const surfaceUnit = surfaceUnitId ? units[surfaceUnitId] : null;
                 const key = coordKey(tile.coord);
+                const isVoidTile = tile.terrain_id === "__void__";
+                const terrainHref = terrainAsset(tile.terrain_id);
                 return (
                   <g
                     key={key}
                     className="hex-group"
-                    onClick={() => selectTileAndOccupant(tile)}
+                    onClick={isVoidTile ? undefined : () => selectTileAndOccupant(tile)}
                     transform={`translate(${center.x}, ${center.y})`}
                   >
                     <polygon
@@ -692,18 +733,29 @@ function App() {
                       stroke="#22304a"
                       strokeWidth="2"
                     />
-                    <image
-                      href={terrainAsset(tile.terrain_id)}
-                      x={-34}
-                      y={-34}
-                      width={68}
-                      height={68}
-                      clipPath={`url(#${clipPathId(tile.coord)})`}
-                      preserveAspectRatio="xMidYMid meet"
-                    />
+                    {terrainHref ? (
+                      <image
+                        href={terrainHref}
+                        x={-34}
+                        y={-34}
+                        width={68}
+                        height={68}
+                        clipPath={`url(#${clipPathId(tile.coord)})`}
+                        preserveAspectRatio="xMidYMid meet"
+                      />
+                    ) : null}
 
-                    {selectedUnitPositionKey === key && possibleMoves ? (
-                      <g className="action-badges" transform="translate(0,18)">
+                    {selectedUnitPositionKey === key && possibleMoves && !isVoidTile ? (
+                      <>
+                        {currentAttackTargets.length > 0 ? (
+                          <g className="current-attack-overlay" transform="translate(0,-18)" opacity="0.85">
+                            <circle className="move-overlay-disc" cx="0" cy="0" r="8" />
+                            <text className="move-overlay-count" x="0" y="1">
+                              {String(currentAttackTargets.length)}
+                            </text>
+                          </g>
+                        ) : null}
+                        <g className="action-badges" transform="translate(0,18)">
                         {possibleMoves.can_bury ? (
                           <g transform="translate(-12,0)">
                             <rect className="action-badge action-bury" x="-9" y="-7" width="18" height="14" rx="6" />
@@ -727,12 +779,13 @@ function App() {
                             </text>
                           </g>
                         ) : null}
-                      </g>
+                        </g>
+                      </>
                     ) : null}
 
                     {tile.owner_id ? (
-                      <g transform="translate(26,-28)">
-                        <circle r="10" className={`owner-disc owner-${tile.owner_id}`} />
+                      <g transform="translate(0,-24)">
+                        <circle r="8" className={`owner-disc owner-${tile.owner_id}`} />
                         <text className="owner-text" x="0" y="1">
                           {tile.owner_id.toUpperCase()}
                         </text>
@@ -770,6 +823,11 @@ function App() {
                         </g>
                       </g>
                     ) : null}
+                    <g key={`coord-${key}`} className="coord-overlay">
+                      <text className={`coord-label ${isVoidTile ? "coord-label-void" : ""}`} x="0" y="22">
+                        {key}
+                      </text>
+                    </g>
                   </g>
                 );
               })}
@@ -839,17 +897,6 @@ function App() {
                         {String(unit.hp)}
                       </text>
                     </g>
-                  </g>
-                );
-              })}
-              {tiles.map((tile) => {
-                const center = axialToPixel(tile.coord);
-                const key = coordKey(tile.coord);
-                return (
-                  <g key={`coord-${key}`} className="coord-overlay" transform={`translate(${center.x}, ${center.y})`}>
-                    <text className="coord-label" x="0" y="22">
-                      {key}
-                    </text>
                   </g>
                 );
               })}
