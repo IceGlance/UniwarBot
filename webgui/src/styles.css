@@ -1,10 +1,12 @@
+html {
+  min-height: 100vh;
+  background: #0b1727;
+}
+
 :root {
   font-family: "Segoe UI", "Inter", sans-serif;
   color: #0f172a;
-  background:
-    radial-gradient(circle at top left, rgba(104, 177, 255, 0.24), transparent 28%),
-    radial-gradient(circle at top right, rgba(255, 214, 120, 0.16), transparent 22%),
-    linear-gradient(180deg, #0b1727 0%, #132238 16%, #ecf1f8 16.1%, #dce5ef 100%);
+  background: #0f172a;
 }
 
 * {
@@ -14,6 +16,12 @@
 body {
   margin: 0;
   min-height: 100vh;
+  background: #0b1727;
+}
+
+#root {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0b1727 0%, #132238 100%);
 }
 
 button,
@@ -28,6 +36,7 @@ select {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: linear-gradient(180deg, #0b1727 0%, #132238 100%);
 }
 
 .topbar {
@@ -241,6 +250,14 @@ select {
   height: 100%;
   overflow: auto;
   overflow-anchor: none;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  -webkit-user-select: none;
+}
+
+.board-viewport.panning {
+  cursor: grabbing;
 }
 
 .board-svg {
@@ -501,6 +518,10 @@ select {
 .panel-detail {
   min-height: 0;
   overflow: hidden;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
 }
 
 .panel-detail {
@@ -512,7 +533,7 @@ select {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 12px;
+  padding: 8px 0 0;
 }
 
 .detail-card {

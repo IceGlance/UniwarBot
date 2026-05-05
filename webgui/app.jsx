@@ -1,4 +1,4 @@
-const { useEffect, useMemo, useState } = React;
+const { useEffect, useMemo, useRef, useState } = React;
 
 const BASE_HEX_SIZE = 32;
 const API_BASE =
@@ -173,6 +173,19 @@ function App() {
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
   const [zoom, setZoom] = useState(0.9);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [isPanningBoard, setIsPanningBoard] = useState(false);
+  const boardViewportRef = useRef(null);
+  const boardSvgRef = useRef(null);
+  const boardPanRef = useRef({
+    pointerId: null,
+    startClientX: 0,
+    startClientY: 0,
+    startPanX: 0,
+    startPanY: 0,
+    hasDragged: false,
+  });
+  const suppressBoardClickRef = useRef(false);
 
   useEffect(() => {
     fetch(`${API_BASE}/scenarios`)
@@ -203,6 +216,7 @@ function App() {
     setSelectedStepIndex(-1);
     setSelectedTileKey(null);
     setSelectedUnitId(null);
+    setPanOffset({ x: 0, y: 0 });
     fetch(`${API_BASE}/scenarios/${selectedScenarioId}`)
       .then(async (response) => {
         if (!response.ok) {
@@ -319,6 +333,77 @@ function App() {
     }
     return null;
   }, [selectedUnitId, tiles]);
+
+  const beginBoardPan = (event) => {
+    if (event.button !== 0) {
+      return;
+    }
+    const viewport = boardViewportRef.current;
+    if (!viewport) {
+      return;
+    }
+    boardPanRef.current = {
+      pointerId: event.pointerId,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      startPanX: panOffset.x,
+      startPanY: panOffset.y,
+      hasDragged: false,
+    };
+    suppressBoardClickRef.current = false;
+    setIsPanningBoard(true);
+  };
+
+  const moveBoardPan = (event) => {
+    const viewport = boardViewportRef.current;
+    const svg = boardSvgRef.current;
+    const session = boardPanRef.current;
+    if (!viewport || !svg || session.pointerId !== event.pointerId) {
+      return;
+    }
+    const deltaX = event.clientX - session.startClientX;
+    const deltaY = event.clientY - session.startClientY;
+    if (!session.hasDragged && Math.hypot(deltaX, deltaY) >= 4) {
+      session.hasDragged = true;
+      suppressBoardClickRef.current = true;
+    }
+    if (!session.hasDragged) {
+      return;
+    }
+    const width = Math.max(1, viewport.clientWidth);
+    const height = Math.max(1, viewport.clientHeight);
+    const worldDx = deltaX * (zoomedViewBox.width / width);
+    const worldDy = deltaY * (zoomedViewBox.height / height);
+    setPanOffset({
+      x: session.startPanX - worldDx,
+      y: session.startPanY - worldDy,
+    });
+  };
+
+  const endBoardPan = (event) => {
+    const session = boardPanRef.current;
+    if (session.pointerId !== event.pointerId) {
+      return;
+    }
+    boardPanRef.current = {
+      pointerId: null,
+      startClientX: 0,
+      startClientY: 0,
+      startPanX: 0,
+      startPanY: 0,
+      hasDragged: false,
+    };
+    setIsPanningBoard(false);
+  };
+
+  const suppressBoardClickIfNeeded = (event) => {
+    if (!suppressBoardClickRef.current) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    suppressBoardClickRef.current = false;
+  };
   const selectedUnitLayer =
     selectedUnitTile == null || selectedUnitId == null
       ? null
@@ -426,12 +511,12 @@ function App() {
     const width = boardBounds.width / zoom;
     const height = boardBounds.height / zoom;
     return {
-      minX: centerX - width / 2,
-      minY: centerY - height / 2,
+      minX: centerX - width / 2 + panOffset.x,
+      minY: centerY - height / 2 + panOffset.y,
       width,
       height,
     };
-  }, [boardBounds, zoom]);
+  }, [boardBounds, panOffset.x, panOffset.y, zoom]);
 
   return (
     <div className="app-shell">
@@ -542,18 +627,6 @@ function App() {
           </div>
 
           <div className="step-strip">
-            <div className="zoom-controls">
-              <button className="zoom-chip" onClick={() => adjustZoom(-0.15)} title="Zoom out">
-                -
-              </button>
-              <span className="zoom-readout">{Math.round(zoom * 100)}%</span>
-              <button className="zoom-chip" onClick={() => adjustZoom(0.15)} title="Zoom in">
-                +
-              </button>
-              <button className="zoom-chip" onClick={() => setZoom(0.9)} title="Reset zoom">
-                Reset
-              </button>
-            </div>
             <button
               className={`step-chip ${selectedStepIndex < 0 ? "selected" : ""}`}
               onClick={() => setSelectedStepIndex(-1)}
@@ -574,15 +647,23 @@ function App() {
 
           <div className="board-card">
             <div
-              className="board-viewport"
+              ref={boardViewportRef}
+              className={`board-viewport ${isPanningBoard ? "panning" : ""}`}
               onWheel={(event) => {
                 event.preventDefault();
                 adjustZoom(event.deltaY < 0 ? 0.08 : -0.08);
               }}
+              onPointerDown={beginBoardPan}
+              onPointerMove={moveBoardPan}
+              onPointerUp={endBoardPan}
+              onPointerCancel={endBoardPan}
+              onPointerLeave={endBoardPan}
             >
             <svg
+              ref={boardSvgRef}
               className="board-svg"
               viewBox={`${zoomedViewBox.minX} ${zoomedViewBox.minY} ${zoomedViewBox.width} ${zoomedViewBox.height}`}
+              onClickCapture={suppressBoardClickIfNeeded}
             >
               <defs>
                 {tiles.map((tile) => {
@@ -620,18 +701,6 @@ function App() {
                       clipPath={`url(#${clipPathId(tile.coord)})`}
                       preserveAspectRatio="xMidYMid meet"
                     />
-
-                    {legalMoveKeys.has(key) ? (
-                      <g className="move-overlay">
-                        <polygon points={hexPoints(0, 0, BASE_HEX_SIZE - 2)} className="move-overlay-fill" />
-                        <circle className="move-overlay-disc" cx="0" cy="0" r="8" />
-                        {Array.isArray(moveAttackTargets[key]) && moveAttackTargets[key].length > 0 ? (
-                          <text className="move-overlay-count" x="0" y="1">
-                            {String(moveAttackTargets[key].length)}
-                          </text>
-                        ) : null}
-                      </g>
-                    ) : null}
 
                     {selectedUnitPositionKey === key && possibleMoves ? (
                       <g className="action-badges" transform="translate(0,18)">
@@ -700,6 +769,31 @@ function App() {
                           </text>
                         </g>
                       </g>
+                    ) : null}
+                  </g>
+                );
+              })}
+              {tiles.map((tile) => {
+                const key = coordKey(tile.coord);
+                if (!legalMoveKeys.has(key)) {
+                  return null;
+                }
+                const center = axialToPixel(tile.coord);
+                return (
+                  <g
+                    key={`move-${key}`}
+                    className="move-overlay"
+                    transform={`translate(${center.x}, ${center.y})`}
+                    opacity="0.75"
+                  >
+                    <polygon points={hexPoints(0, 0, BASE_HEX_SIZE)} className="move-overlay-fill" />
+                    {Array.isArray(moveAttackTargets[key]) && moveAttackTargets[key].length > 0 ? (
+                      <>
+                        <circle className="move-overlay-disc" cx="0" cy="0" r="8" />
+                        <text className="move-overlay-count" x="0" y="1">
+                          {String(moveAttackTargets[key].length)}
+                        </text>
+                      </>
                     ) : null}
                   </g>
                 );
