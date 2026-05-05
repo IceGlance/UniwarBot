@@ -1609,7 +1609,7 @@
             "instance_id": "u_enemy_battery",
             "unit_id": "battery",
             "owner_id": "p2",
-            "coord": "7:1",
+            "coord": "7:2",
             "action": {
               "is_available": true,
               "configured_action_count": 1,
@@ -1626,6 +1626,9 @@
           "expected": {
             "unit_id": "u_underling",
             "move_points": 9,
+            "current_attack_targets": [
+              "u_enemy_marine"
+            ],
             "move_destinations": [
               "3:5",
               "4:3",
