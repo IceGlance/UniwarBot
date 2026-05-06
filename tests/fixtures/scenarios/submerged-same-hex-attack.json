@@ -14,9 +14,9 @@
       "expected_changes": {
         "units.u_destroyer_same.action.actions_remaining": 0,
         "units.u_destroyer_same.action.has_attacked_this_turn": true,
-        "units.u_destroyer_same.hp": 10,
+        "units.u_destroyer_same.hp": 5,
         "units.u_sub_destroyer_same.hp": 6,
-        "current_rseed": -2030036310202079615
+        "current_rseed": -2704195468370554623
       }
     },
     {

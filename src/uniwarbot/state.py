@@ -1711,19 +1711,9 @@ class GameState:
         if distance != 0:
             return False
         attacker_data = self._unit_dictionary_entry(attacker)
-        submerged_target_attack = attacker_data.get("submerged_target_attack") or {}
-        if not bool(submerged_target_attack.get("surface_same_hex_allowed", False)):
-            return False
         surface_range = (attacker_data.get("attack_range") or {}).get("surface") or {}
         range_min = int(surface_range.get("min", 0))
-        range_max = int(surface_range.get("max", 0))
-        if range_min == 0:
-            return True
-        if attacker.unit_id == "fuze":
-            return True
-        if range_min == 1 and range_max == 1:
-            return True
-        return bool(submerged_target_attack.get("surface_same_hex_allowed", False))
+        return range_min <= 1
 
     def _submerged_attacker_can_target(
         self,

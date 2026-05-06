@@ -2020,7 +2020,7 @@
         "mobility": 9,
         "vision": 2,
         "attack_range": {
-          "min": 1,
+          "min": 0,
           "max": 2
         },
         "defense_strength": 8,
@@ -2044,11 +2044,11 @@
       },
       "attack_range": {
         "surface": {
-          "min": 3,
+          "min": 0,
           "max": 3
         },
         "hidden": {
-          "min": 1,
+          "min": 0,
           "max": 2
         }
       },
@@ -3346,7 +3346,7 @@
       "hidden_mode": null,
       "attack_range": {
         "surface": {
-          "min": 1,
+          "min": 0,
           "max": 3
         },
         "hidden": null
@@ -3507,7 +3507,7 @@
       "hidden_mode": null,
       "attack_range": {
         "surface": {
-          "min": 3,
+          "min": 0,
           "max": 3
         },
         "hidden": null
@@ -3847,7 +3847,7 @@
       },
       "attack_range": {
         "surface": {
-          "min": 2,
+          "min": 0,
           "max": 2
         },
         "hidden": {
@@ -5495,7 +5495,7 @@
       "hidden_mode": null,
       "attack_range": {
         "surface": {
-          "min": 2,
+          "min": 0,
           "max": 2
         },
         "hidden": null
@@ -5650,7 +5650,7 @@
         "mobility": 10,
         "vision": 3,
         "attack_range": {
-          "min": 1,
+          "min": 0,
           "max": 2
         },
         "defense_strength": 9,
@@ -5674,11 +5674,11 @@
       },
       "attack_range": {
         "surface": {
-          "min": 3,
+          "min": 0,
           "max": 3
         },
         "hidden": {
-          "min": 1,
+          "min": 0,
           "max": 2
         }
       },

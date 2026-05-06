@@ -230,7 +230,7 @@ Range needs one interpretation note for hidden sea targets. The usual printed ra
 | Battery | GH | 600 | 5 | 2-4 | 4 | 1 | 4 | 10/6/5/10/10/2 | Long-range artillery |
 | Destroyer | Aq | 800 | 12 | 0-3 | 5 | 2 | 12 | 10/10/12/16/10/7 | Capital ship, strongest anti-sea |
 | Fuze | Amphi | 200 | 9 | 0-2 | 4 | 1 | 2 | 5/4/1/4/6/3 | Amphibious harasser |
-| Submarine | Aq | 400 | 9 | 3 | 3 | 1 | 5 | 5/5/3/8/4/8 | Submersible skirmisher |
+| Submarine | Aq | 400 | 9 | 0-3 | 3 | 1 | 5 | 5/5/3/8/4/8 | Submersible skirmisher |
 
 ### Khraleans
 
@@ -245,10 +245,10 @@ These base stats are compiled from the official unit pages for Underling through
 | Borfly | Air | 200 | 6 | 2-3 | 3 | 1 | 2 | 4/6/1/4/4/0 | Anti-heavy blaster |
 | Garuda | Air | 350 | 12 | 1 | 5 | 2 | 9 | 7/8/9/8/7/3 | Durable air superiority / bruiser |
 | Pinzer | GH | 450 | 8 | 1 | 3 | 2 | 13 | 12/10/3/10/12/2 | Heavy front-liner |
-| Wyrm | GH | 550 | 6 | 1-3 | 3 | 1 | 4 | 10/9/12/10/10/2 | Mobile support artillery |
-| Leviathan | Aq | 600 | 11 | 3 | 4 | 2 | 12 | 10/10/9/12/10/3 | Budget capital ship |
+| Wyrm | GH | 550 | 6 | 0-3 | 3 | 1 | 4 | 10/9/12/10/10/2 | Mobile support artillery |
+| Leviathan | Aq | 600 | 11 | 0-3 | 4 | 2 | 12 | 10/10/9/12/10/3 | Budget capital ship |
 | Salamander | Amphi | 200 | 9 | 1 | 4 | 2 | 8 | 6/4/3/5/6/4 | Tanky amphibian with plague |
-| Kraken | Aq | 350 | 10 | 2 | 3 | 2 | 8 | 6/6/0/6/6/6 | Cheap stealth sea threat |
+| Kraken | Aq | 350 | 10 | 0-2 | 3 | 2 | 8 | 6/6/0/6/6/6 | Cheap stealth sea threat |
 
 ### Titans
 
@@ -266,13 +266,13 @@ These base stats are compiled from the official unit pages for Mecha through Ski
 | Walker | GH | 700 | 6 | 3-5 | 5 | 1 | 5 | 10/10/11/10/10/2 | Longest-range artillery |
 | Hydronaut | Aq | 800 | 11 | 2-4 | 6 | 2 | 10 | 12/10/12/13/12/4 | Naval artillery |
 | Mantisse | Amphi | 250 | 11 | 0-2 | 4 | 1 | 4 | 6/4/2/4/7/3 | Amphibious ranged harasser |
-| Skimmer | Aq | 450 | 10 | 3 | 4 | 1 | 6 | 5/5/5/9/5/9 | Submersible naval skirmisher |
+| Skimmer | Aq | 450 | 10 | 0-3 | 4 | 1 | 6 | 5/5/5/9/5/9 | Submersible naval skirmisher |
 
 ### Overrides, underwater states, armor piercing, and practical counters
 
 Screenshot reconciliation update (`UnitsScreenshots/`, 2026-05-02): the current in-game unit screens expose an explicit `Submerged` attack row for every unit, so the bot dictionary stores that row directly as `submerged_target_attack.surface_mode_explicit_strength` and `surface_mode_effective_strength`. The reconciled surface-mode submerged target strengths are: Marine/Engineer/Mecha II/Marauder/Bopper/Underling/Infector/Infected Marine/Borfly/Mecha/Assimilator/Cyber Underling/Speeder/Guardian/Eclipse `0`; Tank/Swarmer `1`; Battery/Pinzer/Wyrm/Walker `2`; Helicopter/Fuze/Garuda/Leviathan/Plasma Tank/Mantisse `3`; Salamander/Hydronaut `4`; Kraken `6`; Destroyer `7`; Submarine `8`; Skimmer `9`. The same screenshots also show that `0` in attack range means "same-hex attack against a submerged hidden target," so surface units that can legally attack submerged targets get a dedicated same-hex hidden-target case in addition to their ordinary visible-target range. The same screenshots state that Submarine can attack ground/air units from underwater, while Kraken and Skimmer cannot attack ground/air units from underwater.
 
-The official unit pages add a second layer of numbers for buried and submerged states. Underling has underground mobility 7, underground vision 2, and a `+4` resurface bonus; Cyber Underling has underground mobility 6, underground vision 2, defense 6 underground, and also `+4` resurface. Engine-wise, that should be interpreted narrowly: buried Underling-family units cannot attack while still buried, but if they unbury and attack immediately as part of the same action, that attack gets `+4` in addition to terrain and gang-up. Conversely, surface Underling-family units may attack directly or move-then-attack or bury, but should not treat plain `move` as a completed legal action. Kraken has submerged mobility 10, submerged vision 3, submerged defense 12, underwater range 1, and `+3` resurface; Submarine and Skimmer have underwater ranges `1-2`, submerged defenses `8` and `9`, and all three submerged sea attackers publish `Attack from Underwater penalty -2`. That field is attacker-side: hidden-mode attack against a submerged target is `Submerged attack row + Attack from Underwater penalty`, so Submarine attacks submerged targets at `8 + (-2) = 6`, Kraken at `6 + (-2) = 4`, and Skimmer at `9 + (-2) = 7`. For current bot implementation, the screenshot-derived explicit `Submerged` row is authoritative for surface-mode submerged target strength; old aquatic-minus-penalty derivations are retained only as historical source context, not as the machine-readable value.
+The official unit pages add a second layer of numbers for buried and submerged states. Underling has underground mobility 7, underground vision 2, and a `+4` resurface bonus; Cyber Underling has underground mobility 6, underground vision 2, defense 6 underground, and also `+4` resurface. Engine-wise, that should be interpreted narrowly: buried Underling-family units cannot attack while still buried, but if they unbury and attack immediately as part of the same action, that attack gets `+4` in addition to terrain and gang-up. Conversely, surface Underling-family units may attack directly or move-then-attack or bury, but should not treat plain `move` as a completed legal action. Kraken has submerged mobility 10, submerged vision 3, submerged defense 12, underwater range `1`, and `+3` resurface; Submarine and Skimmer have underwater ranges `0-2`, submerged defenses `8` and `9`, and all three submerged sea attackers publish `Attack from Underwater penalty -2`. Surface Submarine has range `0-3`, surface Kraken `0-2`, surface Leviathan `0-3`, surface Wyrm `0-3`, and surface Skimmer `0-3`. That field is attacker-side: hidden-mode attack against a submerged target is `Submerged attack row + Attack from Underwater penalty`, so Submarine attacks submerged targets at `8 + (-2) = 6`, Kraken at `6 + (-2) = 4`, and Skimmer at `9 + (-2) = 7`. For current bot implementation, the screenshot-derived explicit `Submerged` row is authoritative for surface-mode submerged target strength; same-hex attack against a submerged hidden target is derived from normal range data, so any unit whose surface or hidden attack range starts at `0` can attack a submerged target on its own hex, and any unit whose surface range starts at `1` can also target same-hex submerged units as the special hidden-target extension of melee range.
 
 Armor piercing appears on the blaster and submarine-class designs. By the official pages, Bopper has `GH 25%, Air 35%, Aq 50%, Am 25%`; Borfly `GH 30%, Air 30%, Aq 50%, Am 25%`; Guardian `GH 40%, Aq 45%, Am 25%`; Fuze `GL 25%, Aq 20%`; Salamander `GL 25%, Aq 30%`; Mantisse `GL 25%, Air 10%, Aq 20%`; Submarine `GL 15%, GH 30%, Air 15%, Aq 40%, Am 10%`; Kraken `GL 15%, GH 30%, Aq 60%, Am 15%`; Skimmer `GL 10%, GH 30%, Air 20%, Aq 50%, Am 15%`. The calculator changelog's note that defense after armor piercing should not be rounded implies that AP is applied directly to the defender's effective defense before the p-value is finalized.
 
