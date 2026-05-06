@@ -3,35 +3,37 @@
   "input_state": "states/submerged-strengths-ready.json",
   "cases": [
     {
-      "name": "marine_uses_screenshot_submerged_strength_0_plus_harbor_bonus",
+      "name": "destroyer_uses_screenshot_submerged_strength_7_on_same_hex",
       "actions": [
         {
           "type": "attack_unit",
-          "attacker_id": "u_marine",
-          "defender_id": "u_sub_marine"
+          "attacker_id": "u_destroyer",
+          "defender_id": "u_sub_destroyer"
         }
       ],
       "expected_changes": {
-        "units.u_marine.hp": 10,
-        "units.u_marine.action.actions_remaining": 0,
-        "units.u_sub_marine.hp": 9,
+        "units.u_destroyer.action.actions_remaining": 0,
+        "units.u_destroyer.action.has_attacked_this_turn": true,
+        "units.u_destroyer.hp": 10,
+        "units.u_sub_destroyer.hp": 6,
         "current_rseed": -2030036310202079615
       }
     },
     {
-      "name": "fuze_uses_screenshot_submerged_strength_3",
+      "name": "hydronaut_uses_screenshot_submerged_strength_4_at_range_2",
       "actions": [
         {
           "type": "attack_unit",
-          "attacker_id": "u_fuze",
-          "defender_id": "u_sub_fuze"
+          "attacker_id": "u_hydronaut",
+          "defender_id": "u_sub_hydronaut"
         }
       ],
       "expected_changes": {
-        "units.u_fuze.hp": 10,
-        "units.u_fuze.action.actions_remaining": 0,
-        "units.u_sub_fuze.hp": 7,
-        "current_rseed": -2030036310202079615
+        "units.u_hydronaut.action.actions_remaining": 0,
+        "units.u_hydronaut.action.has_attacked_this_turn": true,
+        "units.u_hydronaut.hp": 4,
+        "units.u_sub_hydronaut.hp": 7,
+        "current_rseed": -2704195468370554623
       }
     },
     {
@@ -44,8 +46,9 @@
         }
       ],
       "expected_changes": {
-        "units.u_walker.hp": 10,
         "units.u_walker.action.actions_remaining": 0,
+        "units.u_walker.action.has_attacked_this_turn": true,
+        "units.u_walker.hp": 10,
         "units.u_sub_walker.hp": 9,
         "current_rseed": -2030036310202079615
       }
@@ -62,8 +65,8 @@
       ],
       "expected_changes": {
         "units.u_engineer.action.actions_remaining": 1,
-        "units.u_sub_engineer.hp": 10,
-        "current_rseed": 12345
+        "units.u_engineer.action.has_attacked_this_turn": false,
+        "units.u_sub_engineer.hp": 10
       }
     }
   ]

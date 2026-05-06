@@ -265,7 +265,7 @@ These base stats are compiled from the official unit pages for Mecha through Ski
 | Plasma Tank | GH | 500 | 7 | 1 | 3 | 1 | 14 | 10/12/5/11/10/3 | Hardest land wall |
 | Walker | GH | 700 | 6 | 3-5 | 5 | 1 | 5 | 10/10/11/10/10/2 | Longest-range artillery |
 | Hydronaut | Aq | 800 | 11 | 2-4 | 6 | 2 | 10 | 12/10/12/13/12/4 | Naval artillery |
-| Mantisse | Amphi | 250 | 11 | 2 | 4 | 1 | 4 | 6/4/2/4/7/3 | Amphibious ranged harasser |
+| Mantisse | Amphi | 250 | 11 | 0-2 | 4 | 1 | 4 | 6/4/2/4/7/3 | Amphibious ranged harasser |
 | Skimmer | Aq | 450 | 10 | 3 | 4 | 1 | 6 | 5/5/5/9/5/9 | Submersible naval skirmisher |
 
 ### Overrides, underwater states, armor piercing, and practical counters

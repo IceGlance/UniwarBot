@@ -59,7 +59,7 @@
       "input_state": "states/attack_surface_matrix/003_assimilator_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "assimilator attacks aquatic (destroyer) on plain",
+      "name": "assimilator attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -163,7 +163,7 @@
       "input_state": "states/attack_surface_matrix/008_battery_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "battery attacks aquatic (destroyer) on plain",
+      "name": "battery attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -285,7 +285,7 @@
       "input_state": "states/attack_surface_matrix/013_bopper_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "bopper attacks aquatic (destroyer) on plain",
+      "name": "bopper attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -665,7 +665,7 @@
             "occupying_unit_id": "u_defender",
             "owner_id": null,
             "surface_unit_id": "u_defender",
-            "terrain_id": "plain"
+            "terrain_id": "water"
           },
           {
             "capture_state": null,
@@ -926,7 +926,7 @@
       "input_state": "states/attack_surface_matrix/018_borfly_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "borfly attacks aquatic (destroyer) on plain",
+      "name": "borfly attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -1241,7 +1241,7 @@
             "occupying_unit_id": "u_defender",
             "owner_id": null,
             "surface_unit_id": "u_defender",
-            "terrain_id": "plain"
+            "terrain_id": "water"
           },
           {
             "capture_state": null,
@@ -1502,7 +1502,7 @@
       "input_state": "states/attack_surface_matrix/023_cyber_underling_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "cyber_underling attacks aquatic (destroyer) on plain",
+      "name": "cyber_underling attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -1552,7 +1552,7 @@
       "input_state": "states/attack_surface_matrix/025_cyber_underling_attacks_amphibian_salamander_on_plain.json"
     },
     {
-      "name": "destroyer attacks ground_light (marine) on plain",
+      "name": "destroyer attacks ground_light (marine) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -1576,7 +1576,7 @@
       "input_state": "states/attack_surface_matrix/026_destroyer_attacks_ground_light_marine_on_plain.json"
     },
     {
-      "name": "destroyer attacks ground_heavy (tank) on plain",
+      "name": "destroyer attacks ground_heavy (tank) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -1600,7 +1600,7 @@
       "input_state": "states/attack_surface_matrix/027_destroyer_attacks_ground_heavy_tank_on_plain.json"
     },
     {
-      "name": "destroyer attacks air (helicopter) on plain",
+      "name": "destroyer attacks air (helicopter) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -1624,7 +1624,7 @@
       "input_state": "states/attack_surface_matrix/028_destroyer_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "destroyer attacks aquatic (destroyer) on plain",
+      "name": "destroyer attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -1650,7 +1650,7 @@
       "input_state": "states/attack_surface_matrix/029_destroyer_attacks_aquatic_destroyer_on_plain.json"
     },
     {
-      "name": "destroyer attacks amphibian (salamander) on plain",
+      "name": "destroyer attacks amphibian (salamander) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -1746,7 +1746,7 @@
       "input_state": "states/attack_surface_matrix/033_eclipse_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "eclipse attacks aquatic (destroyer) on plain",
+      "name": "eclipse attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -1854,7 +1854,7 @@
       "input_state": "states/attack_surface_matrix/038_engineer_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "engineer attacks aquatic (destroyer) on plain",
+      "name": "engineer attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -1958,7 +1958,7 @@
       "input_state": "states/attack_surface_matrix/043_fuze_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "fuze attacks aquatic (destroyer) on plain",
+      "name": "fuze attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2080,7 +2080,7 @@
       "input_state": "states/attack_surface_matrix/048_garuda_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "garuda attacks aquatic (destroyer) on plain",
+      "name": "garuda attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2203,7 +2203,7 @@
       "input_state": "states/attack_surface_matrix/053_guardian_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "guardian attacks aquatic (destroyer) on plain",
+      "name": "guardian attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2326,7 +2326,7 @@
       "input_state": "states/attack_surface_matrix/058_helicopter_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "helicopter attacks aquatic (destroyer) on plain",
+      "name": "helicopter attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2377,7 +2377,7 @@
       "input_state": "states/attack_surface_matrix/060_helicopter_attacks_amphibian_salamander_on_plain.json"
     },
     {
-      "name": "hydronaut attacks ground_light (marine) on plain",
+      "name": "hydronaut attacks ground_light (marine) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2401,7 +2401,7 @@
       "input_state": "states/attack_surface_matrix/061_hydronaut_attacks_ground_light_marine_on_plain.json"
     },
     {
-      "name": "hydronaut attacks ground_heavy (tank) on plain",
+      "name": "hydronaut attacks ground_heavy (tank) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2425,7 +2425,7 @@
       "input_state": "states/attack_surface_matrix/062_hydronaut_attacks_ground_heavy_tank_on_plain.json"
     },
     {
-      "name": "hydronaut attacks air (helicopter) on plain",
+      "name": "hydronaut attacks air (helicopter) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2449,7 +2449,7 @@
       "input_state": "states/attack_surface_matrix/063_hydronaut_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "hydronaut attacks aquatic (destroyer) on plain",
+      "name": "hydronaut attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2475,7 +2475,7 @@
       "input_state": "states/attack_surface_matrix/064_hydronaut_attacks_aquatic_destroyer_on_plain.json"
     },
     {
-      "name": "hydronaut attacks amphibian (salamander) on plain",
+      "name": "hydronaut attacks amphibian (salamander) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2571,7 +2571,7 @@
       "input_state": "states/attack_surface_matrix/068_infected_marine_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "infected_marine attacks aquatic (destroyer) on plain",
+      "name": "infected_marine attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2678,7 +2678,7 @@
       "input_state": "states/attack_surface_matrix/073_infector_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "infector attacks aquatic (destroyer) on plain",
+      "name": "infector attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2710,7 +2710,7 @@
       "input_state": "states/attack_surface_matrix/075_infector_attacks_amphibian_salamander_on_plain.json"
     },
     {
-      "name": "kraken attacks ground_light (marine) on plain",
+      "name": "kraken attacks ground_light (marine) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2734,7 +2734,7 @@
       "input_state": "states/attack_surface_matrix/076_kraken_attacks_ground_light_marine_on_plain.json"
     },
     {
-      "name": "kraken attacks ground_heavy (tank) on plain",
+      "name": "kraken attacks ground_heavy (tank) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2758,7 +2758,7 @@
       "input_state": "states/attack_surface_matrix/077_kraken_attacks_ground_heavy_tank_on_plain.json"
     },
     {
-      "name": "kraken attacks air (helicopter) on plain",
+      "name": "kraken attacks air (helicopter) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2777,7 +2777,7 @@
       "input_state": "states/attack_surface_matrix/078_kraken_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "kraken attacks aquatic (destroyer) on plain",
+      "name": "kraken attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2803,7 +2803,7 @@
       "input_state": "states/attack_surface_matrix/079_kraken_attacks_aquatic_destroyer_on_plain.json"
     },
     {
-      "name": "kraken attacks amphibian (salamander) on plain",
+      "name": "kraken attacks amphibian (salamander) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2827,7 +2827,7 @@
       "input_state": "states/attack_surface_matrix/080_kraken_attacks_amphibian_salamander_on_plain.json"
     },
     {
-      "name": "leviathan attacks ground_light (marine) on plain",
+      "name": "leviathan attacks ground_light (marine) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2851,7 +2851,7 @@
       "input_state": "states/attack_surface_matrix/081_leviathan_attacks_ground_light_marine_on_plain.json"
     },
     {
-      "name": "leviathan attacks ground_heavy (tank) on plain",
+      "name": "leviathan attacks ground_heavy (tank) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2875,7 +2875,7 @@
       "input_state": "states/attack_surface_matrix/082_leviathan_attacks_ground_heavy_tank_on_plain.json"
     },
     {
-      "name": "leviathan attacks air (helicopter) on plain",
+      "name": "leviathan attacks air (helicopter) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2899,7 +2899,7 @@
       "input_state": "states/attack_surface_matrix/083_leviathan_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "leviathan attacks aquatic (destroyer) on plain",
+      "name": "leviathan attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -2925,7 +2925,7 @@
       "input_state": "states/attack_surface_matrix/084_leviathan_attacks_aquatic_destroyer_on_plain.json"
     },
     {
-      "name": "leviathan attacks amphibian (salamander) on plain",
+      "name": "leviathan attacks amphibian (salamander) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -3021,7 +3021,7 @@
       "input_state": "states/attack_surface_matrix/088_mantisse_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "mantisse attacks aquatic (destroyer) on plain",
+      "name": "mantisse attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -3143,7 +3143,7 @@
       "input_state": "states/attack_surface_matrix/093_marauder_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "marauder attacks aquatic (destroyer) on plain",
+      "name": "marauder attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -3265,7 +3265,7 @@
       "input_state": "states/attack_surface_matrix/098_marine_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "marine attacks aquatic (destroyer) on plain",
+      "name": "marine attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -3387,7 +3387,7 @@
       "input_state": "states/attack_surface_matrix/103_mecha_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "mecha attacks aquatic (destroyer) on plain",
+      "name": "mecha attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -3509,7 +3509,7 @@
       "input_state": "states/attack_surface_matrix/108_mecha_ii_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "mecha_ii attacks aquatic (destroyer) on plain",
+      "name": "mecha_ii attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -3631,7 +3631,7 @@
       "input_state": "states/attack_surface_matrix/113_pinzer_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "pinzer attacks aquatic (destroyer) on plain",
+      "name": "pinzer attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -3754,7 +3754,7 @@
       "input_state": "states/attack_surface_matrix/118_plasma_tank_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "plasma_tank attacks aquatic (destroyer) on plain",
+      "name": "plasma_tank attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -3877,7 +3877,7 @@
       "input_state": "states/attack_surface_matrix/123_salamander_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "salamander attacks aquatic (destroyer) on plain",
+      "name": "salamander attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -3928,7 +3928,7 @@
       "input_state": "states/attack_surface_matrix/125_salamander_attacks_amphibian_salamander_on_plain.json"
     },
     {
-      "name": "skimmer attacks ground_light (marine) on plain",
+      "name": "skimmer attacks ground_light (marine) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -3952,7 +3952,7 @@
       "input_state": "states/attack_surface_matrix/126_skimmer_attacks_ground_light_marine_on_plain.json"
     },
     {
-      "name": "skimmer attacks ground_heavy (tank) on plain",
+      "name": "skimmer attacks ground_heavy (tank) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -3976,7 +3976,7 @@
       "input_state": "states/attack_surface_matrix/127_skimmer_attacks_ground_heavy_tank_on_plain.json"
     },
     {
-      "name": "skimmer attacks air (helicopter) on plain",
+      "name": "skimmer attacks air (helicopter) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -4000,7 +4000,7 @@
       "input_state": "states/attack_surface_matrix/128_skimmer_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "skimmer attacks aquatic (destroyer) on plain",
+      "name": "skimmer attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -4185,7 +4185,7 @@
             "occupying_unit_id": null,
             "owner_id": null,
             "surface_unit_id": null,
-            "terrain_id": "plain"
+            "terrain_id": "water"
           },
           {
             "capture_state": null,
@@ -4380,7 +4380,7 @@
             "occupying_unit_id": "u_defender",
             "owner_id": null,
             "surface_unit_id": "u_defender",
-            "terrain_id": "plain"
+            "terrain_id": "water"
           },
           {
             "capture_state": null,
@@ -4545,7 +4545,7 @@
       "input_state": "states/attack_surface_matrix/129_skimmer_attacks_aquatic_destroyer_on_plain.json"
     },
     {
-      "name": "skimmer attacks amphibian (salamander) on plain",
+      "name": "skimmer attacks amphibian (salamander) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -4641,7 +4641,7 @@
       "input_state": "states/attack_surface_matrix/133_speeder_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "speeder attacks aquatic (destroyer) on plain",
+      "name": "speeder attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -4692,7 +4692,7 @@
       "input_state": "states/attack_surface_matrix/135_speeder_attacks_amphibian_salamander_on_plain.json"
     },
     {
-      "name": "submarine attacks ground_light (marine) on plain",
+      "name": "submarine attacks ground_light (marine) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -4716,7 +4716,7 @@
       "input_state": "states/attack_surface_matrix/136_submarine_attacks_ground_light_marine_on_plain.json"
     },
     {
-      "name": "submarine attacks ground_heavy (tank) on plain",
+      "name": "submarine attacks ground_heavy (tank) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -4740,7 +4740,7 @@
       "input_state": "states/attack_surface_matrix/137_submarine_attacks_ground_heavy_tank_on_plain.json"
     },
     {
-      "name": "submarine attacks air (helicopter) on plain",
+      "name": "submarine attacks air (helicopter) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -4764,7 +4764,7 @@
       "input_state": "states/attack_surface_matrix/138_submarine_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "submarine attacks aquatic (destroyer) on plain",
+      "name": "submarine attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -4949,7 +4949,7 @@
             "occupying_unit_id": null,
             "owner_id": null,
             "surface_unit_id": null,
-            "terrain_id": "plain"
+            "terrain_id": "water"
           },
           {
             "capture_state": null,
@@ -5144,7 +5144,7 @@
             "occupying_unit_id": "u_defender",
             "owner_id": null,
             "surface_unit_id": "u_defender",
-            "terrain_id": "plain"
+            "terrain_id": "water"
           },
           {
             "capture_state": null,
@@ -5309,7 +5309,7 @@
       "input_state": "states/attack_surface_matrix/139_submarine_attacks_aquatic_destroyer_on_plain.json"
     },
     {
-      "name": "submarine attacks amphibian (salamander) on plain",
+      "name": "submarine attacks amphibian (salamander) from water",
       "actions": [
         {
           "type": "attack_unit",
@@ -5405,7 +5405,7 @@
       "input_state": "states/attack_surface_matrix/143_swarmer_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "swarmer attacks aquatic (destroyer) on plain",
+      "name": "swarmer attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -5523,7 +5523,7 @@
       "input_state": "states/attack_surface_matrix/148_tank_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "tank attacks aquatic (destroyer) on plain",
+      "name": "tank attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -5641,7 +5641,7 @@
       "input_state": "states/attack_surface_matrix/153_underling_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "underling attacks aquatic (destroyer) on plain",
+      "name": "underling attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -5763,7 +5763,7 @@
       "input_state": "states/attack_surface_matrix/158_walker_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "walker attacks aquatic (destroyer) on plain",
+      "name": "walker attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",
@@ -5885,7 +5885,7 @@
       "input_state": "states/attack_surface_matrix/163_wyrm_attacks_air_helicopter_on_plain.json"
     },
     {
-      "name": "wyrm attacks aquatic (destroyer) on plain",
+      "name": "wyrm attacks aquatic (destroyer) on water",
       "actions": [
         {
           "type": "attack_unit",

@@ -844,6 +844,7 @@ function App() {
                     transform={`translate(${center.x}, ${center.y})`}
                     opacity="0.75"
                   >
+                    <polygon points={hexPoints(0, 0, BASE_HEX_SIZE)} className="move-overlay-outline" />
                     <polygon points={hexPoints(0, 0, BASE_HEX_SIZE)} className="move-overlay-fill" />
                     {Array.isArray(moveAttackTargets[key]) && moveAttackTargets[key].length > 0 ? (
                       <>

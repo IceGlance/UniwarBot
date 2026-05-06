@@ -307,7 +307,7 @@
           "q": 1,
           "r": 1
         },
-        "terrain_id": "base",
+        "terrain_id": "harbor",
         "owner_id": "p2",
         "occupying_unit_id": "u_submarine",
         "capture_state": null,

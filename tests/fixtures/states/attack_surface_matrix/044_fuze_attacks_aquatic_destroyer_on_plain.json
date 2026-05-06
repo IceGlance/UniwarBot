@@ -288,7 +288,7 @@
           "q": 2,
           "r": 0
         },
-        "terrain_id": "plain",
+        "terrain_id": "water",
         "owner_id": null,
         "occupying_unit_id": "u_defender",
         "surface_unit_id": "u_defender",
