@@ -671,6 +671,230 @@ select {
   color: #64748b;
 }
 
+.editor-status-banner {
+  margin: 0 24px 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: #14532d;
+  background: rgba(220, 252, 231, 0.92);
+  border: 1px solid rgba(34, 197, 94, 0.28);
+}
+
+.editor-workspace-grid {
+  grid-template-columns: 300px minmax(0, 1fr) 420px;
+}
+
+.editor-tab-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 14px 18px 0;
+}
+
+.editor-tab {
+  border: 1px solid #c7d3e2;
+  background: rgba(255, 255, 255, 0.92);
+  color: #334155;
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.editor-tab.selected {
+  background: #0f172a;
+  color: #f8fafc;
+  border-color: #0f172a;
+}
+
+.editor-control-stack {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 14px;
+}
+
+.editor-tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.editor-button-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.editor-button-row .step-chip,
+.editor-section .step-chip {
+  justify-content: center;
+}
+
+.editor-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.editor-section-first {
+  padding-top: 0;
+  border-top: none;
+}
+
+.editor-inline-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.editor-inline-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.editor-inline-grid label span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.player-slot-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.player-slot-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(240, 246, 255, 0.92), rgba(230, 238, 248, 0.92));
+  border: 1px solid rgba(59, 130, 246, 0.14);
+}
+
+.player-slot-card strong {
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.checkbox-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.checkbox-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid #c7d3e2;
+  background: rgba(255, 255, 255, 0.9);
+  color: #334155;
+  cursor: pointer;
+}
+
+.checkbox-chip.checked {
+  background: #0f172a;
+  border-color: #0f172a;
+  color: #f8fafc;
+}
+
+.checkbox-chip input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+}
+
+.checkbox-chip span {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.terrain-palette-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.terrain-palette-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: rgba(255, 255, 255, 0.88);
+  color: #334155;
+  cursor: pointer;
+}
+
+.terrain-palette-button:hover {
+  border-color: rgba(59, 130, 246, 0.34);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.terrain-palette-button.selected {
+  border-color: #0f766e;
+  background: linear-gradient(180deg, rgba(236, 253, 245, 0.96), rgba(209, 250, 229, 0.94));
+  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.18);
+}
+
+.terrain-palette-button-delete {
+  justify-content: center;
+}
+
+.terrain-delete-glyph {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(254, 242, 242, 0.96), rgba(254, 226, 226, 0.94));
+  color: #b91c1c;
+  font-size: 20px;
+  font-weight: 900;
+  border: 1px solid rgba(185, 28, 28, 0.18);
+}
+
+.terrain-palette-button img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.terrain-palette-button span {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: capitalize;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.terrain-help-copy {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #64748b;
+}
+
+.panel-controls .editor-section .field-label {
+  margin-bottom: 0;
+}
+
 @media (max-width: 1500px) {
   .workspace-grid {
     grid-template-columns: 280px minmax(0, 1fr);
@@ -714,6 +938,18 @@ select {
 
   .board-svg {
     min-height: 420px;
+  }
+
+  .editor-workspace-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .terrain-palette-grid,
+  .editor-inline-grid,
+  .editor-button-row,
+  .editor-tab-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import json
+import math
+import re
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.responses import JSONResponse, RedirectResponse, Response
@@ -20,6 +23,8 @@ from .state import load_game_dictionary
 
 WEB_DIST = ROOT / "webgui" / "dist"
 WEB_APP = ROOT / "webgui"
+MAPS_DIR = ROOT / "maps"
+EDITOR_FACTIONS = ["sapiens", "khraleans", "titans"]
 
 app = FastAPI(
     title="UniwarBot Scenario Inspector API",
@@ -70,6 +75,7 @@ LANDING_PAGE = """<!doctype html>
     <div class="links">
       <a href="/scenario-inspector/">Scenario Inspector</a>
       <a href="/units-stats/">Units Stats</a>
+      <a href="/game-state-editor/">Game State Editor</a>
     </div>
   </body>
 </html>
@@ -95,6 +101,151 @@ TERRAIN_DISPLAY_ORDER = [
 
 TARGET_CLASS_ORDER = ["ground_light", "ground_heavy", "air", "aquatic", "amphibian"]
 FACTION_ORDER = {"sapiens": 0, "khraleans": 1, "titans": 2}
+
+
+def _suggest_city_income(base_income: int) -> int:
+    return int(math.ceil((int(base_income) / 2) / 5.0) * 5)
+
+
+def _sanitize_map_file_name(file_name: str) -> str:
+    cleaned = re.sub(r"[^A-Za-z0-9._-]+", "_", str(file_name).strip())
+    cleaned = cleaned.strip("._")
+    if not cleaned:
+        raise ValueError("Map file name cannot be empty")
+    if not cleaned.lower().endswith(".json"):
+        cleaned = f"{cleaned}.json"
+    return cleaned
+
+
+def _normalize_editor_map(payload: dict[str, object] | None) -> dict[str, object]:
+    payload = dict(payload or {})
+    terrain_ids = set(load_game_dictionary()["terrains"].keys())
+    terrain_map = load_game_dictionary()["terrains"]
+
+    size = dict(payload.get("size") or {})
+    width = max(1, int(size.get("width", payload.get("width", 8) or 8)))
+    height = max(1, int(size.get("height", payload.get("height", 8) or 8)))
+    player_count = max(1, min(8, int(payload.get("player_count", 2) or 2)))
+
+    players_payload = list(payload.get("players") or [])
+    players: list[dict[str, object]] = []
+    for index in range(player_count):
+        raw_player = dict(players_payload[index]) if index < len(players_payload) else {}
+        allowed_factions = [
+            faction for faction in list(raw_player.get("allowed_factions") or EDITOR_FACTIONS) if faction in EDITOR_FACTIONS
+        ]
+        if not allowed_factions:
+            allowed_factions = list(EDITOR_FACTIONS)
+        players.append(
+            {
+                "player_id": f"p{index + 1}",
+                "allowed_factions": allowed_factions,
+            }
+        )
+
+    economy_payload = dict(payload.get("economy") or {})
+    base_income = max(0, int(economy_payload.get("base_income", 100) or 100))
+    city_income_raw = economy_payload.get("city_income")
+    city_income = (
+        _suggest_city_income(base_income)
+        if city_income_raw is None
+        else max(0, int(city_income_raw))
+    )
+    starting_credits = max(0, int(economy_payload.get("starting_credits", 100) or 100))
+
+    tiles: list[dict[str, object]] = []
+    valid_owner_ids = {f"p{index + 1}" for index in range(player_count)}
+    for raw_tile in list(payload.get("tiles") or []):
+        tile = dict(raw_tile)
+        coord = dict(tile.get("coord") or {})
+        q = int(coord.get("q", -1))
+        r = int(coord.get("r", -1))
+        if not (0 <= q < width and 0 <= r < height):
+            continue
+        terrain_id = str(tile.get("terrain_id", "plain"))
+        if terrain_id not in terrain_ids:
+            terrain_id = "plain"
+        owner_id = tile.get("owner_id")
+        if owner_id not in valid_owner_ids:
+            owner_id = None
+        if not bool(terrain_map.get(terrain_id, {}).get("capturable", False)):
+            owner_id = None
+        tiles.append(
+            {
+                "coord": {"q": q, "r": r},
+                "terrain_id": terrain_id,
+                "owner_id": owner_id,
+            }
+        )
+    tiles.sort(key=lambda tile: (int(tile["coord"]["r"]), int(tile["coord"]["q"])))
+
+    map_name = str(payload.get("name", "New Map") or "New Map")
+    map_id = str(payload.get("map_id", re.sub(r"[^a-z0-9]+", "-", map_name.lower()).strip("-") or "new-map"))
+
+    return {
+        "schema_version": "map-editor-v1",
+        "map_id": map_id,
+        "name": map_name,
+        "size": {"width": width, "height": height},
+        "player_count": player_count,
+        "players": players,
+        "economy": {
+            "base_income": base_income,
+            "city_income": city_income,
+            "starting_credits": starting_credits,
+        },
+        "tiles": tiles,
+    }
+
+
+def _build_map_editor_config() -> dict[str, object]:
+    game_dictionary = load_game_dictionary()
+    terrains = game_dictionary["terrains"]
+    terrain_order = [
+        terrain_id for terrain_id in TERRAIN_DISPLAY_ORDER if terrain_id in terrains
+    ] + [terrain_id for terrain_id in terrains if terrain_id not in TERRAIN_DISPLAY_ORDER]
+    return {
+        "terrain_order": terrain_order,
+        "terrains": {
+            terrain_id: {
+                "terrain_id": terrain_id,
+                "display_name": str(terrains[terrain_id].get("display_name", terrain_id)),
+                "capturable": bool(terrains[terrain_id].get("capturable", False)),
+                "supports_production": bool(terrains[terrain_id].get("supports_production", False)),
+                "production_role": terrains[terrain_id].get("production_role"),
+                "provides_income": bool(terrains[terrain_id].get("provides_income", False)),
+            }
+            for terrain_id in terrain_order
+        },
+        "factions": list(EDITOR_FACTIONS),
+        "defaults": {
+            "width": 8,
+            "height": 8,
+            "player_count": 2,
+            "base_income": 100,
+            "city_income": _suggest_city_income(100),
+            "starting_credits": 100,
+        },
+    }
+
+
+def _list_saved_maps() -> list[dict[str, object]]:
+    MAPS_DIR.mkdir(parents=True, exist_ok=True)
+    items: list[dict[str, object]] = []
+    for path in sorted(MAPS_DIR.glob("*.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            name = str(payload.get("name", path.stem))
+        except Exception:
+            name = path.stem
+        items.append(
+            {
+                "file_name": path.name,
+                "name": name,
+                "modified_utc": path.stat().st_mtime,
+            }
+        )
+    return items
 
 
 def _range_label(range_data: dict[str, object] | None) -> str | None:
@@ -243,6 +394,48 @@ def unit_stats() -> dict[str, object]:
     return build_unit_stats_payload()
 
 
+@app.get("/api/map-editor/config")
+def map_editor_config() -> dict[str, object]:
+    return _build_map_editor_config()
+
+
+@app.get("/api/maps")
+def list_maps() -> list[dict[str, object]]:
+    return _list_saved_maps()
+
+
+@app.get("/api/maps/{file_name}")
+def load_map(file_name: str) -> dict[str, object]:
+    try:
+        sanitized = _sanitize_map_file_name(file_name)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    path = MAPS_DIR / sanitized
+    if not path.exists():
+        raise HTTPException(status_code=404, detail=f"Unknown map: {sanitized}")
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=500, detail=f"Invalid map JSON: {sanitized}") from exc
+    normalized = _normalize_editor_map(payload)
+    normalized["file_name"] = sanitized
+    return normalized
+
+
+@app.post("/api/maps/save")
+def save_map(payload: dict[str, object] = Body(...)) -> dict[str, object]:
+    try:
+        file_name = _sanitize_map_file_name(str(payload.get("file_name", "")))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    normalized = _normalize_editor_map(dict(payload.get("map") or {}))
+    MAPS_DIR.mkdir(parents=True, exist_ok=True)
+    path = MAPS_DIR / file_name
+    path.write_text(json.dumps(normalized, indent=2) + "\n", encoding="utf-8")
+    normalized["file_name"] = file_name
+    return normalized
+
+
 @app.get("/gui-status", response_model=None)
 def gui_status() -> Response:
     if WEB_DIST.exists():
@@ -288,6 +481,21 @@ def unit_stats_app() -> Response:
     return FileResponse(WEB_APP / "units-stats.jsx")
 
 
+@app.get("/game-state-editor", include_in_schema=False)
+def game_state_editor_redirect() -> Response:
+    return RedirectResponse(url="/game-state-editor/")
+
+
+@app.get("/game-state-editor/", include_in_schema=False)
+def game_state_editor_index() -> Response:
+    return FileResponse(WEB_APP / "game-state-editor.html")
+
+
+@app.get("/game-state-editor/game-state-editor.jsx", include_in_schema=False)
+def game_state_editor_app() -> Response:
+    return FileResponse(WEB_APP / "game-state-editor.jsx")
+
+
 if WEB_DIST.exists():
     app.mount("/scenario-inspector/assets", StaticFiles(directory=WEB_DIST / "assets"), name="webgui-assets")
 else:
@@ -297,6 +505,9 @@ else:
     app.mount("/units-stats/public", StaticFiles(directory=WEB_APP / "public"), name="units-stats-public")
     app.mount("/units-stats/src", StaticFiles(directory=WEB_APP / "src"), name="units-stats-src")
     app.mount("/units-stats/vendor", StaticFiles(directory=WEB_APP / "vendor"), name="units-stats-vendor")
+    app.mount("/game-state-editor/public", StaticFiles(directory=WEB_APP / "public"), name="game-state-editor-public")
+    app.mount("/game-state-editor/src", StaticFiles(directory=WEB_APP / "src"), name="game-state-editor-src")
+    app.mount("/game-state-editor/vendor", StaticFiles(directory=WEB_APP / "vendor"), name="game-state-editor-vendor")
 
 
 def main() -> None:

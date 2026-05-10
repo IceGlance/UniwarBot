@@ -51,7 +51,7 @@ That ordering is intentional. A strong bot depends on a correct simulator, and a
   Machine-readable dictionary of terrains and units for the engine and bot pipeline.
 
 - `src/uniwarbot/gui_api.py`
-  FastAPI backend for the local scenario inspector GUI.
+  FastAPI backend for the local scenario inspector, units stats, and map editor pages.
 
 - `webgui/`
   React + TypeScript frontend for browsing scenario fixtures, actions, states, and diffs.
@@ -218,7 +218,11 @@ The current test suite has been verified from that environment with:
 
 ## Scenario Inspector GUI
 
-The repository now includes a first local web GUI for visualizing UT scenarios, actions, state transitions, and changed fields.
+The repository now includes a local web GUI bundle with three pages:
+
+- `Scenario Inspector`
+- `Units Stats`
+- `Game State Editor`
 
 Current GUI scope:
 
@@ -228,12 +232,14 @@ Current GUI scope:
 - render terrain tiles from locally downloaded UniCalc terrain sprites,
 - render unit markers from locally downloaded UniCalc unit sprites,
 - inspect tile and unit JSON,
-- view actual changed fields after each action.
+- view actual changed fields after each action,
+- browse unit stats from the validated dictionary,
+- create and save map JSON files through a visual map editor.
 
 Architecture:
 
 - `FastAPI` backend in `src/uniwarbot/gui_api.py`
-- `React + TypeScript` frontend in `webgui/`
+- local React JSX frontend pages in `webgui/`
 
 ### Start The Backend
 
@@ -260,13 +266,21 @@ Important:
 - `http://127.0.0.1:8000/api/...` endpoints are raw JSON data sources for the frontend.
 - They are not the GUI itself.
 - `http://127.0.0.1:8000/` is now a minimal landing page.
-- Use `http://127.0.0.1:8000/scenario-inspector/` for the actual visual scenario inspector.
+- Use that landing page to open:
+  - `Scenario Inspector`
+  - `Units Stats`
+  - `Game State Editor`
 
 Useful endpoints:
 
 - `GET /api/health`
 - `GET /api/scenarios`
 - `GET /api/scenarios/{scenario_id}`
+- `GET /api/unit-stats`
+- `GET /api/map-editor/config`
+- `GET /api/maps`
+- `GET /api/maps/{file_name}`
+- `POST /api/maps/save`
 
 ### Start The GUI Frontend
 
@@ -297,11 +311,11 @@ The GUI currently provides:
 - a scenario dropdown populated from `tests/fixtures/scenarios/`,
 - step selection per scenario action,
 - a rendered board with locally stored UniCalc terrain and unit sprites,
-- zoom in, zoom out, reset zoom, and mouse-wheel zoom on the board,
+- mouse-wheel zoom and drag-to-pan on the board,
 - clickable tile and unit inspection panels,
-- action payload and changed-field diff panels.
-
-The Vite dev server proxies `/api` requests to the FastAPI backend on port `8000`.
+- action payload and changed-field diff panels,
+- a unit stats table generated from `data/validated/game-dictionary.json`,
+- a map editor for terrain painting, economy, player setup, ownership, save, and load.
 
 ### Typical Local Workflow
 
@@ -321,6 +335,8 @@ http://127.0.0.1:8000/
 
 ```text
 Scenario Inspector
+Units Stats
+Game State Editor
 ```
 
 Optional split-server workflow:
@@ -336,6 +352,44 @@ http://127.0.0.1:5173
 ```
 
 Do not open `/api/scenarios/{scenario_id}` directly unless you specifically want the raw JSON that drives the GUI.
+
+## Game State Editor
+
+The `Game State Editor` page is an early visual editor for map JSON files. It currently supports map setup only. Unit placement is not implemented yet.
+
+Current editor features:
+
+- create a blank map with configurable width and height,
+- resize the map later without switching to raw JSON,
+- paint terrain hexes using terrain icons,
+- set player count,
+- set allowed races for each player,
+- set `base_income`,
+- set `city_income`,
+- set `starting_credits`,
+- set ownership of capturable hexes such as base, harbor, and city,
+- save the map as JSON,
+- save as a new JSON file,
+- load saved JSON maps from the local `maps/` folder.
+
+City income behavior:
+
+- the editor suggests city income as half of base income,
+- rounded up to the next multiple of `5`.
+
+Map files:
+
+- saved map files are stored in `maps/`
+- nothing is written to a database
+- the backend normalizes loaded and saved files to the current editor schema
+
+Useful routes:
+
+- `http://127.0.0.1:8000/game-state-editor/`
+- `GET http://127.0.0.1:8000/api/map-editor/config`
+- `GET http://127.0.0.1:8000/api/maps`
+- `GET http://127.0.0.1:8000/api/maps/{file_name}`
+- `POST http://127.0.0.1:8000/api/maps/save`
 
 ### Future Extension Path
 
