@@ -101,10 +101,66 @@ TERRAIN_DISPLAY_ORDER = [
 
 TARGET_CLASS_ORDER = ["ground_light", "ground_heavy", "air", "aquatic", "amphibian"]
 FACTION_ORDER = {"sapiens": 0, "khraleans": 1, "titans": 2}
+HIDDEN_MODE_VALUES = ["buried", "submerged"]
+TELEPORT_LOCK_PHASE_VALUES = ["opponent_turn", "owner_turn"]
 
 
 def _suggest_city_income(base_income: int) -> int:
     return int(math.ceil((int(base_income) / 2) / 5.0) * 5)
+
+
+def _unit_sprite_id(unit_id: str) -> str:
+    return "mecha_2" if unit_id == "mecha_ii" else unit_id
+
+
+def _default_editor_unit(
+    unit_id: str,
+    owner_id: str,
+    position: dict[str, int],
+    *,
+    instance_id: str,
+    hidden_mode: str | None = None,
+) -> dict[str, object]:
+    unit_entry = load_game_dictionary()["units"].get(unit_id, {})
+    return {
+        "instance_id": instance_id,
+        "unit_id": unit_id,
+        "owner_id": owner_id,
+        "position": {"q": int(position["q"]), "r": int(position["r"])},
+        "hp": int(unit_entry.get("base_max_hp", 10)),
+        "veterancy_level": 0,
+        "experience_points": 0,
+        "status": {
+            "plague_infected": False,
+            "hidden_mode": hidden_mode,
+            "emp_disabled_rounds": 0,
+            "teleport_disabled_rounds": 0,
+            "teleport_lock_phase": None,
+            "teleport_cooldown_rounds": 0,
+            "buried_resurface_bonus": 0,
+            "submerged_attack_penalty": 0,
+            "ability_cooldowns": {},
+        },
+        "action": {
+            "is_available": True,
+            "configured_action_count": 1,
+            "actions_remaining": 1,
+            "can_interleave_between_action_windows": True,
+            "move_points_remaining": None,
+            "attacks_remaining": 1,
+            "special_actions_remaining": None,
+            "action_phase_index": 0,
+            "current_action_index": 0,
+            "action_windows": [],
+            "atomic_action_locked": False,
+            "atomic_action_label": None,
+            "has_moved_this_turn": False,
+            "has_attacked_this_turn": False,
+            "has_used_special_this_turn": False,
+        },
+        "capture_target": None,
+        "metadata": {},
+    }
 
 
 def _sanitize_map_file_name(file_name: str) -> str:
@@ -119,8 +175,10 @@ def _sanitize_map_file_name(file_name: str) -> str:
 
 def _normalize_editor_map(payload: dict[str, object] | None) -> dict[str, object]:
     payload = dict(payload or {})
-    terrain_ids = set(load_game_dictionary()["terrains"].keys())
-    terrain_map = load_game_dictionary()["terrains"]
+    game_dictionary = load_game_dictionary()
+    terrain_ids = set(game_dictionary["terrains"].keys())
+    terrain_map = game_dictionary["terrains"]
+    unit_ids = set(game_dictionary["units"].keys())
 
     size = dict(payload.get("size") or {})
     width = max(1, int(size.get("width", payload.get("width", 8) or 8)))
@@ -178,6 +236,147 @@ def _normalize_editor_map(payload: dict[str, object] | None) -> dict[str, object
             }
         )
     tiles.sort(key=lambda tile: (int(tile["coord"]["r"]), int(tile["coord"]["q"])))
+    tile_keys = {
+        (int(tile["coord"]["q"]), int(tile["coord"]["r"]))
+        for tile in tiles
+    }
+
+    units: list[dict[str, object]] = []
+    seen_instance_ids: set[str] = set()
+    for index, raw_unit in enumerate(list(payload.get("units") or []), start=1):
+        unit = dict(raw_unit)
+        unit_id = str(unit.get("unit_id", "marine"))
+        if unit_id not in unit_ids:
+            continue
+        owner_id = str(unit.get("owner_id", "p1"))
+        if owner_id not in valid_owner_ids:
+            owner_id = "p1"
+        position = dict(unit.get("position") or {})
+        q = int(position.get("q", -1))
+        r = int(position.get("r", -1))
+        if not (0 <= q < width and 0 <= r < height):
+            continue
+        if (q, r) not in tile_keys:
+            continue
+        raw_status = dict(unit.get("status") or {})
+        hidden_mode = raw_status.get("hidden_mode")
+        hidden_mode_value = (
+            str(hidden_mode) if hidden_mode in HIDDEN_MODE_VALUES else None
+        )
+        default_unit = _default_editor_unit(
+            unit_id,
+            owner_id,
+            {"q": q, "r": r},
+            instance_id=f"u_{unit_id}_{index}",
+            hidden_mode=hidden_mode_value,
+        )
+        instance_id = str(unit.get("instance_id") or default_unit["instance_id"])
+        if instance_id in seen_instance_ids:
+            suffix = 2
+            while f"{instance_id}_{suffix}" in seen_instance_ids:
+                suffix += 1
+            instance_id = f"{instance_id}_{suffix}"
+        seen_instance_ids.add(instance_id)
+
+        status = dict(default_unit["status"])
+        status.update(raw_status)
+        status["hidden_mode"] = (
+            str(status.get("hidden_mode"))
+            if status.get("hidden_mode") in HIDDEN_MODE_VALUES
+            else None
+        )
+        status["teleport_lock_phase"] = (
+            str(status.get("teleport_lock_phase"))
+            if status.get("teleport_lock_phase") in TELEPORT_LOCK_PHASE_VALUES
+            else None
+        )
+        status["plague_infected"] = bool(status.get("plague_infected", False))
+        status["emp_disabled_rounds"] = int(status.get("emp_disabled_rounds", 0))
+        status["teleport_disabled_rounds"] = int(
+            status.get("teleport_disabled_rounds", 0)
+        )
+        status["teleport_cooldown_rounds"] = int(
+            status.get("teleport_cooldown_rounds", 0)
+        )
+        status["buried_resurface_bonus"] = int(
+            status.get("buried_resurface_bonus", 0)
+        )
+        status["submerged_attack_penalty"] = int(
+            status.get("submerged_attack_penalty", 0)
+        )
+        status["ability_cooldowns"] = {
+            str(key): int(value)
+            for key, value in dict(status.get("ability_cooldowns", {})).items()
+        }
+
+        raw_action = dict(unit.get("action") or {})
+        action = dict(default_unit["action"])
+        action.update(raw_action)
+        action["is_available"] = bool(action.get("is_available", True))
+        action["configured_action_count"] = int(
+            action.get("configured_action_count", 1)
+        )
+        action["actions_remaining"] = int(action.get("actions_remaining", 1))
+        action["can_interleave_between_action_windows"] = bool(
+            action.get("can_interleave_between_action_windows", True)
+        )
+        action["move_points_remaining"] = (
+            None
+            if action.get("move_points_remaining") in {None, ""}
+            else int(action.get("move_points_remaining"))
+        )
+        action["attacks_remaining"] = int(action.get("attacks_remaining", 1))
+        action["special_actions_remaining"] = (
+            None
+            if action.get("special_actions_remaining") in {None, ""}
+            else int(action.get("special_actions_remaining"))
+        )
+        action["action_phase_index"] = int(action.get("action_phase_index", 0))
+        action["current_action_index"] = int(action.get("current_action_index", 0))
+        action["action_windows"] = list(action.get("action_windows", []))
+        action["atomic_action_locked"] = bool(
+            action.get("atomic_action_locked", False)
+        )
+        action["atomic_action_label"] = (
+            None
+            if action.get("atomic_action_label") in {None, ""}
+            else str(action.get("atomic_action_label"))
+        )
+        action["has_moved_this_turn"] = bool(
+            action.get("has_moved_this_turn", False)
+        )
+        action["has_attacked_this_turn"] = bool(
+            action.get("has_attacked_this_turn", False)
+        )
+        action["has_used_special_this_turn"] = bool(
+            action.get("has_used_special_this_turn", False)
+        )
+
+        capture_target = unit.get("capture_target")
+        normalized_capture_target = None
+        if isinstance(capture_target, dict):
+            capture_q = int(capture_target.get("q", -1))
+            capture_r = int(capture_target.get("r", -1))
+            if 0 <= capture_q < width and 0 <= capture_r < height:
+                normalized_capture_target = {"q": capture_q, "r": capture_r}
+
+        units.append(
+            {
+                "instance_id": instance_id,
+                "unit_id": unit_id,
+                "owner_id": owner_id,
+                "position": {"q": q, "r": r},
+                "hp": int(unit.get("hp", default_unit["hp"])),
+                "veterancy_level": max(
+                    0, min(2, int(unit.get("veterancy_level", 0)))
+                ),
+                "experience_points": int(unit.get("experience_points", 0)),
+                "status": status,
+                "action": action,
+                "capture_target": normalized_capture_target,
+                "metadata": dict(unit.get("metadata", {})),
+            }
+        )
 
     map_name = str(payload.get("name", "New Map") or "New Map")
     map_id = str(payload.get("map_id", re.sub(r"[^a-z0-9]+", "-", map_name.lower()).strip("-") or "new-map"))
@@ -195,15 +394,24 @@ def _normalize_editor_map(payload: dict[str, object] | None) -> dict[str, object
             "starting_credits": starting_credits,
         },
         "tiles": tiles,
+        "units": units,
     }
 
 
 def _build_map_editor_config() -> dict[str, object]:
     game_dictionary = load_game_dictionary()
     terrains = game_dictionary["terrains"]
+    units = game_dictionary["units"]
     terrain_order = [
         terrain_id for terrain_id in TERRAIN_DISPLAY_ORDER if terrain_id in terrains
     ] + [terrain_id for terrain_id in terrains if terrain_id not in TERRAIN_DISPLAY_ORDER]
+    unit_order = sorted(
+        units.keys(),
+        key=lambda unit_id: (
+            FACTION_ORDER.get(str(units[unit_id].get("faction")), 99),
+            str(units[unit_id].get("display_name", unit_id)).lower(),
+        ),
+    )
     return {
         "terrain_order": terrain_order,
         "terrains": {
@@ -218,6 +426,21 @@ def _build_map_editor_config() -> dict[str, object]:
             for terrain_id in terrain_order
         },
         "factions": list(EDITOR_FACTIONS),
+        "unit_order": unit_order,
+        "units": {
+            unit_id: {
+                "unit_id": unit_id,
+                "display_name": str(units[unit_id].get("display_name", unit_id)),
+                "faction": str(units[unit_id].get("faction", "")),
+                "unit_type": str(units[unit_id].get("unit_type", "")),
+                "base_max_hp": int(units[unit_id].get("base_max_hp", 10)),
+                "sprite_unit_id": _unit_sprite_id(unit_id),
+            }
+            for unit_id in unit_order
+        },
+        "hidden_mode_values": list(HIDDEN_MODE_VALUES),
+        "teleport_lock_phase_values": list(TELEPORT_LOCK_PHASE_VALUES),
+        "veterancy_levels": [0, 1, 2],
         "defaults": {
             "width": 8,
             "height": 8,

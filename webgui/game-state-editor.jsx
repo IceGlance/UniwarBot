@@ -86,12 +86,39 @@ function terrainAsset(terrainId) {
   return `./public/gui-assets/terrains/${terrainId}.png`;
 }
 
+function unitAsset(unitId, ownerId) {
+  const mapped = unitId === "mecha_ii" ? "mecha_2" : unitId;
+  if (ownerId === "p1") {
+    return `./public/gui-assets/units-red/${mapped}.png`;
+  }
+  if (ownerId === "p2") {
+    return `./public/gui-assets/units-blue/${mapped}.png`;
+  }
+  return `./public/gui-assets/units/${mapped}.png`;
+}
+
 function pretty(value) {
   return JSON.stringify(value ?? null, null, 2);
 }
 
 function suggestCityIncome(baseIncome) {
   return Math.ceil((Number(baseIncome || 0) / 2) / 5) * 5;
+}
+
+function renderVeterancy(unit) {
+  const level = Number(unit?.veterancy_level ?? 0);
+  if (level <= 0) {
+    return null;
+  }
+  return (
+    <g className="veterancy-badge" transform="translate(-20,-4)">
+      {Array.from({ length: Math.min(level, 2) }).map((_, index) => (
+        <text key={index} className="veterancy-text" x="0" y={index * -8}>
+          ^
+        </text>
+      ))}
+    </g>
+  );
 }
 
 function buildBlankMap(config, width, height, playerCount, fillTerrainId = "plain") {
@@ -112,6 +139,7 @@ function buildBlankMap(config, width, height, playerCount, fillTerrainId = "plai
       city_income: config?.defaults?.city_income ?? 50,
       starting_credits: config?.defaults?.starting_credits ?? 100,
     },
+    units: [],
     tiles: Array.from({ length: height }, (_, r) =>
       Array.from({ length: width }, (_, q) => ({
         coord: { q, r },
@@ -124,6 +152,272 @@ function buildBlankMap(config, width, height, playerCount, fillTerrainId = "plai
 
 function cloneMapPayload(map) {
   return JSON.parse(JSON.stringify(map));
+}
+
+function buildEditorUnit(config, unitId, ownerId, coord, placementMode, instanceId) {
+  const unitConfig = config?.units?.[unitId] ?? {};
+  return {
+    instance_id: instanceId,
+    unit_id: unitId,
+    owner_id: ownerId,
+    position: { q: coord.q, r: coord.r },
+    hp: Number(unitConfig.base_max_hp ?? 10),
+    veterancy_level: 0,
+    experience_points: 0,
+    status: {
+      plague_infected: false,
+      hidden_mode: placementMode === "surface" ? null : placementMode,
+      emp_disabled_rounds: 0,
+      teleport_disabled_rounds: 0,
+      teleport_lock_phase: null,
+      teleport_cooldown_rounds: 0,
+      buried_resurface_bonus: 0,
+      submerged_attack_penalty: 0,
+      ability_cooldowns: {},
+    },
+    action: {
+      is_available: true,
+      configured_action_count: 1,
+      actions_remaining: 1,
+      can_interleave_between_action_windows: true,
+      move_points_remaining: null,
+      attacks_remaining: 1,
+      special_actions_remaining: null,
+      action_phase_index: 0,
+      current_action_index: 0,
+      action_windows: [],
+      atomic_action_locked: false,
+      atomic_action_label: null,
+      has_moved_this_turn: false,
+      has_attacked_this_turn: false,
+      has_used_special_this_turn: false,
+    },
+    capture_target: null,
+    metadata: {},
+  };
+}
+
+function nullableInt(value) {
+  return value === "" ? null : Number(value);
+}
+
+function jsonValueType(value) {
+  if (Array.isArray(value)) {
+    return "array";
+  }
+  if (value === null || value === undefined) {
+    return "null";
+  }
+  if (typeof value === "object") {
+    return "object";
+  }
+  if (typeof value === "number") {
+    return "number";
+  }
+  if (typeof value === "boolean") {
+    return "boolean";
+  }
+  return "string";
+}
+
+function defaultJsonValue(type) {
+  switch (type) {
+    case "number":
+      return 0;
+    case "boolean":
+      return false;
+    case "object":
+      return {};
+    case "array":
+      return [];
+    case "null":
+      return null;
+    case "string":
+    default:
+      return "";
+  }
+}
+
+function nextObjectFieldName(objectValue) {
+  const taken = new Set(Object.keys(objectValue ?? {}));
+  let index = 1;
+  while (taken.has(`field_${index}`)) {
+    index += 1;
+  }
+  return `field_${index}`;
+}
+
+function JsonValueEditor({ value, onChange, depth = 0 }) {
+  const currentType = jsonValueType(value);
+  const changeType = (nextType) => {
+    onChange(defaultJsonValue(nextType));
+  };
+
+  if (currentType === "object") {
+    const entries = Object.entries(value ?? {});
+    return (
+      <div className={`json-editor json-editor-depth-${depth}`}>
+        <div className="json-editor-type-row">
+          <span className="summary-label">object</span>
+          <div className="json-editor-actions">
+            <select value="object" onChange={(event) => changeType(event.target.value)}>
+              <option value="string">String</option>
+              <option value="number">Number</option>
+              <option value="boolean">Boolean</option>
+              <option value="null">Null</option>
+              <option value="object">Object</option>
+              <option value="array">Array</option>
+            </select>
+            <button
+              type="button"
+              className="step-chip"
+              onClick={() => {
+                const nextKey = nextObjectFieldName(value);
+                onChange({
+                  ...(value ?? {}),
+                  [nextKey]: "",
+                });
+              }}
+            >
+              Add Field
+            </button>
+          </div>
+        </div>
+        {entries.length === 0 ? <span className="muted">No fields.</span> : null}
+        <div className="json-editor-stack">
+          {entries.map(([entryKey, entryValue]) => (
+            <div key={entryKey} className="json-editor-entry">
+              <input
+                className="json-editor-key"
+                value={entryKey}
+                onChange={(event) => {
+                  const nextKey = event.target.value.trim() || entryKey;
+                  if (nextKey === entryKey) {
+                    return;
+                  }
+                  const nextObject = {};
+                  Object.entries(value ?? {}).forEach(([candidateKey, candidateValue]) => {
+                    nextObject[candidateKey === entryKey ? nextKey : candidateKey] = candidateValue;
+                  });
+                  onChange(nextObject);
+                }}
+              />
+              <div className="json-editor-value">
+                <JsonValueEditor
+                  value={entryValue}
+                  onChange={(nextEntryValue) =>
+                    onChange({
+                      ...(value ?? {}),
+                      [entryKey]: nextEntryValue,
+                    })
+                  }
+                  depth={depth + 1}
+                />
+              </div>
+              <button
+                type="button"
+                className="json-editor-remove"
+                onClick={() => {
+                  const nextObject = { ...(value ?? {}) };
+                  delete nextObject[entryKey];
+                  onChange(nextObject);
+                }}
+                title="Remove field"
+              >
+                X
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (currentType === "array") {
+    const arrayValue = Array.isArray(value) ? value : [];
+    return (
+      <div className={`json-editor json-editor-depth-${depth}`}>
+        <div className="json-editor-type-row">
+          <span className="summary-label">array</span>
+          <div className="json-editor-actions">
+            <select value="array" onChange={(event) => changeType(event.target.value)}>
+              <option value="string">String</option>
+              <option value="number">Number</option>
+              <option value="boolean">Boolean</option>
+              <option value="null">Null</option>
+              <option value="object">Object</option>
+              <option value="array">Array</option>
+            </select>
+            <button type="button" className="step-chip" onClick={() => onChange([...(arrayValue ?? []), ""])}>
+              Add Item
+            </button>
+          </div>
+        </div>
+        {arrayValue.length === 0 ? <span className="muted">No items.</span> : null}
+        <div className="json-editor-stack">
+          {arrayValue.map((itemValue, index) => (
+            <div key={index} className="json-editor-entry">
+              <span className="json-editor-index">{index + 1}</span>
+              <div className="json-editor-value">
+                <JsonValueEditor
+                  value={itemValue}
+                  onChange={(nextItemValue) => {
+                    const nextArray = [...arrayValue];
+                    nextArray[index] = nextItemValue;
+                    onChange(nextArray);
+                  }}
+                  depth={depth + 1}
+                />
+              </div>
+              <button
+                type="button"
+                className="json-editor-remove"
+                onClick={() => {
+                  const nextArray = arrayValue.filter((_, candidateIndex) => candidateIndex !== index);
+                  onChange(nextArray);
+                }}
+                title="Remove item"
+              >
+                X
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`json-editor json-editor-depth-${depth}`}>
+      <div className="json-editor-primitive">
+        <select value={currentType} onChange={(event) => changeType(event.target.value)}>
+          <option value="string">String</option>
+          <option value="number">Number</option>
+          <option value="boolean">Boolean</option>
+          <option value="null">Null</option>
+          <option value="object">Object</option>
+          <option value="array">Array</option>
+        </select>
+        {currentType === "string" ? (
+          <input value={String(value ?? "")} onChange={(event) => onChange(event.target.value)} />
+        ) : null}
+        {currentType === "number" ? (
+          <input
+            type="number"
+            value={Number.isFinite(Number(value)) ? Number(value) : 0}
+            onChange={(event) => onChange(Number(event.target.value || 0))}
+          />
+        ) : null}
+        {currentType === "boolean" ? (
+          <select value={value ? "true" : "false"} onChange={(event) => onChange(event.target.value === "true")}>
+            <option value="false">false</option>
+            <option value="true">true</option>
+          </select>
+        ) : null}
+        {currentType === "null" ? <span className="muted">null</span> : null}
+      </div>
+    </div>
+  );
 }
 
 function updateMapName(current, nextName) {
@@ -163,6 +457,16 @@ function resizeMapKeepingTiles(map, nextWidth, nextHeight, terrainConfig) {
       ...tile,
       owner_id: terrainAllowsOwner(terrainConfig, tile.terrain_id) ? tile.owner_id ?? null : null,
     }));
+  const keptTileKeys = new Set((nextMap.tiles ?? []).map((tile) => coordKey(tile.coord)));
+  nextMap.units = (nextMap.units ?? []).filter((unit) => {
+    const position = unit?.position ?? {};
+    const q = Number(position.q);
+    const r = Number(position.r);
+    if (!(q >= 0 && q < nextWidth && r >= 0 && r < nextHeight)) {
+      return false;
+    }
+    return keptTileKeys.has(coordKey({ q, r }));
+  });
   return nextMap;
 }
 
@@ -195,8 +499,12 @@ function App() {
   const [savedMaps, setSavedMaps] = useState([]);
   const [mapData, setMapData] = useState(null);
   const [selectedTileKey, setSelectedTileKey] = useState(null);
+  const [selectedUnitId, setSelectedUnitId] = useState(null);
   const [selectedTerrainId, setSelectedTerrainId] = useState("plain");
   const [recreateTerrainId, setRecreateTerrainId] = useState("plain");
+  const [selectedUnitBrushId, setSelectedUnitBrushId] = useState("marine");
+  const [unitBrushOwnerId, setUnitBrushOwnerId] = useState("p1");
+  const [unitBrushPlacementMode, setUnitBrushPlacementMode] = useState("surface");
   const [selectedLoadFile, setSelectedLoadFile] = useState("");
   const [draftWidth, setDraftWidth] = useState(8);
   const [draftHeight, setDraftHeight] = useState(8);
@@ -268,6 +576,7 @@ function App() {
         setDraftHeight(starterMap.size.height);
         setSelectedTerrainId(configPayload.terrain_order?.[0] ?? "plain");
         setRecreateTerrainId(configPayload.terrain_order?.[0] ?? "plain");
+        setSelectedUnitBrushId(configPayload.unit_order?.[0] ?? "marine");
         setFileNameInput("new-map.json");
       })
       .catch((reason) => {
@@ -276,12 +585,67 @@ function App() {
   }, []);
 
   const tiles = mapData?.tiles ?? [];
+  const units = mapData?.units ?? [];
   const tileByKey = useMemo(() => new Map(tiles.map((tile) => [coordKey(tile.coord), tile])), [tiles]);
   const selectedTile = selectedTileKey ? tileByKey.get(selectedTileKey) ?? null : null;
+  const unitsById = useMemo(
+    () => new Map(units.map((unit) => [String(unit.instance_id), unit])),
+    [units],
+  );
+  const surfaceUnitsByTile = useMemo(() => {
+    const result = new Map();
+    units.forEach((unit) => {
+      if (!unit?.status?.hidden_mode) {
+        result.set(coordKey(unit.position), unit);
+      }
+    });
+    return result;
+  }, [units]);
+  const hiddenUnitsByTile = useMemo(() => {
+    const result = new Map();
+    units.forEach((unit) => {
+      if (unit?.status?.hidden_mode) {
+        result.set(coordKey(unit.position), unit);
+      }
+    });
+    return result;
+  }, [units]);
+  const selectedUnit = selectedUnitId ? unitsById.get(selectedUnitId) ?? null : null;
+  const selectedTileSurfaceUnit = selectedTileKey ? surfaceUnitsByTile.get(selectedTileKey) ?? null : null;
+  const selectedTileHiddenUnit = selectedTileKey ? hiddenUnitsByTile.get(selectedTileKey) ?? null : null;
+  const hiddenRenderItems = useMemo(
+    () =>
+      tiles
+        .map((tile) => {
+          const hiddenUnit = hiddenUnitsByTile.get(coordKey(tile.coord));
+          if (!hiddenUnit) {
+            return null;
+          }
+          return {
+            key: String(hiddenUnit.instance_id),
+            tile,
+            unit: hiddenUnit,
+          };
+        })
+        .filter(Boolean),
+    [hiddenUnitsByTile, tiles],
+  );
   const playerOptions = useMemo(
     () => Array.from({ length: Number(mapData?.player_count ?? 0) }, (_, index) => `p${index + 1}`),
     [mapData?.player_count],
   );
+  const unitsGroupedByFaction = useMemo(() => {
+    const groups = {};
+    (config?.unit_order ?? []).forEach((unitId) => {
+      const unitConfig = config?.units?.[unitId];
+      const faction = String(unitConfig?.faction ?? "other");
+      if (!groups[faction]) {
+        groups[faction] = [];
+      }
+      groups[faction].push(unitConfig);
+    });
+    return groups;
+  }, [config]);
 
   const boardBounds = useMemo(() => editorMapBounds(tiles), [tiles]);
   const zoomedViewBox = useMemo(() => {
@@ -319,6 +683,91 @@ function App() {
     });
   };
 
+  const updateSelectedUnit = (updater) => {
+    setMapData((current) => {
+      if (!current || !selectedUnitId) {
+        return current;
+      }
+      const nextMap = cloneMapPayload(current);
+      nextMap.units = (nextMap.units ?? []).map((unit) =>
+        String(unit.instance_id) === selectedUnitId ? updater({ ...unit }) : unit,
+      );
+      return nextMap;
+    });
+  };
+
+  const removeSelectedUnit = () => {
+    if (!selectedUnitId) {
+      return;
+    }
+    setMapData((current) => {
+      if (!current) {
+        return current;
+      }
+      const nextMap = cloneMapPayload(current);
+      nextMap.units = (nextMap.units ?? []).filter(
+        (unit) => String(unit.instance_id) !== selectedUnitId,
+      );
+      return nextMap;
+    });
+    setSelectedUnitId(null);
+  };
+
+  const setSelectedUnitValue = (path, nextValue) => {
+    updateSelectedUnit((unit) => {
+      const nextUnit = cloneMapPayload(unit);
+      let cursor = nextUnit;
+      for (let index = 0; index < path.length - 1; index += 1) {
+        const key = path[index];
+        cursor[key] = cloneMapPayload(cursor[key] ?? {});
+        cursor = cursor[key];
+      }
+      cursor[path[path.length - 1]] = nextValue;
+      return nextUnit;
+    });
+  };
+
+  const moveSelectedUnitTo = (nextCoord, nextHiddenMode = selectedUnit?.status?.hidden_mode ?? null) => {
+    if (!selectedUnitId) {
+      return;
+    }
+    const nextKey = coordKey(nextCoord);
+    if (!tileByKey.has(nextKey)) {
+      setError(`Cannot move unit to ${nextKey}: no hex exists there.`);
+      return;
+    }
+    const conflictingUnit =
+      nextHiddenMode
+        ? hiddenUnitsByTile.get(nextKey)
+        : surfaceUnitsByTile.get(nextKey);
+    if (conflictingUnit && String(conflictingUnit.instance_id) !== selectedUnitId) {
+      setError(`Cannot move unit to ${nextKey}: that layer is already occupied.`);
+      return;
+    }
+    setMapData((current) => {
+      if (!current) {
+        return current;
+      }
+      const nextMap = cloneMapPayload(current);
+      nextMap.units = (nextMap.units ?? []).map((unit) => {
+        if (String(unit.instance_id) !== selectedUnitId) {
+          return unit;
+        }
+        return {
+          ...unit,
+          position: { q: nextCoord.q, r: nextCoord.r },
+          status: {
+            ...(unit.status ?? {}),
+            hidden_mode: nextHiddenMode || null,
+          },
+        };
+      });
+      return nextMap;
+    });
+    setSelectedTileKey(nextKey);
+    setError("");
+  };
+
   const upsertTileAtCoord = (coord, terrainId) => {
     setMapData((current) => {
       if (!current || !config) {
@@ -337,6 +786,13 @@ function App() {
           coord: {
             q: tile.coord.q + shiftQ,
             r: tile.coord.r + shiftR,
+          },
+        }));
+        nextMap.units = (nextMap.units ?? []).map((unit) => ({
+          ...unit,
+          position: {
+            q: Number(unit.position?.q ?? 0) + shiftQ,
+            r: Number(unit.position?.r ?? 0) + shiftR,
           },
         }));
       }
@@ -376,6 +832,15 @@ function App() {
       }
       const nextMap = cloneMapPayload(current);
       nextMap.tiles = (nextMap.tiles ?? []).filter((tile) => coordKey(tile.coord) !== coordKey(coord));
+      nextMap.units = (nextMap.units ?? []).filter((unit) => coordKey(unit.position) !== coordKey(coord));
+      if (selectedUnitId) {
+        const removed = (current.units ?? []).some(
+          (unit) => String(unit.instance_id) === selectedUnitId && coordKey(unit.position) === coordKey(coord),
+        );
+        if (removed) {
+          setSelectedUnitId(null);
+        }
+      }
       return nextMap;
     });
   };
@@ -398,11 +863,70 @@ function App() {
     }));
   };
 
+  const nextUnitInstanceId = (currentMap, unitId) => {
+    const base = `u_${unitId}`;
+    const existing = new Set((currentMap.units ?? []).map((unit) => String(unit.instance_id)));
+    if (!existing.has(base)) {
+      return base;
+    }
+    let index = 2;
+    while (existing.has(`${base}_${index}`)) {
+      index += 1;
+    }
+    return `${base}_${index}`;
+  };
+
+  const placeUnitOnTile = (tile) => {
+    if (!config || !selectedUnitBrushId) {
+      return;
+    }
+    const key = coordKey(tile.coord);
+    const existingSurface = surfaceUnitsByTile.get(key);
+    const existingHidden = hiddenUnitsByTile.get(key);
+    if (unitBrushPlacementMode === "surface" && existingSurface) {
+      return;
+    }
+    if (unitBrushPlacementMode !== "surface" && existingHidden) {
+      return;
+    }
+    const instanceId = nextUnitInstanceId(mapData ?? { units: [] }, selectedUnitBrushId);
+    setMapData((current) => {
+      if (!current) {
+        return current;
+      }
+      const nextMap = cloneMapPayload(current);
+      const nextUnit = buildEditorUnit(
+        config,
+        selectedUnitBrushId,
+        unitBrushOwnerId,
+        tile.coord,
+        unitBrushPlacementMode,
+        instanceId,
+      );
+      nextMap.units = [...(nextMap.units ?? []), nextUnit];
+      return nextMap;
+    });
+    setSelectedUnitId(instanceId);
+    setSelectedTileKey(key);
+  };
+
   const selectAndPaintTile = (tile) => {
     const key = coordKey(tile.coord);
     setSelectedTileKey(selectedTerrainId === DELETE_BRUSH_ID ? null : key);
     if (activeControlsTab === "terrain" && selectedTerrainId) {
       applyTerrainToTile(key, selectedTerrainId);
+    }
+  };
+
+  const handleTileClick = (tile) => {
+    const key = coordKey(tile.coord);
+    if (activeControlsTab === "terrain") {
+      selectAndPaintTile(tile);
+      return;
+    }
+    setSelectedTileKey(key);
+    if (activeControlsTab === "units") {
+      placeUnitOnTile(tile);
     }
   };
 
@@ -515,6 +1039,10 @@ function App() {
         ...tile,
         owner_id: validOwners.has(tile.owner_id) ? tile.owner_id : null,
       }));
+      nextMap.units = nextMap.units.map((unit) => ({
+        ...unit,
+        owner_id: validOwners.has(unit.owner_id) ? unit.owner_id : "p1",
+      }));
       return nextMap;
     });
   };
@@ -560,6 +1088,7 @@ function App() {
       .then((payload) => {
         setMapAndSyncDrafts(payload);
         setSelectedTileKey(null);
+        setSelectedUnitId(null);
         setFileNameInput(payload.file_name ?? selectedLoadFile);
         setError("");
       })
@@ -614,6 +1143,7 @@ function App() {
     setMapAndSyncDrafts(blank);
     setFileNameInput("new-map.json");
     setSelectedTileKey(null);
+    setSelectedUnitId(null);
     setError("");
   };
 
@@ -636,6 +1166,7 @@ function App() {
     );
     setMapAndSyncDrafts(recreated);
     setSelectedTileKey(null);
+    setSelectedUnitId(null);
     setError("");
   };
 
@@ -681,6 +1212,12 @@ function App() {
               onClick={() => setActiveControlsTab("players")}
             >
               Players
+            </button>
+            <button
+              className={`editor-tab ${activeControlsTab === "units" ? "selected" : ""}`}
+              onClick={() => setActiveControlsTab("units")}
+            >
+              Units
             </button>
             <button
               className={`editor-tab ${activeControlsTab === "terrain" ? "selected" : ""}`}
@@ -917,6 +1454,77 @@ function App() {
                 </div>
               </div>
             ) : null}
+
+            {activeControlsTab === "units" ? (
+              <div className="editor-tab-panel">
+                <div className="editor-section editor-section-first">
+                  <span className="field-label">Placement</span>
+                  <div className="editor-inline-grid">
+                    <label>
+                      <span>Owner</span>
+                      <select value={unitBrushOwnerId} onChange={(event) => setUnitBrushOwnerId(event.target.value)}>
+                        {playerOptions.map((playerId) => (
+                          <option key={playerId} value={playerId}>
+                            {playerId}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label>
+                      <span>Layer</span>
+                      <select value={unitBrushPlacementMode} onChange={(event) => setUnitBrushPlacementMode(event.target.value)}>
+                        <option value="surface">Surface</option>
+                        <option value="buried">Buried</option>
+                        <option value="submerged">Submerged</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div className="terrain-help-copy">
+                    Click an existing hex to place the selected unit brush. Click a unit sprite on the map to edit that unit.
+                  </div>
+                </div>
+
+                <div className="editor-section">
+                  <span className="field-label">Selected Unit</span>
+                  {selectedUnit ? (
+                    <div className="summary-card">
+                      <span className="summary-label">{selectedUnit.instance_id}</span>
+                      <strong>{config?.units?.[selectedUnit.unit_id]?.display_name ?? selectedUnit.unit_id}</strong>
+                    </div>
+                  ) : (
+                    <span className="muted">No unit selected.</span>
+                  )}
+                  <button className="step-chip" disabled={!selectedUnitId} onClick={removeSelectedUnit}>
+                    Delete Selected Unit
+                  </button>
+                </div>
+
+                <div className="editor-section">
+                  <span className="field-label">Unit Palette</span>
+                  {Object.entries(unitsGroupedByFaction).map(([faction, factionUnits]) => (
+                    <div key={faction} className="unit-palette-section">
+                      <div className="summary-label">{faction}</div>
+                      <div className="unit-palette-grid">
+                        {factionUnits.map((unitConfig) => (
+                          <button
+                            key={unitConfig.unit_id}
+                            className={`unit-palette-button ${selectedUnitBrushId === unitConfig.unit_id ? "selected" : ""}`}
+                            onClick={() => setSelectedUnitBrushId(unitConfig.unit_id)}
+                            title={unitConfig.display_name}
+                          >
+                            <img
+                              src={unitAsset(unitConfig.unit_id, unitBrushOwnerId)}
+                              alt={unitConfig.display_name}
+                            />
+                            <span>{unitConfig.display_name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
         </section>
 
@@ -924,7 +1532,13 @@ function App() {
           <div className="panel-header">
             <h2>{mapData?.name ?? "Map"}</h2>
             <div className="meta-line">
-              <span>Brush: {config?.terrains?.[selectedTerrainId]?.display_name ?? selectedTerrainId}</span>
+              <span>
+                Terrain brush: {config?.terrains?.[selectedTerrainId]?.display_name ?? selectedTerrainId}
+              </span>
+              <span>
+                Unit brush: {config?.units?.[selectedUnitBrushId]?.display_name ?? selectedUnitBrushId} ({unitBrushOwnerId},{" "}
+                {unitBrushPlacementMode})
+              </span>
               <span>Base income: {mapData?.economy?.base_income ?? "-"}</span>
               <span>City income: {mapData?.economy?.city_income ?? "-"}</span>
               <span>Start income: {mapData?.economy?.starting_credits ?? "-"}</span>
@@ -970,6 +1584,7 @@ function App() {
                   const center = axialToPixel(tile.coord);
                   const key = coordKey(tile.coord);
                   const terrainHref = terrainAsset(tile.terrain_id);
+                  const surfaceUnit = surfaceUnitsByTile.get(key);
                   return (
                     <g
                       key={key}
@@ -981,7 +1596,7 @@ function App() {
                         fill={TERRAIN_FALLBACKS[tile.terrain_id] ?? "#d8d8d8"}
                         stroke="#22304a"
                         strokeWidth="2"
-                        onClick={() => selectAndPaintTile(tile)}
+                        onClick={() => handleTileClick(tile)}
                       />
                       <image
                         href={terrainHref}
@@ -1001,9 +1616,83 @@ function App() {
                           </text>
                         </g>
                       ) : null}
+                      {surfaceUnit ? (
+                        <g
+                          className="unit-token"
+                          transform="translate(0,-2)"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            setSelectedTileKey(key);
+                            setSelectedUnitId(String(surfaceUnit.instance_id));
+                            setActiveControlsTab("units");
+                          }}
+                        >
+                          <image
+                            className="unit-sprite"
+                            href={unitAsset(String(surfaceUnit.unit_id ?? ""), String(surfaceUnit.owner_id ?? ""))}
+                            x={-23}
+                            y={-18}
+                            width={46}
+                            height={36}
+                            draggable="false"
+                            preserveAspectRatio="xMidYMid slice"
+                          />
+                          {renderVeterancy(surfaceUnit)}
+                          <g transform="translate(18,13)">
+                            <text className="hp-text" x="0" y="1">
+                              {String(surfaceUnit.hp)}
+                            </text>
+                          </g>
+                        </g>
+                      ) : null}
                       <text className="coord-label" x="0" y="22" pointerEvents="none">
                         {key}
                       </text>
+                    </g>
+                  );
+                })}
+
+                {hiddenRenderItems.map(({ key: unitKey, tile, unit }) => {
+                  const center = axialToPixel(tile.coord);
+                  const tileKey = coordKey(tile.coord);
+                  return (
+                    <g
+                      key={`hidden-${unitKey}`}
+                      className="unit-token hidden-token-layer"
+                      transform={`translate(${center.x}, ${center.y + 24})`}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        setSelectedTileKey(tileKey);
+                        setSelectedUnitId(String(unit.instance_id));
+                        setActiveControlsTab("units");
+                      }}
+                      opacity="0.65"
+                    >
+                      <ellipse className="hidden-ring" cx="0" cy="0" rx="19" ry="14" />
+                      <image
+                        className="unit-sprite hidden"
+                        href={unitAsset(String(unit.unit_id ?? ""), String(unit.owner_id ?? ""))}
+                        x={-17}
+                        y={-13}
+                        width={34}
+                        height={27}
+                        draggable="false"
+                        preserveAspectRatio="xMidYMid slice"
+                      />
+                      {renderVeterancy(unit)}
+                      <g transform="translate(-13,-9)">
+                        <rect className="hidden-flag" x="-6" y="-6" width="12" height="12" rx="4" />
+                        <text className="hidden-flag-text" x="0" y="1">
+                          H
+                        </text>
+                      </g>
+                      <g transform="translate(13,10)">
+                        <text className="hp-text" x="0" y="1">
+                          {String(unit.hp)}
+                        </text>
+                      </g>
                     </g>
                   );
                 })}
@@ -1038,6 +1727,49 @@ function App() {
                       <span>Coord: {coordKey(selectedTile.coord)}</span>
                     </div>
                   </div>
+                  <div className="occupant-card">
+                    <span className="summary-label">Occupants</span>
+                    <div className="occupant-list">
+                      <button
+                        className={`occupant-chip ${selectedTileSurfaceUnit ? "" : "empty"} ${
+                          selectedUnitId != null && String(selectedTileSurfaceUnit?.instance_id ?? "") === selectedUnitId
+                            ? "selected"
+                            : ""
+                        }`}
+                        disabled={!selectedTileSurfaceUnit}
+                        onClick={() => {
+                          if (!selectedTileSurfaceUnit) {
+                            return;
+                          }
+                          setSelectedUnitId(String(selectedTileSurfaceUnit.instance_id));
+                          setActiveControlsTab("units");
+                        }}
+                      >
+                        {selectedTileSurfaceUnit
+                          ? `Surface: ${config?.units?.[selectedTileSurfaceUnit.unit_id]?.display_name ?? selectedTileSurfaceUnit.unit_id}`
+                          : "Surface: empty"}
+                      </button>
+                      <button
+                        className={`occupant-chip ${selectedTileHiddenUnit ? "" : "empty"} ${
+                          selectedUnitId != null && String(selectedTileHiddenUnit?.instance_id ?? "") === selectedUnitId
+                            ? "selected"
+                            : ""
+                        }`}
+                        disabled={!selectedTileHiddenUnit}
+                        onClick={() => {
+                          if (!selectedTileHiddenUnit) {
+                            return;
+                          }
+                          setSelectedUnitId(String(selectedTileHiddenUnit.instance_id));
+                          setActiveControlsTab("units");
+                        }}
+                      >
+                        {selectedTileHiddenUnit
+                          ? `Hidden: ${config?.units?.[selectedTileHiddenUnit.unit_id]?.display_name ?? selectedTileHiddenUnit.unit_id}`
+                          : "Hidden: empty"}
+                      </button>
+                    </div>
+                  </div>
                   <label className="field-label">Owner</label>
                   <select
                     value={selectedTile.owner_id ?? ""}
@@ -1061,6 +1793,208 @@ function App() {
                 <span className="muted">Click a hex to inspect and edit it.</span>
               )}
               <pre>{pretty(selectedTile ?? null)}</pre>
+            </div>
+
+            <div className="detail-card">
+              <h2>Unit Inspector</h2>
+              {selectedUnit ? (
+                <>
+                  <div className="visual-inspector">
+                    <img
+                      className="unit-inspector-icon"
+                      src={unitAsset(selectedUnit.unit_id, selectedUnit.owner_id)}
+                      alt={selectedUnit.unit_id}
+                    />
+                    <div className="visual-copy">
+                      <strong>{config?.units?.[selectedUnit.unit_id]?.display_name ?? selectedUnit.unit_id}</strong>
+                      <span>{String(selectedUnit.instance_id)}</span>
+                      <span>
+                        {selectedUnit.owner_id} / {selectedUnit.status?.hidden_mode ?? "surface"} / {coordKey(selectedUnit.position)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="editor-section editor-section-first">
+                    <span className="field-label">Core</span>
+                    <div className="editor-inline-grid">
+                      <label>
+                        <span>Instance Id</span>
+                        <input
+                          value={String(selectedUnit.instance_id ?? "")}
+                          onChange={(event) => setSelectedUnitValue(["instance_id"], event.target.value)}
+                        />
+                      </label>
+                      <label>
+                        <span>Unit Type</span>
+                        <select
+                          value={selectedUnit.unit_id}
+                          onChange={(event) => setSelectedUnitValue(["unit_id"], event.target.value)}
+                        >
+                          {(config?.unit_order ?? []).map((unitId) => (
+                            <option key={unitId} value={unitId}>
+                              {config?.units?.[unitId]?.display_name ?? unitId}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        <span>Owner</span>
+                        <select
+                          value={selectedUnit.owner_id}
+                          onChange={(event) => setSelectedUnitValue(["owner_id"], event.target.value)}
+                        >
+                          {playerOptions.map((playerId) => (
+                            <option key={playerId} value={playerId}>
+                              {playerId}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        <span>HP</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value={Number(selectedUnit.hp ?? 0)}
+                          onChange={(event) => setSelectedUnitValue(["hp"], Number(event.target.value || 0))}
+                        />
+                      </label>
+                      <label>
+                        <span>Veterancy</span>
+                        <select
+                          value={Number(selectedUnit.veterancy_level ?? 0)}
+                          onChange={(event) => setSelectedUnitValue(["veterancy_level"], Number(event.target.value))}
+                        >
+                          {(config?.veterancy_levels ?? [0, 1, 2]).map((level) => (
+                            <option key={level} value={level}>
+                              {level}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        <span>XP</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value={Number(selectedUnit.experience_points ?? 0)}
+                          onChange={(event) => setSelectedUnitValue(["experience_points"], Number(event.target.value || 0))}
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="editor-section">
+                    <span className="field-label">Position And Layer</span>
+                    <div className="editor-inline-grid">
+                      <label>
+                        <span>Q</span>
+                        <input
+                          type="number"
+                          value={Number(selectedUnit.position?.q ?? 0)}
+                          onChange={(event) =>
+                            moveSelectedUnitTo(
+                              {
+                                q: Number(event.target.value || 0),
+                                r: Number(selectedUnit.position?.r ?? 0),
+                              },
+                              selectedUnit.status?.hidden_mode ?? null,
+                            )
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>R</span>
+                        <input
+                          type="number"
+                          value={Number(selectedUnit.position?.r ?? 0)}
+                          onChange={(event) =>
+                            moveSelectedUnitTo(
+                              {
+                                q: Number(selectedUnit.position?.q ?? 0),
+                                r: Number(event.target.value || 0),
+                              },
+                              selectedUnit.status?.hidden_mode ?? null,
+                            )
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Layer</span>
+                        <select
+                          value={selectedUnit.status?.hidden_mode ?? "surface"}
+                          onChange={(event) =>
+                            moveSelectedUnitTo(
+                              {
+                                q: Number(selectedUnit.position?.q ?? 0),
+                                r: Number(selectedUnit.position?.r ?? 0),
+                              },
+                              event.target.value === "surface" ? null : event.target.value,
+                            )
+                          }
+                        >
+                          <option value="surface">surface</option>
+                          {(config?.hidden_mode_values ?? []).map((mode) => (
+                            <option key={mode} value={mode}>
+                              {mode}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                    <button
+                      className="step-chip"
+                      onClick={() => {
+                        if (!selectedTile) {
+                          return;
+                        }
+                        moveSelectedUnitTo(
+                          selectedTile.coord,
+                          selectedUnit.status?.hidden_mode ?? null,
+                        );
+                      }}
+                      disabled={!selectedTile}
+                    >
+                      Move To Selected Hex
+                    </button>
+                  </div>
+
+                  <div className="editor-section">
+                    <span className="field-label">Status</span>
+                    <JsonValueEditor
+                      value={selectedUnit.status ?? {}}
+                      onChange={(nextValue) => setSelectedUnitValue(["status"], nextValue)}
+                    />
+                  </div>
+
+                  <div className="editor-section">
+                    <span className="field-label">Action</span>
+                    <JsonValueEditor
+                      value={selectedUnit.action ?? {}}
+                      onChange={(nextValue) => setSelectedUnitValue(["action"], nextValue)}
+                    />
+                  </div>
+
+                  <div className="editor-section">
+                    <span className="field-label">Capture Target</span>
+                    <JsonValueEditor
+                      value={selectedUnit.capture_target ?? null}
+                      onChange={(nextValue) => setSelectedUnitValue(["capture_target"], nextValue)}
+                    />
+                  </div>
+
+                  <div className="editor-section">
+                    <span className="field-label">Metadata</span>
+                    <JsonValueEditor
+                      value={selectedUnit.metadata ?? {}}
+                      onChange={(nextValue) => setSelectedUnitValue(["metadata"], nextValue)}
+                    />
+                  </div>
+                </>
+              ) : (
+                <span className="muted">Click a unit on the map to inspect and edit it.</span>
+              )}
+              <pre>{pretty(selectedUnit ?? null)}</pre>
             </div>
 
             <div className="detail-card">

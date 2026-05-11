@@ -555,6 +555,15 @@ select {
   font-size: 16px;
 }
 
+.detail-card input,
+.detail-card select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #c7d3e2;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
 .detail-card pre {
   margin: 0;
   overflow: auto;
@@ -686,7 +695,7 @@ select {
 
 .editor-tab-strip {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   padding: 14px 18px 0;
 }
@@ -889,6 +898,122 @@ select {
   font-size: 12px;
   line-height: 1.4;
   color: #64748b;
+}
+
+.unit-palette-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.unit-palette-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.unit-palette-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: rgba(255, 255, 255, 0.88);
+  color: #334155;
+  cursor: pointer;
+}
+
+.unit-palette-button:hover {
+  border-color: rgba(59, 130, 246, 0.34);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.unit-palette-button.selected {
+  border-color: #0f766e;
+  background: linear-gradient(180deg, rgba(236, 253, 245, 0.96), rgba(209, 250, 229, 0.94));
+  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.18);
+}
+
+.unit-palette-button img {
+  width: 60px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.unit-palette-button span {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.json-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.json-editor-type-row,
+.json-editor-primitive {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.json-editor-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.json-editor-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.json-editor-entry {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr) 36px;
+  gap: 8px;
+  align-items: start;
+  padding: 8px;
+  border-radius: 12px;
+  background: rgba(241, 245, 249, 0.78);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.json-editor-key,
+.json-editor-index {
+  align-self: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.json-editor-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+}
+
+.json-editor-value {
+  min-width: 0;
+}
+
+.json-editor-remove {
+  min-height: 40px;
+  border: 1px solid rgba(185, 28, 28, 0.18);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(254, 242, 242, 0.96), rgba(254, 226, 226, 0.94));
+  color: #b91c1c;
+  font-weight: 900;
+  cursor: pointer;
 }
 
 .panel-controls .editor-section .field-label {
