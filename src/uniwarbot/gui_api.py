@@ -435,6 +435,31 @@ def _build_map_editor_config() -> dict[str, object]:
                 "unit_type": str(units[unit_id].get("unit_type", "")),
                 "base_max_hp": int(units[unit_id].get("base_max_hp", 10)),
                 "sprite_unit_id": _unit_sprite_id(unit_id),
+                "hidden_mode": (
+                    str((units[unit_id].get("hidden_mode") or {}).get("mode"))
+                    if units[unit_id].get("hidden_mode")
+                    else None
+                ),
+                "can_teleport": any(
+                    str((ability or {}).get("id")) == "teleport"
+                    for ability in list(units[unit_id].get("abilities") or [])
+                ),
+                "can_plague": unit_id not in {"engineer", "submarine"},
+                "surface_allowed_terrains": sorted(
+                    terrain_id
+                    for terrain_id, effects in dict(units[unit_id].get("terrain_effects") or {}).items()
+                    if (effects or {}).get("mobility_cost") is not None
+                ),
+                "hidden_allowed_terrains": sorted(
+                    terrain_id
+                    for terrain_id, cost in dict(((units[unit_id].get("hidden_mode") or {}).get("terrain_movement_costs") or {})).items()
+                    if cost is not None
+                    and terrain_id
+                    not in {
+                        str(item)
+                        for item in list(((units[unit_id].get("hidden_mode") or {}).get("forbidden_terrains") or []))
+                    }
+                ),
             }
             for unit_id in unit_order
         },
@@ -456,6 +481,8 @@ def _list_saved_maps() -> list[dict[str, object]]:
     MAPS_DIR.mkdir(parents=True, exist_ok=True)
     items: list[dict[str, object]] = []
     for path in sorted(MAPS_DIR.glob("*.json")):
+        if path.name.startswith("_"):
+            continue
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
             name = str(payload.get("name", path.stem))

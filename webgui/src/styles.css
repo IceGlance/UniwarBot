@@ -773,6 +773,13 @@ select {
   font-size: 12px;
   font-weight: 700;
   color: #64748b;
+  overflow-wrap: anywhere;
+}
+
+.editor-inline-grid input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  align-self: flex-start;
 }
 
 .player-slot-stack {
@@ -908,45 +915,105 @@ select {
 
 .unit-palette-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px 4px;
+}
+
+.unit-palette-grid-delete {
+  margin-bottom: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .unit-palette-button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 10px 8px;
-  border-radius: 16px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  background: rgba(255, 255, 255, 0.88);
+  gap: 2px;
+  padding: 2px 1px 4px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
   color: #334155;
   cursor: pointer;
 }
 
 .unit-palette-button:hover {
-  border-color: rgba(59, 130, 246, 0.34);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  background: rgba(15, 23, 42, 0.035);
 }
 
 .unit-palette-button.selected {
-  border-color: #0f766e;
-  background: linear-gradient(180deg, rgba(236, 253, 245, 0.96), rgba(209, 250, 229, 0.94));
-  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.18);
+  background: rgba(15, 118, 110, 0.08);
+  box-shadow: inset 0 0 0 1.5px rgba(15, 118, 110, 0.24);
 }
 
 .unit-palette-button img {
-  width: 60px;
-  height: 46px;
+  width: 50px;
+  height: 38px;
   object-fit: contain;
 }
 
 .unit-palette-button span {
-  font-size: 11px;
+  font-size: 8px;
   font-weight: 700;
   text-align: center;
   line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.unit-palette-button-delete {
+  justify-content: center;
+}
+
+.unit-palette-icon-wrap {
+  position: relative;
+  width: 44px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.unit-palette-hidden-ring {
+  position: absolute;
+  inset: 5px 3px 4px 3px;
+  border: 1.25px dashed rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.1);
+  pointer-events: none;
+}
+
+.unit-palette-image-hidden {
+  opacity: 0.65;
+}
+
+.unit-palette-hidden-badge {
+  position: absolute;
+  left: 1px;
+  top: 0;
+  width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 132, 199, 0.92);
+  color: #f8fafc;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.terrain-delete-glyph-small {
+  width: 28px;
+  height: 22px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.editor-help-text {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #64748b;
 }
 
 .json-editor {

@@ -4,6 +4,7 @@ const BASE_HEX_SIZE = 32;
 const MIN_BOARD_WORLD_WIDTH = 880;
 const MIN_BOARD_WORLD_HEIGHT = 620;
 const DELETE_BRUSH_ID = "__delete__";
+const DELETE_UNIT_BRUSH_ID = "__delete_unit__";
 const API_BASE =
   window.location.port === "5173"
     ? `${window.location.protocol}//${window.location.hostname}:8000/api`
@@ -199,6 +200,35 @@ function buildEditorUnit(config, unitId, ownerId, coord, placementMode, instance
 
 function nullableInt(value) {
   return value === "" ? null : Number(value);
+}
+
+function placementModesForUnit(unitConfig) {
+  const modes = ["surface"];
+  if (unitConfig?.hidden_mode) {
+    modes.push(unitConfig.hidden_mode);
+  }
+  return modes;
+}
+
+function encodeUnitBrush(unitId, mode = "surface") {
+  return `${unitId}|${mode}`;
+}
+
+function decodeUnitBrush(brushValue) {
+  if (!brushValue || brushValue === DELETE_UNIT_BRUSH_ID) {
+    return null;
+  }
+  const [unitId, mode = "surface"] = String(brushValue).split("|");
+  return { unitId, mode };
+}
+
+function allowedTerrainsForMode(unitConfig, mode) {
+  if (!unitConfig) {
+    return [];
+  }
+  return mode === "surface"
+    ? [...(unitConfig.surface_allowed_terrains ?? [])]
+    : [...(unitConfig.hidden_allowed_terrains ?? [])];
 }
 
 function jsonValueType(value) {
@@ -502,9 +532,8 @@ function App() {
   const [selectedUnitId, setSelectedUnitId] = useState(null);
   const [selectedTerrainId, setSelectedTerrainId] = useState("plain");
   const [recreateTerrainId, setRecreateTerrainId] = useState("plain");
-  const [selectedUnitBrushId, setSelectedUnitBrushId] = useState("marine");
+  const [selectedUnitBrushId, setSelectedUnitBrushId] = useState(encodeUnitBrush("marine"));
   const [unitBrushOwnerId, setUnitBrushOwnerId] = useState("p1");
-  const [unitBrushPlacementMode, setUnitBrushPlacementMode] = useState("surface");
   const [selectedLoadFile, setSelectedLoadFile] = useState("");
   const [draftWidth, setDraftWidth] = useState(8);
   const [draftHeight, setDraftHeight] = useState(8);
@@ -576,7 +605,7 @@ function App() {
         setDraftHeight(starterMap.size.height);
         setSelectedTerrainId(configPayload.terrain_order?.[0] ?? "plain");
         setRecreateTerrainId(configPayload.terrain_order?.[0] ?? "plain");
-        setSelectedUnitBrushId(configPayload.unit_order?.[0] ?? "marine");
+        setSelectedUnitBrushId(encodeUnitBrush(configPayload.unit_order?.[0] ?? "marine"));
         setFileNameInput("new-map.json");
       })
       .catch((reason) => {
@@ -613,6 +642,9 @@ function App() {
   const selectedUnit = selectedUnitId ? unitsById.get(selectedUnitId) ?? null : null;
   const selectedTileSurfaceUnit = selectedTileKey ? surfaceUnitsByTile.get(selectedTileKey) ?? null : null;
   const selectedTileHiddenUnit = selectedTileKey ? hiddenUnitsByTile.get(selectedTileKey) ?? null : null;
+  const selectedUnitConfig = selectedUnit ? config?.units?.[selectedUnit.unit_id] ?? null : null;
+  const selectedBrush = useMemo(() => decodeUnitBrush(selectedUnitBrushId), [selectedUnitBrushId]);
+  const selectedBrushUnitConfig = selectedBrush ? config?.units?.[selectedBrush.unitId] ?? null : null;
   const hiddenRenderItems = useMemo(
     () =>
       tiles
@@ -667,6 +699,40 @@ function App() {
     setDraftHeight(nextMap.size.height);
   };
 
+  useEffect(() => {
+    if (!selectedUnit || !selectedUnitConfig) {
+      return;
+    }
+    const allowedModes = placementModesForUnit(selectedUnitConfig);
+    const currentMode = selectedUnit.status?.hidden_mode ?? "surface";
+    if (!allowedModes.includes(currentMode)) {
+      setSelectedUnitValue(["status", "hidden_mode"], null);
+    }
+    if (!selectedUnitConfig.can_teleport) {
+      if (Number(selectedUnit.status?.teleport_disabled_rounds ?? 0) !== 0) {
+        setSelectedUnitValue(["status", "teleport_disabled_rounds"], 0);
+      }
+      if (selectedUnit.status?.teleport_lock_phase != null) {
+        setSelectedUnitValue(["status", "teleport_lock_phase"], null);
+      }
+      if (Number(selectedUnit.status?.teleport_cooldown_rounds ?? 0) !== 0) {
+        setSelectedUnitValue(["status", "teleport_cooldown_rounds"], 0);
+      }
+    }
+    if (!selectedUnitConfig.can_plague && selectedUnit.status?.plague_infected) {
+      setSelectedUnitValue(["status", "plague_infected"], false);
+    }
+  }, [selectedUnit, selectedUnitConfig]);
+
+  useEffect(() => {
+    if (playerOptions.length === 0) {
+      return;
+    }
+    if (!playerOptions.includes(unitBrushOwnerId)) {
+      setUnitBrushOwnerId(playerOptions[0]);
+    }
+  }, [playerOptions, unitBrushOwnerId]);
+
   const updateTile = (tileKey, updater) => {
     setMapData((current) => {
       if (!current) {
@@ -713,6 +779,28 @@ function App() {
     setSelectedUnitId(null);
   };
 
+  const deleteUnitAtTile = (tileKey) => {
+    const targetUnit = surfaceUnitsByTile.get(tileKey) ?? hiddenUnitsByTile.get(tileKey);
+    if (!targetUnit) {
+      return;
+    }
+    removeUnitById(String(targetUnit.instance_id));
+  };
+
+  const removeUnitById = (targetId) => {
+    setMapData((current) => {
+      if (!current) {
+        return current;
+      }
+      const nextMap = cloneMapPayload(current);
+      nextMap.units = (nextMap.units ?? []).filter((unit) => String(unit.instance_id) !== targetId);
+      return nextMap;
+    });
+    if (selectedUnitId === targetId) {
+      setSelectedUnitId(null);
+    }
+  };
+
   const setSelectedUnitValue = (path, nextValue) => {
     updateSelectedUnit((unit) => {
       const nextUnit = cloneMapPayload(unit);
@@ -734,6 +822,16 @@ function App() {
     const nextKey = coordKey(nextCoord);
     if (!tileByKey.has(nextKey)) {
       setError(`Cannot move unit to ${nextKey}: no hex exists there.`);
+      return;
+    }
+    const destinationTile = tileByKey.get(nextKey);
+    const allowedTerrains = new Set(
+      allowedTerrainsForMode(selectedUnitConfig, nextHiddenMode ? nextHiddenMode : "surface"),
+    );
+    if (!allowedTerrains.has(destinationTile.terrain_id)) {
+      setError(
+        `Cannot move unit to ${nextKey}: ${selectedUnitConfig?.display_name ?? selectedUnit?.unit_id} cannot be on ${destinationTile.terrain_id}.`,
+      );
       return;
     }
     const conflictingUnit =
@@ -877,30 +975,43 @@ function App() {
   };
 
   const placeUnitOnTile = (tile) => {
-    if (!config || !selectedUnitBrushId) {
+    if (!config || !selectedBrush || selectedUnitBrushId === DELETE_UNIT_BRUSH_ID) {
       return;
     }
     const key = coordKey(tile.coord);
+    const allowedTerrains = new Set(
+      allowedTerrainsForMode(selectedBrushUnitConfig, selectedBrush.mode),
+    );
+    if (!allowedTerrains.has(tile.terrain_id)) {
+      setError(
+        `Cannot place ${selectedBrushUnitConfig?.display_name ?? selectedBrush.unitId} on ${tile.terrain_id}.`,
+      );
+      return;
+    }
     const existingSurface = surfaceUnitsByTile.get(key);
     const existingHidden = hiddenUnitsByTile.get(key);
-    if (unitBrushPlacementMode === "surface" && existingSurface) {
-      return;
-    }
-    if (unitBrushPlacementMode !== "surface" && existingHidden) {
-      return;
-    }
-    const instanceId = nextUnitInstanceId(mapData ?? { units: [] }, selectedUnitBrushId);
+    const instanceId = nextUnitInstanceId(mapData ?? { units: [] }, selectedBrush.unitId);
     setMapData((current) => {
       if (!current) {
         return current;
       }
       const nextMap = cloneMapPayload(current);
+      if (selectedBrush.mode === "surface" && existingSurface) {
+        nextMap.units = (nextMap.units ?? []).filter(
+          (unit) => String(unit.instance_id) !== String(existingSurface.instance_id),
+        );
+      }
+      if (selectedBrush.mode !== "surface" && existingHidden) {
+        nextMap.units = (nextMap.units ?? []).filter(
+          (unit) => String(unit.instance_id) !== String(existingHidden.instance_id),
+        );
+      }
       const nextUnit = buildEditorUnit(
         config,
-        selectedUnitBrushId,
+        selectedBrush.unitId,
         unitBrushOwnerId,
         tile.coord,
-        unitBrushPlacementMode,
+        selectedBrush.mode,
         instanceId,
       );
       nextMap.units = [...(nextMap.units ?? []), nextUnit];
@@ -908,6 +1019,7 @@ function App() {
     });
     setSelectedUnitId(instanceId);
     setSelectedTileKey(key);
+    setError("");
   };
 
   const selectAndPaintTile = (tile) => {
@@ -926,6 +1038,10 @@ function App() {
     }
     setSelectedTileKey(key);
     if (activeControlsTab === "units") {
+      if (selectedUnitBrushId === DELETE_UNIT_BRUSH_ID) {
+        deleteUnitAtTile(key);
+        return;
+      }
       placeUnitOnTile(tile);
     }
   };
@@ -1458,26 +1574,22 @@ function App() {
             {activeControlsTab === "units" ? (
               <div className="editor-tab-panel">
                 <div className="editor-section editor-section-first">
-                  <span className="field-label">Placement</span>
-                  <div className="editor-inline-grid">
-                    <label>
-                      <span>Owner</span>
-                      <select value={unitBrushOwnerId} onChange={(event) => setUnitBrushOwnerId(event.target.value)}>
-                        {playerOptions.map((playerId) => (
-                          <option key={playerId} value={playerId}>
-                            {playerId}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label>
-                      <span>Layer</span>
-                      <select value={unitBrushPlacementMode} onChange={(event) => setUnitBrushPlacementMode(event.target.value)}>
-                        <option value="surface">Surface</option>
-                        <option value="buried">Buried</option>
-                        <option value="submerged">Submerged</option>
-                      </select>
-                    </label>
+                  <span className="field-label">Placement Owner</span>
+                  <div className="checkbox-chip-row">
+                    {playerOptions.map((playerId) => {
+                      const checked = unitBrushOwnerId === playerId;
+                      return (
+                        <label key={playerId} className={`checkbox-chip ${checked ? "checked" : ""}`}>
+                          <input
+                            type="radio"
+                            name="unit-brush-owner"
+                            checked={checked}
+                            onChange={() => setUnitBrushOwnerId(playerId)}
+                          />
+                          <span>{playerId}</span>
+                        </label>
+                      );
+                    })}
                   </div>
                   <div className="terrain-help-copy">
                     Click an existing hex to place the selected unit brush. Click a unit sprite on the map to edit that unit.
@@ -1485,40 +1597,50 @@ function App() {
                 </div>
 
                 <div className="editor-section">
-                  <span className="field-label">Selected Unit</span>
-                  {selectedUnit ? (
-                    <div className="summary-card">
-                      <span className="summary-label">{selectedUnit.instance_id}</span>
-                      <strong>{config?.units?.[selectedUnit.unit_id]?.display_name ?? selectedUnit.unit_id}</strong>
-                    </div>
-                  ) : (
-                    <span className="muted">No unit selected.</span>
-                  )}
-                  <button className="step-chip" disabled={!selectedUnitId} onClick={removeSelectedUnit}>
-                    Delete Selected Unit
-                  </button>
-                </div>
-
-                <div className="editor-section">
                   <span className="field-label">Unit Palette</span>
+                  <div className="unit-palette-grid unit-palette-grid-delete">
+                    <button
+                      className={`unit-palette-button unit-palette-button-delete ${selectedUnitBrushId === DELETE_UNIT_BRUSH_ID ? "selected" : ""}`}
+                      onClick={() => setSelectedUnitBrushId(DELETE_UNIT_BRUSH_ID)}
+                      title="Delete unit"
+                    >
+                      <div className="terrain-delete-glyph terrain-delete-glyph-small">X</div>
+                      <span>Delete</span>
+                    </button>
+                  </div>
                   {Object.entries(unitsGroupedByFaction).map(([faction, factionUnits]) => (
                     <div key={faction} className="unit-palette-section">
                       <div className="summary-label">{faction}</div>
                       <div className="unit-palette-grid">
-                        {factionUnits.map((unitConfig) => (
-                          <button
-                            key={unitConfig.unit_id}
-                            className={`unit-palette-button ${selectedUnitBrushId === unitConfig.unit_id ? "selected" : ""}`}
-                            onClick={() => setSelectedUnitBrushId(unitConfig.unit_id)}
-                            title={unitConfig.display_name}
-                          >
-                            <img
-                              src={unitAsset(unitConfig.unit_id, unitBrushOwnerId)}
-                              alt={unitConfig.display_name}
-                            />
-                            <span>{unitConfig.display_name}</span>
-                          </button>
-                        ))}
+                        {factionUnits.flatMap((unitConfig) =>
+                          placementModesForUnit(unitConfig).map((mode) => {
+                            const brushKey = encodeUnitBrush(unitConfig.unit_id, mode);
+                            const isHidden = mode !== "surface";
+                            return (
+                              <button
+                                key={brushKey}
+                                className={`unit-palette-button unit-palette-button-plain ${selectedUnitBrushId === brushKey ? "selected" : ""}`}
+                                onClick={() => setSelectedUnitBrushId(brushKey)}
+                                title={isHidden ? `${unitConfig.display_name} (${mode})` : unitConfig.display_name}
+                              >
+                                <div className="unit-palette-icon-wrap">
+                                  {isHidden ? <div className="unit-palette-hidden-ring" /> : null}
+                                  <img
+                                    src={unitAsset(unitConfig.unit_id, unitBrushOwnerId)}
+                                    alt={unitConfig.display_name}
+                                    className={isHidden ? "unit-palette-image-hidden" : ""}
+                                  />
+                                  {isHidden ? (
+                                    <div className="unit-palette-hidden-badge">
+                                      {mode === "buried" ? "B" : "S"}
+                                    </div>
+                                  ) : null}
+                                </div>
+                                <span>{isHidden ? `${unitConfig.display_name} ${mode}` : unitConfig.display_name}</span>
+                              </button>
+                            );
+                          }),
+                        )}
                       </div>
                     </div>
                   ))}
@@ -1536,8 +1658,11 @@ function App() {
                 Terrain brush: {config?.terrains?.[selectedTerrainId]?.display_name ?? selectedTerrainId}
               </span>
               <span>
-                Unit brush: {config?.units?.[selectedUnitBrushId]?.display_name ?? selectedUnitBrushId} ({unitBrushOwnerId},{" "}
-                {unitBrushPlacementMode})
+                Unit brush:{" "}
+                {selectedUnitBrushId === DELETE_UNIT_BRUSH_ID
+                  ? "Delete"
+                  : `${selectedBrushUnitConfig?.display_name ?? selectedBrush?.unitId ?? "-"} (${selectedBrush?.mode ?? "surface"})`}{" "}
+                / {unitBrushOwnerId}
               </span>
               <span>Base income: {mapData?.economy?.base_income ?? "-"}</span>
               <span>City income: {mapData?.economy?.city_income ?? "-"}</span>
@@ -1623,6 +1748,10 @@ function App() {
                           onClick={(event) => {
                             event.preventDefault();
                             event.stopPropagation();
+                            if (activeControlsTab === "units" && selectedUnitBrushId === DELETE_UNIT_BRUSH_ID) {
+                              removeUnitById(String(surfaceUnit.instance_id));
+                              return;
+                            }
                             setSelectedTileKey(key);
                             setSelectedUnitId(String(surfaceUnit.instance_id));
                             setActiveControlsTab("units");
@@ -1657,17 +1786,21 @@ function App() {
                   const center = axialToPixel(tile.coord);
                   const tileKey = coordKey(tile.coord);
                   return (
-                    <g
-                      key={`hidden-${unitKey}`}
-                      className="unit-token hidden-token-layer"
-                      transform={`translate(${center.x}, ${center.y + 24})`}
-                      onClick={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        setSelectedTileKey(tileKey);
-                        setSelectedUnitId(String(unit.instance_id));
-                        setActiveControlsTab("units");
-                      }}
+                  <g
+                    key={`hidden-${unitKey}`}
+                    className="unit-token hidden-token-layer"
+                    transform={`translate(${center.x}, ${center.y + 24})`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      if (activeControlsTab === "units" && selectedUnitBrushId === DELETE_UNIT_BRUSH_ID) {
+                        removeUnitById(String(unit.instance_id));
+                        return;
+                      }
+                      setSelectedTileKey(tileKey);
+                      setSelectedUnitId(String(unit.instance_id));
+                      setActiveControlsTab("units");
+                    }}
                       opacity="0.65"
                     >
                       <ellipse className="hidden-ring" cx="0" cy="0" rx="19" ry="14" />
@@ -1727,49 +1860,6 @@ function App() {
                       <span>Coord: {coordKey(selectedTile.coord)}</span>
                     </div>
                   </div>
-                  <div className="occupant-card">
-                    <span className="summary-label">Occupants</span>
-                    <div className="occupant-list">
-                      <button
-                        className={`occupant-chip ${selectedTileSurfaceUnit ? "" : "empty"} ${
-                          selectedUnitId != null && String(selectedTileSurfaceUnit?.instance_id ?? "") === selectedUnitId
-                            ? "selected"
-                            : ""
-                        }`}
-                        disabled={!selectedTileSurfaceUnit}
-                        onClick={() => {
-                          if (!selectedTileSurfaceUnit) {
-                            return;
-                          }
-                          setSelectedUnitId(String(selectedTileSurfaceUnit.instance_id));
-                          setActiveControlsTab("units");
-                        }}
-                      >
-                        {selectedTileSurfaceUnit
-                          ? `Surface: ${config?.units?.[selectedTileSurfaceUnit.unit_id]?.display_name ?? selectedTileSurfaceUnit.unit_id}`
-                          : "Surface: empty"}
-                      </button>
-                      <button
-                        className={`occupant-chip ${selectedTileHiddenUnit ? "" : "empty"} ${
-                          selectedUnitId != null && String(selectedTileHiddenUnit?.instance_id ?? "") === selectedUnitId
-                            ? "selected"
-                            : ""
-                        }`}
-                        disabled={!selectedTileHiddenUnit}
-                        onClick={() => {
-                          if (!selectedTileHiddenUnit) {
-                            return;
-                          }
-                          setSelectedUnitId(String(selectedTileHiddenUnit.instance_id));
-                          setActiveControlsTab("units");
-                        }}
-                      >
-                        {selectedTileHiddenUnit
-                          ? `Hidden: ${config?.units?.[selectedTileHiddenUnit.unit_id]?.display_name ?? selectedTileHiddenUnit.unit_id}`
-                          : "Hidden: empty"}
-                      </button>
-                    </div>
-                  </div>
                   <label className="field-label">Owner</label>
                   <select
                     value={selectedTile.owner_id ?? ""}
@@ -1792,7 +1882,6 @@ function App() {
               ) : (
                 <span className="muted">Click a hex to inspect and edit it.</span>
               )}
-              <pre>{pretty(selectedTile ?? null)}</pre>
             </div>
 
             <div className="detail-card">
@@ -1828,7 +1917,39 @@ function App() {
                         <span>Unit Type</span>
                         <select
                           value={selectedUnit.unit_id}
-                          onChange={(event) => setSelectedUnitValue(["unit_id"], event.target.value)}
+                          onChange={(event) => {
+                            const nextUnitId = event.target.value;
+                            const nextUnitConfig = config?.units?.[nextUnitId] ?? null;
+                            const nextMode = placementModesForUnit(nextUnitConfig).includes(selectedUnit.status?.hidden_mode ?? "surface")
+                              ? selectedUnit.status?.hidden_mode ?? "surface"
+                              : "surface";
+                            const allowedTerrains = new Set(allowedTerrainsForMode(nextUnitConfig, nextMode));
+                            const currentTerrainId = selectedTile?.terrain_id ?? tileByKey.get(coordKey(selectedUnit.position))?.terrain_id;
+                            if (currentTerrainId && !allowedTerrains.has(currentTerrainId)) {
+                              setError(
+                                `Cannot change unit to ${nextUnitConfig?.display_name ?? nextUnitId}: ${currentTerrainId} is not allowed.`,
+                              );
+                              return;
+                            }
+                            updateSelectedUnit((unit) => ({
+                              ...unit,
+                              unit_id: nextUnitId,
+                              hp: Number(nextUnitConfig?.base_max_hp ?? unit.hp ?? 10),
+                              status: {
+                                ...(unit.status ?? {}),
+                                hidden_mode: nextMode === "surface" ? null : nextMode,
+                                plague_infected: nextUnitConfig?.can_plague ? Boolean(unit.status?.plague_infected) : false,
+                                teleport_disabled_rounds: nextUnitConfig?.can_teleport
+                                  ? Number(unit.status?.teleport_disabled_rounds ?? 0)
+                                  : 0,
+                                teleport_lock_phase: nextUnitConfig?.can_teleport ? unit.status?.teleport_lock_phase ?? null : null,
+                                teleport_cooldown_rounds: nextUnitConfig?.can_teleport
+                                  ? Number(unit.status?.teleport_cooldown_rounds ?? 0)
+                                  : 0,
+                              },
+                            }));
+                            setError("");
+                          }}
                         >
                           {(config?.unit_order ?? []).map((unitId) => (
                             <option key={unitId} value={unitId}>
@@ -1933,8 +2054,7 @@ function App() {
                             )
                           }
                         >
-                          <option value="surface">surface</option>
-                          {(config?.hidden_mode_values ?? []).map((mode) => (
+                          {placementModesForUnit(selectedUnitConfig).map((mode) => (
                             <option key={mode} value={mode}>
                               {mode}
                             </option>
@@ -1961,34 +2081,243 @@ function App() {
 
                   <div className="editor-section">
                     <span className="field-label">Status</span>
-                    <JsonValueEditor
-                      value={selectedUnit.status ?? {}}
-                      onChange={(nextValue) => setSelectedUnitValue(["status"], nextValue)}
-                    />
+                    <div className="editor-inline-grid">
+                      <label>
+                        <span>Plague Infected</span>
+                        <input
+                          type="checkbox"
+                          checked={Boolean(selectedUnit.status?.plague_infected ?? false)}
+                          disabled={!selectedUnitConfig?.can_plague}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["status", "plague_infected"], event.target.checked)
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>EMP Disabled Rounds</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value={Number(selectedUnit.status?.emp_disabled_rounds ?? 0)}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["status", "emp_disabled_rounds"], Number(event.target.value || 0))
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Teleport Disabled Rounds</span>
+                        <input
+                          type="number"
+                          min="0"
+                          disabled={!selectedUnitConfig?.can_teleport}
+                          value={Number(selectedUnit.status?.teleport_disabled_rounds ?? 0)}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["status", "teleport_disabled_rounds"], Number(event.target.value || 0))
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Teleport Lock Phase</span>
+                        <select
+                          disabled={!selectedUnitConfig?.can_teleport}
+                          value={selectedUnit.status?.teleport_lock_phase ?? ""}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["status", "teleport_lock_phase"], event.target.value || null)
+                          }
+                        >
+                          <option value="">none</option>
+                          {(config?.teleport_lock_phase_values ?? []).map((phase) => (
+                            <option key={phase} value={phase}>
+                              {phase}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label>
+                        <span>Teleport Cooldown Rounds</span>
+                        <input
+                          type="number"
+                          min="0"
+                          disabled={!selectedUnitConfig?.can_teleport}
+                          value={Number(selectedUnit.status?.teleport_cooldown_rounds ?? 0)}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["status", "teleport_cooldown_rounds"], Number(event.target.value || 0))
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Buried Resurface Bonus</span>
+                        <input
+                          type="number"
+                          value={Number(selectedUnit.status?.buried_resurface_bonus ?? 0)}
+                          disabled={selectedUnitConfig?.hidden_mode !== "buried"}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["status", "buried_resurface_bonus"], Number(event.target.value || 0))
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Submerged Attack Penalty</span>
+                        <input
+                          type="number"
+                          value={Number(selectedUnit.status?.submerged_attack_penalty ?? 0)}
+                          disabled={selectedUnitConfig?.hidden_mode !== "submerged"}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["status", "submerged_attack_penalty"], Number(event.target.value || 0))
+                          }
+                        />
+                      </label>
+                    </div>
                   </div>
 
                   <div className="editor-section">
                     <span className="field-label">Action</span>
-                    <JsonValueEditor
-                      value={selectedUnit.action ?? {}}
-                      onChange={(nextValue) => setSelectedUnitValue(["action"], nextValue)}
-                    />
-                  </div>
-
-                  <div className="editor-section">
-                    <span className="field-label">Capture Target</span>
-                    <JsonValueEditor
-                      value={selectedUnit.capture_target ?? null}
-                      onChange={(nextValue) => setSelectedUnitValue(["capture_target"], nextValue)}
-                    />
-                  </div>
-
-                  <div className="editor-section">
-                    <span className="field-label">Metadata</span>
-                    <JsonValueEditor
-                      value={selectedUnit.metadata ?? {}}
-                      onChange={(nextValue) => setSelectedUnitValue(["metadata"], nextValue)}
-                    />
+                    <div className="editor-inline-grid">
+                      <label>
+                        <span>Is Available</span>
+                        <input
+                          type="checkbox"
+                          checked={Boolean(selectedUnit.action?.is_available ?? false)}
+                          onChange={(event) => setSelectedUnitValue(["action", "is_available"], event.target.checked)}
+                        />
+                      </label>
+                      <label>
+                        <span>Configured Action Count</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value={Number(selectedUnit.action?.configured_action_count ?? 0)}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["action", "configured_action_count"], Number(event.target.value || 0))
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Actions Remaining</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value={Number(selectedUnit.action?.actions_remaining ?? 0)}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["action", "actions_remaining"], Number(event.target.value || 0))
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Can Interleave Windows</span>
+                        <input
+                          type="checkbox"
+                          checked={Boolean(selectedUnit.action?.can_interleave_between_action_windows ?? false)}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["action", "can_interleave_between_action_windows"], event.target.checked)
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Move Points Remaining</span>
+                        <input
+                          type="number"
+                          value={selectedUnit.action?.move_points_remaining ?? ""}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["action", "move_points_remaining"], nullableInt(event.target.value))
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Attacks Remaining</span>
+                        <input
+                          type="number"
+                          value={selectedUnit.action?.attacks_remaining ?? ""}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["action", "attacks_remaining"], nullableInt(event.target.value))
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Special Actions Remaining</span>
+                        <input
+                          type="number"
+                          value={selectedUnit.action?.special_actions_remaining ?? ""}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["action", "special_actions_remaining"], nullableInt(event.target.value))
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Action Phase Index</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value={Number(selectedUnit.action?.action_phase_index ?? 0)}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["action", "action_phase_index"], Number(event.target.value || 0))
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Current Action Index</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value={Number(selectedUnit.action?.current_action_index ?? 0)}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["action", "current_action_index"], Number(event.target.value || 0))
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Atomic Action Locked</span>
+                        <input
+                          type="checkbox"
+                          checked={Boolean(selectedUnit.action?.atomic_action_locked ?? false)}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["action", "atomic_action_locked"], event.target.checked)
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Atomic Action Label</span>
+                        <input
+                          value={selectedUnit.action?.atomic_action_label ?? ""}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["action", "atomic_action_label"], event.target.value || null)
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Has Moved This Turn</span>
+                        <input
+                          type="checkbox"
+                          checked={Boolean(selectedUnit.action?.has_moved_this_turn ?? false)}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["action", "has_moved_this_turn"], event.target.checked)
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Has Attacked This Turn</span>
+                        <input
+                          type="checkbox"
+                          checked={Boolean(selectedUnit.action?.has_attacked_this_turn ?? false)}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["action", "has_attacked_this_turn"], event.target.checked)
+                          }
+                        />
+                      </label>
+                      <label>
+                        <span>Has Used Special This Turn</span>
+                        <input
+                          type="checkbox"
+                          checked={Boolean(selectedUnit.action?.has_used_special_this_turn ?? false)}
+                          onChange={(event) =>
+                            setSelectedUnitValue(["action", "has_used_special_this_turn"], event.target.checked)
+                          }
+                        />
+                      </label>
+                    </div>
+                    <div className="editor-help-text">
+                      Advanced fields like <code>ability_cooldowns</code>, <code>action_windows</code>, <code>capture_target</code>, and <code>metadata</code> are preserved on save/load and shown in the JSON preview below.
+                    </div>
                   </div>
                 </>
               ) : (
