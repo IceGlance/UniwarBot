@@ -25,6 +25,7 @@ WEB_DIST = ROOT / "webgui" / "dist"
 WEB_APP = ROOT / "webgui"
 MAPS_DIR = ROOT / "maps"
 EDITOR_FACTIONS = ["sapiens", "khraleans", "titans"]
+FRONTEND_SHELL_VERSION = "20260513b"
 
 app = FastAPI(
     title="UniwarBot Scenario Inspector API",
@@ -41,45 +42,136 @@ LANDING_PAGE = """<!doctype html>
     <style>
       :root {
         font-family: "Segoe UI", sans-serif;
-        background: linear-gradient(180deg, #0b1322 0%, #101a2e 100%);
+        color: #e2e8f0;
+        background: #0b1727;
       }
       * { box-sizing: border-box; }
-      body {
+      html, body {
         margin: 0;
         min-height: 100vh;
+        background: linear-gradient(180deg, #0b1727 0%, #132238 100%);
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+      }
+      .shell {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      .tabbar {
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
+        padding: 14px 12px 10px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+        background: rgba(11, 23, 39, 0.92);
+        backdrop-filter: blur(10px);
       }
-      .links {
+      .tabs {
         display: flex;
-        gap: 18px;
+        flex-direction: row;
         flex-wrap: wrap;
-        justify-content: center;
+        gap: 10px;
       }
-      a {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 16px 22px;
+      .tab {
+        appearance: none;
+        border: 1px solid rgba(148, 163, 184, 0.26);
+        background: rgba(15, 23, 42, 0.55);
+        color: #cbd5e1;
         border-radius: 14px;
-        color: white;
-        text-decoration: none;
+        padding: 12px 14px;
+        font-size: 14px;
         font-weight: 700;
-        background: linear-gradient(135deg, #2563eb, #0f766e);
-        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+        cursor: pointer;
+        text-align: left;
+      }
+      .tab.active {
+        background: #f8fafc;
+        color: #0f172a;
+        border-color: #f8fafc;
+      }
+      .viewport {
+        flex: 1;
+        min-height: 0;
+        padding: 12px;
+      }
+      iframe {
+        width: 100%;
+        height: calc(100vh - 77px);
+        border: none;
+        border-radius: 18px;
+        background: white;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+      }
+      @media (max-width: 900px) {
+        .tabs {
+          gap: 8px;
+        }
+        iframe {
+          height: calc(100vh - 132px);
+        }
       }
     </style>
   </head>
   <body>
-    <div class="links">
-      <a href="/scenario-inspector/">Scenario Inspector</a>
-      <a href="/units-stats/">Units Stats</a>
-      <a href="/game-state-editor/">Game State Editor</a>
+    <div class="shell">
+      <div class="tabbar">
+        <div class="tabs" id="tabs"></div>
+      </div>
+      <div class="viewport">
+        <iframe id="content-frame" title="UniwarBot workspace"></iframe>
+      </div>
     </div>
+    <script>
+      const TABS = [
+        { id: "scenario-inspector", label: "Scenario Inspector", src: "/scenario-inspector/?v=__FRONTEND_VERSION__" },
+        { id: "units-stats", label: "Units Stats", src: "/units-stats/?v=__FRONTEND_VERSION__" },
+        { id: "game-state-editor", label: "Game State Editor", src: "/game-state-editor/?v=__FRONTEND_VERSION__" },
+      ];
+
+      const tabsRoot = document.getElementById("tabs");
+      const frame = document.getElementById("content-frame");
+
+      function currentTabId() {
+        const params = new URLSearchParams(window.location.search);
+        const requested = params.get("tab");
+        return TABS.some((item) => item.id === requested) ? requested : TABS[0].id;
+      }
+
+      function renderTabs(activeId) {
+        tabsRoot.innerHTML = "";
+        TABS.forEach((item) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = item.id === activeId ? "tab active" : "tab";
+          button.textContent = item.label;
+          button.addEventListener("click", () => {
+            const url = new URL(window.location.href);
+            url.searchParams.set("tab", item.id);
+            window.history.replaceState({}, "", url);
+            activate(item.id);
+          });
+          tabsRoot.appendChild(button);
+        });
+      }
+
+      function activate(tabId) {
+        const tab = TABS.find((item) => item.id === tabId) || TABS[0];
+        renderTabs(tab.id);
+        if (frame.getAttribute("src") !== tab.src) {
+          frame.setAttribute("src", tab.src);
+        }
+      }
+
+      activate(currentTabId());
+      window.addEventListener("popstate", () => activate(currentTabId()));
+    </script>
   </body>
 </html>
-"""
+""".replace("__FRONTEND_VERSION__", FRONTEND_SHELL_VERSION)
 
 TERRAIN_DISPLAY_ORDER = [
     "plain",
@@ -103,6 +195,21 @@ TARGET_CLASS_ORDER = ["ground_light", "ground_heavy", "air", "aquatic", "amphibi
 FACTION_ORDER = {"sapiens": 0, "khraleans": 1, "titans": 2}
 HIDDEN_MODE_VALUES = ["buried", "submerged"]
 TELEPORT_LOCK_PHASE_VALUES = ["opponent_turn", "owner_turn"]
+
+
+NO_CACHE_HEADERS = {
+    "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+    "Pragma": "no-cache",
+    "Expires": "0",
+}
+
+
+def _html_page_response(content: str) -> HTMLResponse:
+    return HTMLResponse(content=content, headers=NO_CACHE_HEADERS)
+
+
+def _file_page_response(path: Path) -> FileResponse:
+    return FileResponse(path, headers=NO_CACHE_HEADERS)
 
 
 def _suggest_city_income(base_income: int) -> int:
@@ -697,7 +804,7 @@ def gui_status() -> Response:
 
 @app.get("/", response_class=HTMLResponse)
 def landing() -> str:
-    return LANDING_PAGE
+    return _html_page_response(LANDING_PAGE)
 
 
 @app.get("/scenario-inspector", include_in_schema=False)
@@ -708,12 +815,12 @@ def scenario_inspector_redirect() -> Response:
 @app.get("/scenario-inspector/", include_in_schema=False)
 def scenario_inspector_index() -> Response:
     base_dir = WEB_DIST if WEB_DIST.exists() else WEB_APP
-    return FileResponse(base_dir / "index.html")
+    return _file_page_response(base_dir / "index.html")
 
 
 @app.get("/scenario-inspector/app.jsx", include_in_schema=False)
 def scenario_inspector_app() -> Response:
-    return FileResponse(WEB_APP / "app.jsx")
+    return _file_page_response(WEB_APP / "app.jsx")
 
 
 @app.get("/units-stats", include_in_schema=False)
@@ -723,12 +830,12 @@ def unit_stats_redirect() -> Response:
 
 @app.get("/units-stats/", include_in_schema=False)
 def unit_stats_index() -> Response:
-    return FileResponse(WEB_APP / "units-stats.html")
+    return _file_page_response(WEB_APP / "units-stats.html")
 
 
 @app.get("/units-stats/units-stats.jsx", include_in_schema=False)
 def unit_stats_app() -> Response:
-    return FileResponse(WEB_APP / "units-stats.jsx")
+    return _file_page_response(WEB_APP / "units-stats.jsx")
 
 
 @app.get("/game-state-editor", include_in_schema=False)
@@ -738,12 +845,12 @@ def game_state_editor_redirect() -> Response:
 
 @app.get("/game-state-editor/", include_in_schema=False)
 def game_state_editor_index() -> Response:
-    return FileResponse(WEB_APP / "game-state-editor.html")
+    return _file_page_response(WEB_APP / "game-state-editor.html")
 
 
 @app.get("/game-state-editor/game-state-editor.jsx", include_in_schema=False)
 def game_state_editor_app() -> Response:
-    return FileResponse(WEB_APP / "game-state-editor.jsx")
+    return _file_page_response(WEB_APP / "game-state-editor.jsx")
 
 
 if WEB_DIST.exists():

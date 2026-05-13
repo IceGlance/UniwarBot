@@ -92,10 +92,6 @@ function terrainCell(effect) {
   return `${effect.mobility_cost}/${signed(effect.attack_bonus)}/${signed(effect.defense_bonus)}`;
 }
 
-function factionChoices(units) {
-  return ["all"].concat([...new Set(units.map((unit) => unit.faction))]);
-}
-
 function shortUnitType(unitType) {
   return UNIT_TYPE_SHORT[unitType] || unitType || "-";
 }
@@ -174,8 +170,6 @@ function buildDisplayRows(units) {
 function UnitStatsApp() {
   const [payload, setPayload] = useState(null);
   const [error, setError] = useState("");
-  const [search, setSearch] = useState("");
-  const [faction, setFaction] = useState("all");
 
   useEffect(() => {
     let active = true;
@@ -203,33 +197,15 @@ function UnitStatsApp() {
     };
   }, []);
 
-  const filteredUnits = useMemo(() => {
-    const units = payload?.units ?? [];
-    const searchNeedle = search.trim().toLowerCase();
-    return units.filter((unit) => {
-      if (faction !== "all" && unit.faction !== faction) {
-        return false;
-      }
-      if (!searchNeedle) {
-        return true;
-      }
-      const haystack = [unit.display_name, unit.unit_id, unit.faction, unit.unit_type]
-        .join(" ")
-        .toLowerCase();
-      return haystack.includes(searchNeedle);
-    });
-  }, [payload, search, faction]);
-
-  const displayRows = useMemo(() => buildDisplayRows(filteredUnits), [filteredUnits]);
+  const displayRows = useMemo(() => buildDisplayRows(payload?.units ?? []), [payload]);
 
   const terrainOrder = payload?.terrain_order ?? [];
   const targetClassOrder = payload?.target_class_order ?? [];
-  const factions = payload ? factionChoices(payload.units) : ["all"];
 
   return (
     <div className="catalog-shell">
       <header className="catalog-topbar">
-        <div>
+        <div className="header-intro">
           <h1>UniwarBot Units Stats</h1>
           <p>
             Machine-readable unit stats from the validated game dictionary. Terrain cells use
@@ -243,41 +219,12 @@ function UnitStatsApp() {
 
       {error ? <div className="error-banner">{error}</div> : null}
 
-      <section className="catalog-toolbar">
-        <label className="catalog-control">
-          <span>Search</span>
-          <input
-            type="text"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="marine, titan, aquatic..."
-          />
-        </label>
-        <label className="catalog-control">
-          <span>Faction</span>
-          <select value={faction} onChange={(event) => setFaction(event.target.value)}>
-            {factions.map((choice) => (
-              <option key={choice} value={choice}>
-                {choice}
-              </option>
-            ))}
-          </select>
-        </label>
-        <div className="catalog-summary">
-          <span>Rows</span>
-          <strong>{displayRows.length}</strong>
-        </div>
-      </section>
-
       <section className="catalog-table-wrap">
         <table className="stats-table stats-table-split">
           <thead>
             <tr>
               <th className="sticky-col sticky-col-1" rowSpan="2">
                 Unit
-              </th>
-              <th className="sticky-col sticky-col-2" rowSpan="2">
-                Faction
               </th>
               <th rowSpan="2">Type</th>
               <th rowSpan="2">State</th>
@@ -324,9 +271,6 @@ function UnitStatsApp() {
                     <strong>{row.unit.display_name}</strong>
                     <div className="unit-id">{row.unit.unit_id}</div>
                   </div>
-                </td>
-                <td className="sticky-col sticky-col-2">
-                  <span className={`faction-badge faction-${row.unit.faction}`}>{row.unit.faction}</span>
                 </td>
                 <td>
                   <span className="type-chip">{shortUnitType(row.unit.unit_type)}</span>

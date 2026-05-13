@@ -113,24 +113,32 @@ function renderVeterancy(unit) {
   );
 }
 
-function statusMarkerText(unit) {
-  if (Number(unit?.status?.emp_disabled_rounds ?? 0) > 0) {
-    return "E";
+function unitStatusBadges(unit) {
+  const badges = [];
+  if (Boolean(unit?.status?.plague_infected)) {
+    badges.push({ text: "P", className: "status-badge-plague" });
   }
-  return null;
+  if (Number(unit?.status?.emp_disabled_rounds ?? 0) > 0) {
+    badges.push({ text: "E", className: "status-badge-emp" });
+  }
+  return badges;
 }
 
 function renderStatusMarker(unit, transform) {
-  const marker = statusMarkerText(unit);
-  if (!marker) {
+  const badges = unitStatusBadges(unit);
+  if (badges.length === 0) {
     return null;
   }
   return (
     <g className="status-marker" transform={transform}>
-      <rect className="status-badge status-badge-teleport" x="-8" y="-6" width="16" height="12" rx="4" />
-      <text className="status-badge-text" x="0" y="1">
-        {marker}
-      </text>
+      {badges.map((badge, index) => (
+        <g key={`${badge.text}-${index}`} transform={`translate(${index * 18},0)`}>
+          <rect className={`status-badge ${badge.className}`} x="-8" y="-6" width="16" height="12" rx="4" />
+          <text className="status-badge-text" x="0" y="1">
+            {badge.text}
+          </text>
+        </g>
+      ))}
     </g>
   );
 }
@@ -557,14 +565,14 @@ function App() {
     };
   }, [boardBounds, panOffset.x, panOffset.y, zoom]);
 
-  return (
-    <div className="app-shell">
-      <header className="topbar">
-        <div>
-          <h1>UniwarBot Scenario Inspector</h1>
-          <p>Choose a UT scenario, step actions, and inspect the rendered board, units, and state changes.</p>
-        </div>
-        <div className="status-cards">
+    return (
+      <div className="app-shell">
+        <header className="topbar">
+          <div className="header-intro">
+            <h1>UniwarBot Scenario Inspector</h1>
+            <p>Choose a UT scenario, step actions, and inspect the rendered board, units, and state changes.</p>
+          </div>
+          <div className="status-cards">
           <div className="status-card">
             <span>Scenarios</span>
             <strong>{scenarios.length}</strong>

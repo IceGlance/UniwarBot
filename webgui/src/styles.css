@@ -41,9 +41,27 @@ select {
 
 .topbar {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 24px;
   padding: 20px 24px 12px;
+}
+
+.header-intro {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  gap: 16px;
+  width: max-content;
+  max-width: none;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.header-intro h1,
+.header-intro p,
+.header-intro code,
+.header-intro span {
+  white-space: nowrap;
 }
 
 .topbar h1 {
@@ -53,8 +71,8 @@ select {
 }
 
 .topbar p {
-  margin: 8px 0 0;
-  max-width: 760px;
+  margin: 0;
+  max-width: none;
   color: rgba(241, 245, 249, 0.84);
 }
 
@@ -62,6 +80,7 @@ select {
   display: flex;
   gap: 12px;
   align-items: flex-start;
+  align-self: flex-end;
 }
 
 .status-card {
@@ -404,6 +423,14 @@ select {
 
 .status-badge-teleport {
   fill: rgba(249, 115, 22, 0.96);
+}
+
+.status-badge-emp {
+  fill: rgba(249, 115, 22, 0.96);
+}
+
+.status-badge-plague {
+  fill: rgba(22, 163, 74, 0.96);
 }
 
 .status-badge-text {
@@ -1119,6 +1146,18 @@ select {
     flex-direction: column;
   }
 
+  .header-intro {
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .header-intro h1,
+  .header-intro p {
+    white-space: normal;
+  }
+
   .status-cards {
     flex-wrap: wrap;
   }
@@ -1154,9 +1193,9 @@ select {
 
 .catalog-topbar {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 24px;
-  align-items: flex-start;
+  align-items: stretch;
   padding: 20px 24px 14px;
 }
 
@@ -1167,7 +1206,7 @@ select {
 }
 
 .catalog-topbar p {
-  margin: 8px 0 0;
+  margin: 0;
   color: rgba(241, 245, 249, 0.84);
 }
 
@@ -1182,6 +1221,7 @@ select {
   font-weight: 700;
   background: rgba(15, 23, 42, 0.62);
   border: 1px solid rgba(148, 163, 184, 0.28);
+  align-self: flex-end;
 }
 
 .catalog-toolbar {

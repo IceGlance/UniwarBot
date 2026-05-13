@@ -122,6 +122,36 @@ function renderVeterancy(unit) {
   );
 }
 
+function unitStatusBadges(unit) {
+  const badges = [];
+  if (Boolean(unit?.status?.plague_infected)) {
+    badges.push({ text: "P", className: "status-badge-plague" });
+  }
+  if (Number(unit?.status?.emp_disabled_rounds ?? 0) > 0) {
+    badges.push({ text: "E", className: "status-badge-emp" });
+  }
+  return badges;
+}
+
+function renderStatusMarkers(unit, transform) {
+  const badges = unitStatusBadges(unit);
+  if (badges.length === 0) {
+    return null;
+  }
+  return (
+    <g className="status-marker" transform={transform}>
+      {badges.map((badge, index) => (
+        <g key={`${badge.text}-${index}`} transform={`translate(${index * 18},0)`}>
+          <rect className={`status-badge ${badge.className}`} x="-8" y="-6" width="16" height="12" rx="4" />
+          <text className="status-badge-text" x="0" y="1">
+            {badge.text}
+          </text>
+        </g>
+      ))}
+    </g>
+  );
+}
+
 function buildBlankMap(config, width, height, playerCount, fillTerrainId = "plain") {
   const factions = config?.factions ?? [];
   return {
@@ -1286,14 +1316,14 @@ function App() {
     setError("");
   };
 
-  return (
-    <div className="app-shell">
-      <header className="topbar">
-        <div>
-          <h1>UniwarBot Game State Editor</h1>
-          <p>Create and save map JSON locally with terrain painting, player settings, ownership, and economy controls.</p>
-        </div>
-        <div className="status-cards">
+    return (
+      <div className="app-shell">
+        <header className="topbar">
+          <div className="header-intro">
+            <h1>UniwarBot Game State Editor</h1>
+            <p>Create and save map JSON locally with terrain painting, player settings, ownership, and economy controls.</p>
+          </div>
+          <div className="status-cards">
           <div className="status-card">
             <span>Map Size</span>
             <strong>{mapData ? `${mapData.size.width} x ${mapData.size.height}` : "-"}</strong>
@@ -1767,6 +1797,7 @@ function App() {
                             draggable="false"
                             preserveAspectRatio="xMidYMid slice"
                           />
+                          {renderStatusMarkers(surfaceUnit, "translate(-18,-14)")}
                           {renderVeterancy(surfaceUnit)}
                           <g transform="translate(18,13)">
                             <text className="hp-text" x="0" y="1">
@@ -1814,6 +1845,7 @@ function App() {
                         draggable="false"
                         preserveAspectRatio="xMidYMid slice"
                       />
+                      {renderStatusMarkers(unit, "translate(-15,-11)")}
                       {renderVeterancy(unit)}
                       <g transform="translate(-13,-9)">
                         <rect className="hidden-flag" x="-6" y="-6" width="12" height="12" rx="4" />
@@ -2145,180 +2177,9 @@ function App() {
                           }
                         />
                       </label>
-                      <label>
-                        <span>Buried Resurface Bonus</span>
-                        <input
-                          type="number"
-                          value={Number(selectedUnit.status?.buried_resurface_bonus ?? 0)}
-                          disabled={selectedUnitConfig?.hidden_mode !== "buried"}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["status", "buried_resurface_bonus"], Number(event.target.value || 0))
-                          }
-                        />
-                      </label>
-                      <label>
-                        <span>Submerged Attack Penalty</span>
-                        <input
-                          type="number"
-                          value={Number(selectedUnit.status?.submerged_attack_penalty ?? 0)}
-                          disabled={selectedUnitConfig?.hidden_mode !== "submerged"}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["status", "submerged_attack_penalty"], Number(event.target.value || 0))
-                          }
-                        />
-                      </label>
                     </div>
                   </div>
 
-                  <div className="editor-section">
-                    <span className="field-label">Action</span>
-                    <div className="editor-inline-grid">
-                      <label>
-                        <span>Is Available</span>
-                        <input
-                          type="checkbox"
-                          checked={Boolean(selectedUnit.action?.is_available ?? false)}
-                          onChange={(event) => setSelectedUnitValue(["action", "is_available"], event.target.checked)}
-                        />
-                      </label>
-                      <label>
-                        <span>Configured Action Count</span>
-                        <input
-                          type="number"
-                          min="0"
-                          value={Number(selectedUnit.action?.configured_action_count ?? 0)}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["action", "configured_action_count"], Number(event.target.value || 0))
-                          }
-                        />
-                      </label>
-                      <label>
-                        <span>Actions Remaining</span>
-                        <input
-                          type="number"
-                          min="0"
-                          value={Number(selectedUnit.action?.actions_remaining ?? 0)}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["action", "actions_remaining"], Number(event.target.value || 0))
-                          }
-                        />
-                      </label>
-                      <label>
-                        <span>Can Interleave Windows</span>
-                        <input
-                          type="checkbox"
-                          checked={Boolean(selectedUnit.action?.can_interleave_between_action_windows ?? false)}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["action", "can_interleave_between_action_windows"], event.target.checked)
-                          }
-                        />
-                      </label>
-                      <label>
-                        <span>Move Points Remaining</span>
-                        <input
-                          type="number"
-                          value={selectedUnit.action?.move_points_remaining ?? ""}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["action", "move_points_remaining"], nullableInt(event.target.value))
-                          }
-                        />
-                      </label>
-                      <label>
-                        <span>Attacks Remaining</span>
-                        <input
-                          type="number"
-                          value={selectedUnit.action?.attacks_remaining ?? ""}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["action", "attacks_remaining"], nullableInt(event.target.value))
-                          }
-                        />
-                      </label>
-                      <label>
-                        <span>Special Actions Remaining</span>
-                        <input
-                          type="number"
-                          value={selectedUnit.action?.special_actions_remaining ?? ""}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["action", "special_actions_remaining"], nullableInt(event.target.value))
-                          }
-                        />
-                      </label>
-                      <label>
-                        <span>Action Phase Index</span>
-                        <input
-                          type="number"
-                          min="0"
-                          value={Number(selectedUnit.action?.action_phase_index ?? 0)}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["action", "action_phase_index"], Number(event.target.value || 0))
-                          }
-                        />
-                      </label>
-                      <label>
-                        <span>Current Action Index</span>
-                        <input
-                          type="number"
-                          min="0"
-                          value={Number(selectedUnit.action?.current_action_index ?? 0)}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["action", "current_action_index"], Number(event.target.value || 0))
-                          }
-                        />
-                      </label>
-                      <label>
-                        <span>Atomic Action Locked</span>
-                        <input
-                          type="checkbox"
-                          checked={Boolean(selectedUnit.action?.atomic_action_locked ?? false)}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["action", "atomic_action_locked"], event.target.checked)
-                          }
-                        />
-                      </label>
-                      <label>
-                        <span>Atomic Action Label</span>
-                        <input
-                          value={selectedUnit.action?.atomic_action_label ?? ""}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["action", "atomic_action_label"], event.target.value || null)
-                          }
-                        />
-                      </label>
-                      <label>
-                        <span>Has Moved This Turn</span>
-                        <input
-                          type="checkbox"
-                          checked={Boolean(selectedUnit.action?.has_moved_this_turn ?? false)}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["action", "has_moved_this_turn"], event.target.checked)
-                          }
-                        />
-                      </label>
-                      <label>
-                        <span>Has Attacked This Turn</span>
-                        <input
-                          type="checkbox"
-                          checked={Boolean(selectedUnit.action?.has_attacked_this_turn ?? false)}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["action", "has_attacked_this_turn"], event.target.checked)
-                          }
-                        />
-                      </label>
-                      <label>
-                        <span>Has Used Special This Turn</span>
-                        <input
-                          type="checkbox"
-                          checked={Boolean(selectedUnit.action?.has_used_special_this_turn ?? false)}
-                          onChange={(event) =>
-                            setSelectedUnitValue(["action", "has_used_special_this_turn"], event.target.checked)
-                          }
-                        />
-                      </label>
-                    </div>
-                    <div className="editor-help-text">
-                      Advanced fields like <code>ability_cooldowns</code>, <code>action_windows</code>, <code>capture_target</code>, and <code>metadata</code> are preserved on save/load and shown in the JSON preview below.
-                    </div>
-                  </div>
                 </>
               ) : (
                 <span className="muted">Click a unit on the map to inspect and edit it.</span>
