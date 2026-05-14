@@ -768,6 +768,19 @@ select {
   justify-content: center;
 }
 
+.playgame-single-button-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.playgame-history-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.playgame-single-button-row .step-chip,
+.playgame-history-row .step-chip {
+  white-space: nowrap;
+}
+
 .editor-section {
   display: flex;
   flex-direction: column;

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import math
+import random
 import re
 from pathlib import Path
 
@@ -14,18 +15,31 @@ from fastapi.staticfiles import StaticFiles
 from .scenario_inspector import (
     ROOT,
     build_scenario_report,
+    compute_state_changes,
     compute_possible_moves_at_step,
     list_scenario_summaries,
     load_scenario_by_id,
 )
-from .state import load_game_dictionary
+from .state import (
+    GameMap,
+    GameState,
+    HexCoord,
+    MapMetadata,
+    PlayerState,
+    TileState,
+    UnitState,
+    UnitStatusState,
+    build_default_unit_action_state,
+    load_game_dictionary,
+)
 
 
 WEB_DIST = ROOT / "webgui" / "dist"
 WEB_APP = ROOT / "webgui"
 MAPS_DIR = ROOT / "maps"
+SAVED_GAMES_DIR = ROOT / "saved_games"
 EDITOR_FACTIONS = ["sapiens", "khraleans", "titans"]
-FRONTEND_SHELL_VERSION = "20260513b"
+FRONTEND_SHELL_VERSION = "20260514a"
 
 app = FastAPI(
     title="UniwarBot Scenario Inspector API",
@@ -130,6 +144,7 @@ LANDING_PAGE = """<!doctype html>
         { id: "scenario-inspector", label: "Scenario Inspector", src: "/scenario-inspector/?v=__FRONTEND_VERSION__" },
         { id: "units-stats", label: "Units Stats", src: "/units-stats/?v=__FRONTEND_VERSION__" },
         { id: "game-state-editor", label: "Game State Editor", src: "/game-state-editor/?v=__FRONTEND_VERSION__" },
+        { id: "play-game", label: "Play Game", src: "/play-game/?v=__FRONTEND_VERSION__" },
       ];
 
       const tabsRoot = document.getElementById("tabs");
@@ -615,6 +630,230 @@ def _list_saved_maps() -> list[dict[str, object]]:
     return items
 
 
+def _list_saved_games() -> list[dict[str, object]]:
+    SAVED_GAMES_DIR.mkdir(parents=True, exist_ok=True)
+    items: list[dict[str, object]] = []
+    for path in sorted(SAVED_GAMES_DIR.glob("*.json")):
+        if path.name.startswith("_"):
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            name = str(payload.get("name", path.stem))
+        except Exception:
+            name = path.stem
+        items.append(
+            {
+                "file_name": path.name,
+                "name": name,
+                "modified_utc": path.stat().st_mtime,
+            }
+        )
+    return items
+
+
+def _random_int32() -> int:
+    return random.SystemRandom().randint(-(2**31), (2**31) - 1)
+
+
+def _parse_hex_coord(value: object, *, field_name: str = "coord") -> HexCoord:
+    if isinstance(value, dict):
+        return HexCoord(q=int(value["q"]), r=int(value["r"]))
+    if isinstance(value, str):
+        q_text, r_text = value.split(":")
+        return HexCoord(q=int(q_text), r=int(r_text))
+    raise ValueError(f"Invalid {field_name}")
+
+
+def _build_new_game_state_from_map(
+    map_payload: dict[str, object],
+    *,
+    player_factions: dict[str, str] | None = None,
+    seed_override: object = None,
+) -> GameState:
+    normalized = _normalize_editor_map(map_payload)
+    player_entries = list(normalized.get("players") or [])
+    player_order = [str(player["player_id"]) for player in player_entries]
+    if not player_order:
+        raise ValueError("Map must contain at least one player")
+    resolved_seed = (
+        _normalize_optional_int32(seed_override)
+        if seed_override not in {None, ""}
+        else _normalize_optional_int32(normalized.get("start_random_seed"))
+    )
+    if resolved_seed is None:
+        resolved_seed = _random_int32()
+    size = dict(normalized.get("size") or {})
+    game_map = GameMap(
+        metadata=MapMetadata(
+            map_id=str(normalized.get("map_id", "play-map")),
+            name=str(normalized.get("name", "Play Map")),
+            width=int(size.get("width", 0)) or None,
+            height=int(size.get("height", 0)) or None,
+            tags=["play-game"],
+            notes=f"source-map:{normalized.get('file_name', '')}",
+        )
+    )
+    for raw_tile in list(normalized.get("tiles") or []):
+        coord = _parse_hex_coord(raw_tile.get("coord"), field_name="tile coord")
+        game_map.add_tile(
+            TileState(
+                coord=coord,
+                terrain_id=str(raw_tile.get("terrain_id", "plain")),
+                owner_id=raw_tile.get("owner_id"),
+                metadata={},
+            )
+        )
+
+    economy = dict(normalized.get("economy") or {})
+    state = GameState(
+        ruleset_version="play-game-sim.v1",
+        active_player_id=player_order[0],
+        player_order=player_order,
+        turn_number=1,
+        round_number=1,
+        current_rseed=int(resolved_seed),
+        game_map=game_map,
+        metadata={
+            "income_per_base": int(economy.get("base_income", 100)),
+            "income_per_city": int(economy.get("city_income", 50)),
+            "source_map_id": str(normalized.get("map_id", "play-map")),
+            "source_map_name": str(normalized.get("name", "Play Map")),
+        },
+    )
+
+    resolved_factions = dict(player_factions or {})
+    for raw_player in player_entries:
+        player_id = str(raw_player["player_id"])
+        allowed_factions = [
+            str(item)
+            for item in list(raw_player.get("allowed_factions") or EDITOR_FACTIONS)
+            if str(item) in EDITOR_FACTIONS
+        ]
+        if not allowed_factions:
+            allowed_factions = list(EDITOR_FACTIONS)
+        selected_faction = str(resolved_factions.get(player_id, allowed_factions[0]))
+        if selected_faction not in allowed_factions:
+            raise ValueError(f"Faction {selected_faction!r} is not allowed for {player_id}")
+        state.add_player(
+            PlayerState(
+                player_id=player_id,
+                faction=selected_faction,
+                credits=int(economy.get("starting_credits", 100)),
+                team_id=None,
+                defeated=False,
+                has_ended_turn=False,
+                metadata={"allowed_factions": allowed_factions},
+            )
+        )
+
+    for raw_unit in list(normalized.get("units") or []):
+        coord = _parse_hex_coord(raw_unit.get("position"), field_name="unit position")
+        status = UnitStatusState.from_dict(dict(raw_unit.get("status") or {}))
+        unit = UnitState(
+            instance_id=str(raw_unit["instance_id"]),
+            unit_id=str(raw_unit["unit_id"]),
+            owner_id=str(raw_unit["owner_id"]),
+            position=coord,
+            hp=int(raw_unit.get("hp", 10)),
+            veterancy_level=int(raw_unit.get("veterancy_level", 0)),
+            experience_points=int(raw_unit.get("experience_points", 0)),
+            status=status,
+            action=build_default_unit_action_state(str(raw_unit["unit_id"])),
+            capture_target=None,
+            metadata=dict(raw_unit.get("metadata", {})),
+        )
+        state.add_unit(unit)
+
+    return state
+
+
+def _play_state_payload(state: GameState) -> dict[str, object]:
+    return state.to_dict()
+
+
+def _load_state_from_payload(payload: dict[str, object]) -> GameState:
+    return GameState.from_dict(dict(payload))
+
+
+def _apply_play_action(state: GameState, action: dict[str, object]) -> dict[str, object]:
+    action_type = str(action.get("type", ""))
+    result: dict[str, object] = {"type": action_type}
+    if action_type == "move_unit":
+        state.move_unit(
+            str(action["unit_id"]),
+            _parse_hex_coord(action["destination"], field_name="destination"),
+            continue_as_atomic_attack=bool(action.get("continue_as_atomic_attack", False)),
+        )
+    elif action_type == "attack_unit":
+        state.attack_unit(str(action["attacker_id"]), str(action["defender_id"]))
+    elif action_type == "bury_unit":
+        state.bury_unit(str(action["unit_id"]))
+    elif action_type == "resurface_unit":
+        state.resurface_unit(
+            str(action["unit_id"]),
+            continue_as_atomic_attack=bool(action.get("continue_as_atomic_attack", False)),
+        )
+    elif action_type == "submerge_unit":
+        state.submerge_unit(str(action["unit_id"]))
+    elif action_type == "surface_unit":
+        state.surface_unit(str(action["unit_id"]))
+    elif action_type == "teleport_unit":
+        state.teleport_unit(
+            str(action["unit_id"]),
+            _parse_hex_coord(action["destination"], field_name="destination"),
+        )
+    elif action_type == "heal_unit":
+        state.heal_unit(str(action["unit_id"]))
+    elif action_type == "begin_capture":
+        unit = state.get_unit(str(action["unit_id"]))
+        if unit is None:
+            raise KeyError(f"Unknown unit_id: {action['unit_id']}")
+        state.begin_capture(unit.instance_id, unit.position)
+    elif action_type == "buy_unit":
+        result["created_unit_id"] = state.buy_unit(
+            _parse_hex_coord(action["tile_coord"], field_name="tile_coord"),
+            str(action["unit_id"]),
+        )
+    elif action_type == "use_plague":
+        state.use_plague(str(action["unit_id"]), str(action["target_id"]))
+    elif action_type == "use_emp":
+        result["affected_unit_ids"] = state.use_emp(str(action["unit_id"]))
+    elif action_type == "use_uv":
+        result["affected_unit_ids"] = state.use_uv(str(action["unit_id"]))
+    elif action_type == "transform_unit":
+        result["created_unit_id"] = state.transform_unit(
+            str(action["unit_id"]),
+            str(action["target_id"]),
+            ability_id=str(action["ability_id"]),
+        )
+    elif action_type == "end_turn":
+        result["next_player_id"] = state.end_turn()
+    else:
+        raise ValueError(f"Unsupported play action type: {action_type}")
+    return result
+
+
+def _play_options_for_selection(
+    state: GameState,
+    *,
+    selected_unit_id: str | None = None,
+    selected_tile: HexCoord | None = None,
+) -> dict[str, object]:
+    options: dict[str, object] = {
+        "selected_unit_id": selected_unit_id,
+        "selected_tile": None if selected_tile is None else selected_tile.to_dict(),
+        "possible_moves": None,
+        "special_options": None,
+        "buyable_units": [],
+    }
+    if selected_unit_id:
+        options["possible_moves"] = state.get_possible_moves(selected_unit_id)
+        options["special_options"] = state.get_current_special_options(selected_unit_id)
+    if selected_tile is not None:
+        options["buyable_units"] = state.get_buyable_units_for_tile(selected_tile)
+    return options
+
+
 def _range_label(range_data: dict[str, object] | None) -> str | None:
     if not range_data:
         return None
@@ -803,6 +1042,128 @@ def save_map(payload: dict[str, object] = Body(...)) -> dict[str, object]:
     return normalized
 
 
+@app.get("/api/saved-games")
+def list_saved_games() -> list[dict[str, object]]:
+    return _list_saved_games()
+
+
+@app.get("/api/saved-games/{file_name}")
+def load_saved_game(file_name: str) -> dict[str, object]:
+    try:
+        sanitized = _sanitize_map_file_name(file_name)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    path = SAVED_GAMES_DIR / sanitized
+    if not path.exists():
+        raise HTTPException(status_code=404, detail=f"Unknown saved game: {sanitized}")
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    state_payload = dict(payload.get("state") or payload)
+    state = _load_state_from_payload(state_payload)
+    return {
+        "file_name": sanitized,
+        "name": str(payload.get("name", sanitized.removesuffix(".json"))),
+        "state": _play_state_payload(state),
+    }
+
+
+@app.post("/api/saved-games/save")
+def save_saved_game(payload: dict[str, object] = Body(...)) -> dict[str, object]:
+    try:
+        file_name = _sanitize_map_file_name(str(payload.get("file_name", "")))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    state = _load_state_from_payload(dict(payload.get("state") or {}))
+    SAVED_GAMES_DIR.mkdir(parents=True, exist_ok=True)
+    wrapper = {
+        "schema_version": "play-game-save-v1",
+        "name": str(payload.get("name", file_name.removesuffix(".json"))),
+        "state": _play_state_payload(state),
+    }
+    path = SAVED_GAMES_DIR / file_name
+    path.write_text(json.dumps(wrapper, indent=2) + "\n", encoding="utf-8")
+    return {
+        "file_name": file_name,
+        "name": wrapper["name"],
+        "state": wrapper["state"],
+    }
+
+
+@app.get("/api/play-game/config")
+def play_game_config() -> dict[str, object]:
+    config = _build_map_editor_config()
+    return {
+        "factions": list(EDITOR_FACTIONS),
+        "maps": _list_saved_maps(),
+        "saved_games": _list_saved_games(),
+        "terrains": config["terrains"],
+        "terrain_order": config["terrain_order"],
+        "units": config["units"],
+        "unit_order": config["unit_order"],
+    }
+
+
+@app.post("/api/play-game/new")
+def play_game_new(payload: dict[str, object] = Body(...)) -> dict[str, object]:
+    file_name = str(payload.get("map_file_name", ""))
+    try:
+        sanitized = _sanitize_map_file_name(file_name)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    path = MAPS_DIR / sanitized
+    if not path.exists():
+        raise HTTPException(status_code=404, detail=f"Unknown map: {sanitized}")
+    map_payload = json.loads(path.read_text(encoding="utf-8"))
+    state = _build_new_game_state_from_map(
+        map_payload,
+        player_factions={
+            str(key): str(value)
+            for key, value in dict(payload.get("player_factions") or {}).items()
+        },
+        seed_override=payload.get("seed_override"),
+    )
+    return {
+        "map_file_name": sanitized,
+        "state": _play_state_payload(state),
+    }
+
+
+@app.post("/api/play-game/options")
+def play_game_options(payload: dict[str, object] = Body(...)) -> dict[str, object]:
+    state = _load_state_from_payload(dict(payload.get("state") or {}))
+    selected_unit_id = payload.get("selected_unit_id")
+    selected_tile = payload.get("selected_tile")
+    normalized_selected_unit_id = None if selected_unit_id in {None, ""} else str(selected_unit_id)
+    normalized_selected_tile = (
+        None
+        if selected_tile is None or selected_tile == ""
+        else _parse_hex_coord(selected_tile, field_name="selected_tile")
+    )
+    try:
+        return _play_options_for_selection(
+            state,
+            selected_unit_id=normalized_selected_unit_id,
+            selected_tile=normalized_selected_tile,
+        )
+    except (KeyError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/api/play-game/apply")
+def play_game_apply(payload: dict[str, object] = Body(...)) -> dict[str, object]:
+    try:
+        state = _load_state_from_payload(dict(payload.get("state") or {}))
+        before = state.to_dict()
+        result = _apply_play_action(state, dict(payload.get("action") or {}))
+        after = state.to_dict()
+        return {
+            "state": after,
+            "changes": compute_state_changes(before, after),
+            "result": result,
+        }
+    except (KeyError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @app.get("/gui-status", response_model=None)
 def gui_status() -> Response:
     if WEB_DIST.exists():
@@ -863,6 +1224,21 @@ def game_state_editor_app() -> Response:
     return _file_page_response(WEB_APP / "game-state-editor.jsx")
 
 
+@app.get("/play-game", include_in_schema=False)
+def play_game_redirect() -> Response:
+    return RedirectResponse(url="/play-game/")
+
+
+@app.get("/play-game/", include_in_schema=False)
+def play_game_index() -> Response:
+    return _file_page_response(WEB_APP / "play-game.html")
+
+
+@app.get("/play-game/play-game.jsx", include_in_schema=False)
+def play_game_app() -> Response:
+    return _file_page_response(WEB_APP / "play-game.jsx")
+
+
 if WEB_DIST.exists():
     app.mount("/scenario-inspector/assets", StaticFiles(directory=WEB_DIST / "assets"), name="webgui-assets")
 else:
@@ -875,6 +1251,9 @@ else:
     app.mount("/game-state-editor/public", StaticFiles(directory=WEB_APP / "public"), name="game-state-editor-public")
     app.mount("/game-state-editor/src", StaticFiles(directory=WEB_APP / "src"), name="game-state-editor-src")
     app.mount("/game-state-editor/vendor", StaticFiles(directory=WEB_APP / "vendor"), name="game-state-editor-vendor")
+    app.mount("/play-game/public", StaticFiles(directory=WEB_APP / "public"), name="play-game-public")
+    app.mount("/play-game/src", StaticFiles(directory=WEB_APP / "src"), name="play-game-src")
+    app.mount("/play-game/vendor", StaticFiles(directory=WEB_APP / "vendor"), name="play-game-vendor")
 
 
 def main() -> None:

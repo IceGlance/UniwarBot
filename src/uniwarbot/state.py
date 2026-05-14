@@ -36,6 +36,11 @@ def _cached_game_dictionary() -> dict[str, Any]:
     return load_game_dictionary()
 
 
+@lru_cache(maxsize=1)
+def _cached_action_economy_dictionary() -> dict[str, Any]:
+    return load_action_economy_dictionary()
+
+
 def _unit_repair_points(unit_id: str) -> int:
     unit_data = _cached_game_dictionary()["units"].get(unit_id, {})
     return int(unit_data.get("repair_points", 0))
@@ -49,6 +54,43 @@ def _terrain_repair_multiplier(terrain_id: str) -> int:
 def _unit_abilities(unit_id: str) -> list[dict[str, Any]]:
     unit_data = _cached_game_dictionary()["units"].get(unit_id, {})
     return [dict(ability) for ability in unit_data.get("abilities", [])]
+
+
+def _unit_action_profile_id(unit_id: str) -> str | None:
+    return (
+        _cached_action_economy_dictionary()
+        .get("unit_bindings", {})
+        .get(unit_id)
+    )
+
+
+def build_default_unit_action_state(unit_id: str) -> "UnitActionState":
+    profile_id = _unit_action_profile_id(unit_id)
+    profile = (
+        _cached_action_economy_dictionary()
+        .get("profiles", {})
+        .get(profile_id or "", {})
+    )
+    configured_action_count = int(profile.get("action_count", 1))
+    return UnitActionState(
+        is_available=True,
+        configured_action_count=configured_action_count,
+        actions_remaining=configured_action_count,
+        can_interleave_between_action_windows=bool(
+            profile.get("can_interleave_between_action_windows", True)
+        ),
+        move_points_remaining=None,
+        attacks_remaining=1,
+        special_actions_remaining=None,
+        action_phase_index=0,
+        current_action_index=0,
+        action_windows=[],
+        atomic_action_locked=False,
+        atomic_action_label=None,
+        has_moved_this_turn=False,
+        has_attacked_this_turn=False,
+        has_used_special_this_turn=False,
+    )
 
 
 class LegalFormula:
@@ -1004,7 +1046,7 @@ class GameState:
         self._enforce_atomic_action_lock(unit, action_kind="move")
         if unit.status.movement_blocked:
             raise ValueError("Unit cannot move while teleport-locked or disabled")
-        self._consume_action_if_needed(unit)
+        self._consume_action_if_needed(unit, action_kind="move")
         destination_tile = self.game_map.get_tile(destination)
         if destination_tile is None:
             raise ValueError("Destination tile does not exist")
@@ -1027,6 +1069,8 @@ class GameState:
             unit.action.atomic_action_label = "surface_move_attack"
         elif self._is_underling_family(unit) and unit.status.hidden_mode is None:
             unit.action.attacks_remaining = 0
+        if unit.action.move_points_remaining not in {None, 0}:
+            unit.action.move_points_remaining = 0
         current_window = unit.action.current_action_window
         if current_window is not None:
             current_window.in_progress = True
@@ -1056,7 +1100,7 @@ class GameState:
         if tile.terrain_id in self._hidden_mode_forbidden_terrains(unit):
             raise ValueError("Unit cannot bury on this terrain")
 
-        self._consume_action_if_needed(unit)
+        self._consume_action_if_needed(unit, action_kind="special")
         unit.action.has_used_special_this_turn = True
         unit.action.atomic_action_locked = False
         unit.action.atomic_action_label = None
@@ -1083,7 +1127,7 @@ class GameState:
         if tile.surface_unit_id not in (None, unit.instance_id):
             raise ValueError("Cannot resurface onto an occupied surface slot")
 
-        self._consume_action_if_needed(unit)
+        self._consume_action_if_needed(unit, action_kind="special")
         unit.action.has_used_special_this_turn = True
 
         if tile.hidden_unit_id == unit.instance_id:
@@ -1120,7 +1164,7 @@ class GameState:
             raise KeyError(f"Unknown defender_id: {defender_id}")
         if not self._can_unit_attack_target(attacker, defender):
             raise ValueError("Attacker cannot attack the selected target")
-        self._consume_action_if_needed(attacker)
+        self._consume_action_if_needed(attacker, action_kind="attack")
 
         attacker.action.has_attacked_this_turn = True
         attacker.action.attacks_remaining = max(0, attacker.action.attacks_remaining - 1)
@@ -1196,6 +1240,10 @@ class GameState:
         defender.hp = max(0, defender_original_hp - max(0, resolved_defender_damage))
         attacker.hp = max(0, attacker_original_hp - max(0, resolved_attacker_damage))
         attacker.status.buried_resurface_bonus = 0
+        if self._uses_move_after_attack_profile(attacker):
+            after_attack_mobility = self._after_attack_mobility(attacker)
+            if after_attack_mobility > 0:
+                attacker.action.move_points_remaining = after_attack_mobility
         if attacker.action.atomic_action_label in {
             "resurface_attack",
             "surface_move_attack",
@@ -1234,6 +1282,426 @@ class GameState:
         unit.capture_target = tile_coord
         unit.action.is_available = False
         unit.action.actions_remaining = 0
+
+    def heal_unit(self, instance_id: str) -> None:
+        unit = self._require_active_player_unit(instance_id)
+        self._enforce_atomic_action_lock(unit, action_kind="heal")
+        if not unit.action.is_available or unit.action.actions_remaining <= 0:
+            raise ValueError("Unit has no actions remaining")
+        if unit.hp >= self._unit_max_hp(unit):
+            raise ValueError("Unit is already at maximum HP")
+        self._consume_action_if_needed(unit, action_kind="heal")
+        self._auto_heal_unit(unit, heal_actions=1)
+        unit.action.has_used_special_this_turn = True
+        unit.action.attacks_remaining = 0
+        unit.action.move_points_remaining = 0
+
+    def submerge_unit(self, instance_id: str) -> None:
+        unit = self._require_active_player_unit(instance_id)
+        self._enforce_atomic_action_lock(unit, action_kind="special")
+        if self._ability_config(unit, "submerge") is None:
+            raise ValueError("Unit cannot submerge")
+        if unit.status.hidden_mode is not None:
+            raise ValueError("Only surfaced units can submerge")
+        tile = self.game_map.get_tile(unit.position)
+        if tile is None:
+            raise ValueError("Unit tile does not exist")
+        if tile.hidden_unit_id not in (None, unit.instance_id):
+            raise ValueError("Cannot submerge into an occupied hidden slot")
+        if tile.terrain_id in self._hidden_mode_forbidden_terrains(unit):
+            raise ValueError("Unit cannot submerge on this terrain")
+        self._consume_special_ability(unit, ability_id="submerge")
+        if tile.surface_unit_id == unit.instance_id:
+            tile.surface_unit_id = None
+        tile.hidden_unit_id = unit.instance_id
+        unit.status.hidden_mode = HiddenMode.SUBMERGED
+
+    def surface_unit(self, instance_id: str) -> None:
+        unit = self._require_active_player_unit(instance_id)
+        self._enforce_atomic_action_lock(unit, action_kind="special")
+        if self._ability_config(unit, "submerge") is None:
+            raise ValueError("Unit cannot surface from underwater")
+        if unit.status.hidden_mode != HiddenMode.SUBMERGED:
+            raise ValueError("Only submerged units can surface")
+        tile = self.game_map.get_tile(unit.position)
+        if tile is None:
+            raise ValueError("Unit tile does not exist")
+        if tile.surface_unit_id not in (None, unit.instance_id):
+            raise ValueError("Cannot surface onto an occupied surface slot")
+        self._consume_special_ability(unit, ability_id="submerge")
+        if tile.hidden_unit_id == unit.instance_id:
+            tile.hidden_unit_id = None
+        tile.surface_unit_id = unit.instance_id
+        unit.status.hidden_mode = None
+
+    def teleport_unit(self, instance_id: str, destination: HexCoord) -> None:
+        unit = self._require_active_player_unit(instance_id)
+        self._enforce_atomic_action_lock(unit, action_kind="special")
+        ability = self._ability_config(unit, "teleport")
+        if ability is None:
+            raise ValueError("Unit cannot teleport")
+        if unit.status.hidden_mode is not None:
+            raise ValueError("Hidden units cannot teleport")
+        if unit.status.teleport_lock_phase is not None:
+            raise ValueError("Unit is already teleport-locked")
+        if unit.status.teleport_cooldown_rounds > 0:
+            raise ValueError("Teleport is on cooldown")
+        tile = self.game_map.get_tile(destination)
+        if tile is None:
+            raise ValueError("Destination tile does not exist")
+        if tile.surface_unit_id is not None:
+            raise ValueError("Destination tile is already occupied")
+        if tile.terrain_id in {
+            str(item) for item in list(ability.get("cannot_target_terrains", []))
+        }:
+            raise ValueError("Teleport cannot target this terrain")
+        source_tile = self.game_map.get_tile(unit.position)
+        self._consume_special_ability(unit, ability_id="teleport")
+        if source_tile is not None and source_tile.surface_unit_id == instance_id:
+            source_tile.surface_unit_id = None
+        unit.position = destination
+        tile.surface_unit_id = instance_id
+        unit.status.teleport_lock_phase = TeleportLockPhase.OPPONENT_TURN
+        unit.status.teleport_disabled_rounds = max(
+            0, int(ability.get("disabled_rounds_after_use", 0))
+        )
+        recharge_rounds = ability.get("recharge_rounds")
+        unit.status.teleport_cooldown_rounds = max(
+            0, 0 if recharge_rounds in {None, ""} else int(recharge_rounds)
+        )
+        unit.action.move_points_remaining = 0
+
+    def buy_unit(self, tile_coord: HexCoord, unit_id: str) -> str:
+        tile = self.game_map.get_tile(tile_coord)
+        if tile is None:
+            raise ValueError("Production tile does not exist")
+        if tile.owner_id != self.active_player_id:
+            raise ValueError("Only owned structures may produce units")
+        if tile.surface_unit_id is not None:
+            raise ValueError("Production tile is occupied")
+        if unit_id not in self.get_buyable_units_for_tile(tile_coord):
+            raise ValueError("Unit cannot be produced on this tile")
+        player = self.players.get(self.active_player_id)
+        if player is None:
+            raise ValueError("Active player does not exist")
+        unit_data = _cached_game_dictionary()["units"].get(unit_id, {})
+        cost = int(unit_data.get("cost", 0))
+        if player.credits < cost:
+            raise ValueError("Not enough credits")
+        base_instance_id = f"u_{unit_id}_{self.active_player_id}"
+        instance_id = base_instance_id
+        suffix = 2
+        while instance_id in self.units:
+            instance_id = f"{base_instance_id}_{suffix}"
+            suffix += 1
+        unit = UnitState(
+            instance_id=instance_id,
+            unit_id=str(unit_id),
+            owner_id=self.active_player_id,
+            position=tile_coord,
+            hp=int(unit_data.get("base_max_hp", 10)),
+            veterancy_level=VeterancyLevel.NONE,
+            experience_points=0,
+            status=UnitStatusState(),
+            action=build_default_unit_action_state(str(unit_id)),
+            capture_target=None,
+            metadata={},
+        )
+        player.credits -= cost
+        self.add_unit(unit)
+        unit.action.is_available = False
+        unit.action.actions_remaining = 0
+        unit.action.attacks_remaining = 0
+        return instance_id
+
+    def use_plague(self, instance_id: str, target_id: str) -> None:
+        unit = self._require_active_player_unit(instance_id)
+        self._enforce_atomic_action_lock(unit, action_kind="special")
+        ability = self._ability_config(unit, "plague")
+        if ability is None:
+            raise ValueError("Unit cannot use plague")
+        target = self.get_unit(target_id)
+        if target is None:
+            raise KeyError(f"Unknown target_id: {target_id}")
+        if target.owner_id == unit.owner_id:
+            raise ValueError("Plague must target an enemy unit")
+        if self._hex_distance(unit.position, target.position) > int(ability.get("range", 0)):
+            raise ValueError("Target is out of plague range")
+        if not self._can_be_infected_by_plague(target):
+            raise ValueError("Target cannot be infected by plague")
+        self._consume_special_ability(unit, ability_id="plague")
+        target.status.plague_infected = True
+
+    def use_emp(self, instance_id: str) -> list[str]:
+        unit = self._require_active_player_unit(instance_id)
+        self._enforce_atomic_action_lock(unit, action_kind="special")
+        ability = self._ability_config(unit, "emp")
+        if ability is None:
+            raise ValueError("Unit cannot use EMP")
+        if unit.action.has_moved_this_turn:
+            raise ValueError("Unit cannot move and use EMP on the same turn")
+        if unit.status.ability_cooldowns.get("emp", 0) > 0:
+            raise ValueError("EMP is on cooldown")
+        radius = int(ability.get("radius", 0))
+        affected: list[str] = []
+        for target in self.units.values():
+            if target.owner_id == unit.owner_id:
+                continue
+            if self._hex_distance(unit.position, target.position) > radius:
+                continue
+            target_player = self.players.get(target.owner_id)
+            if target.unit_id != "mecha_ii" and (
+                target_player is None or target_player.faction != "titans"
+            ):
+                continue
+            target.status.emp_disabled_rounds = max(
+                target.status.emp_disabled_rounds,
+                int(ability.get("effect_duration_rounds", 1)),
+            )
+            affected.append(target.instance_id)
+        self._consume_special_ability(unit, ability_id="emp")
+        return sorted(affected)
+
+    def use_uv(self, instance_id: str) -> list[str]:
+        unit = self._require_active_player_unit(instance_id)
+        self._enforce_atomic_action_lock(unit, action_kind="special")
+        ability = self._ability_config(unit, "uv")
+        if ability is None:
+            raise ValueError("Unit cannot use UV")
+        if unit.action.has_moved_this_turn:
+            raise ValueError("Unit cannot move and use UV on the same turn")
+        if unit.status.ability_cooldowns.get("uv", 0) > 0:
+            raise ValueError("UV is on cooldown")
+        radius = int(ability.get("radius", 0))
+        damage = int(ability.get("damage", 0))
+        affected: list[str] = []
+        affected_factions = {
+            str(item) for item in list(ability.get("affects_factions", []))
+        }
+        for target in list(self.units.values()):
+            if target.owner_id == unit.owner_id:
+                continue
+            if self._hex_distance(unit.position, target.position) > radius:
+                continue
+            if (
+                not bool(ability.get("affects_buried_units", False))
+                and target.status.hidden_mode == HiddenMode.BURIED
+            ):
+                continue
+            target_player = self.players.get(target.owner_id)
+            if target_player is None or target_player.faction not in affected_factions:
+                continue
+            target.hp = max(0, target.hp - damage)
+            affected.append(target.instance_id)
+            if target.hp == 0:
+                self.remove_unit(target.instance_id)
+        self._consume_special_ability(unit, ability_id="uv")
+        return sorted(affected)
+
+    def transform_unit(self, instance_id: str, target_id: str, *, ability_id: str) -> str:
+        unit = self._require_active_player_unit(instance_id)
+        self._enforce_atomic_action_lock(unit, action_kind="special")
+        ability = self._ability_config(unit, ability_id)
+        if ability is None:
+            raise ValueError("Unit cannot use this transform ability")
+        target = self.get_unit(target_id)
+        if target is None:
+            raise KeyError(f"Unknown target_id: {target_id}")
+        if target.owner_id == unit.owner_id:
+            raise ValueError("Transform target must belong to the opponent")
+        if self._hex_distance(unit.position, target.position) != 1:
+            raise ValueError("Transform target must be adjacent")
+        if target.unit_id != str(ability.get("target_unit_id")):
+            raise ValueError("Invalid transform target type")
+        result_unit_id = str(ability.get("result_unit_id"))
+        if result_unit_id not in _cached_game_dictionary()["units"]:
+            raise ValueError("Unknown transform result unit")
+        self._consume_special_ability(unit, ability_id=ability_id)
+        original_hp = target.hp
+        original_position = target.position
+        original_hidden_mode = target.status.hidden_mode
+        self.remove_unit(target.instance_id)
+        replacement = UnitState(
+            instance_id=target.instance_id,
+            unit_id=result_unit_id,
+            owner_id=unit.owner_id,
+            position=original_position,
+            hp=min(
+                int(_cached_game_dictionary()["units"][result_unit_id].get("base_max_hp", 10)),
+                original_hp,
+            ),
+            veterancy_level=VeterancyLevel.NONE,
+            experience_points=0,
+            status=UnitStatusState(
+                hidden_mode=HiddenMode.BURIED
+                if original_hidden_mode is not None and result_unit_id == "cyber_underling"
+                else None
+            ),
+            action=build_default_unit_action_state(result_unit_id),
+            capture_target=None,
+            metadata={},
+        )
+        self.add_unit(replacement)
+        replacement.action.is_available = False
+        replacement.action.actions_remaining = 0
+        replacement.action.attacks_remaining = 0
+        return replacement.instance_id
+
+    def get_teleport_destinations(self, instance_id: str) -> list[str]:
+        unit = self.get_unit(instance_id)
+        if unit is None:
+            raise KeyError(f"Unknown unit_id: {instance_id}")
+        ability = self._ability_config(unit, "teleport")
+        if ability is None:
+            return []
+        forbidden = {
+            str(item) for item in list(ability.get("cannot_target_terrains", []))
+        }
+        destinations: list[str] = []
+        for coord, tile in self.game_map.tiles.items():
+            if tile.surface_unit_id not in {None, unit.instance_id}:
+                continue
+            if tile.terrain_id in forbidden:
+                continue
+            destinations.append(coord.key)
+        return sorted(destinations)
+
+    def get_transform_targets(self, instance_id: str, *, ability_id: str) -> list[str]:
+        unit = self.get_unit(instance_id)
+        if unit is None:
+            raise KeyError(f"Unknown unit_id: {instance_id}")
+        ability = self._ability_config(unit, ability_id)
+        if ability is None:
+            return []
+        target_unit_id = str(ability.get("target_unit_id"))
+        targets: list[str] = []
+        for target in self.units.values():
+            if target.owner_id == unit.owner_id:
+                continue
+            if target.unit_id != target_unit_id:
+                continue
+            if self._hex_distance(unit.position, target.position) == 1:
+                targets.append(target.instance_id)
+        return sorted(targets)
+
+    def get_plague_targets(self, instance_id: str) -> list[str]:
+        unit = self.get_unit(instance_id)
+        if unit is None:
+            raise KeyError(f"Unknown unit_id: {instance_id}")
+        ability = self._ability_config(unit, "plague")
+        if ability is None:
+            return []
+        radius = int(ability.get("range", 0))
+        targets: list[str] = []
+        for target in self.units.values():
+            if target.owner_id == unit.owner_id:
+                continue
+            if self._hex_distance(unit.position, target.position) > radius:
+                continue
+            if self._can_be_infected_by_plague(target):
+                targets.append(target.instance_id)
+        return sorted(targets)
+
+    def get_buyable_units_for_tile(self, tile_coord: HexCoord) -> list[str]:
+        tile = self.game_map.get_tile(tile_coord)
+        if tile is None:
+            return []
+        if tile.owner_id != self.active_player_id:
+            return []
+        if tile.surface_unit_id is not None:
+            return []
+        terrain = _cached_game_dictionary()["terrains"].get(tile.terrain_id, {})
+        if not bool(terrain.get("supports_production", False)):
+            return []
+        production_role = str(terrain.get("production_role") or "")
+        player = self.players.get(self.active_player_id)
+        if player is None:
+            return []
+        buyable: list[str] = []
+        for unit_id, unit_data in _cached_game_dictionary()["units"].items():
+            if int(unit_data.get("cost", 0)) <= 0:
+                continue
+            if str(unit_data.get("faction", "")) != player.faction:
+                continue
+            unit_type = str(unit_data.get("unit_type", ""))
+            if production_role == "aquatic":
+                if unit_type != "aquatic":
+                    continue
+            elif production_role == "land":
+                if unit_type == "aquatic":
+                    continue
+            else:
+                continue
+            surface_effects = dict(unit_data.get("terrain_effects") or {})
+            if (
+                tile.terrain_id in surface_effects
+                and (surface_effects[tile.terrain_id] or {}).get("mobility_cost") is None
+            ):
+                continue
+            buyable.append(str(unit_id))
+        buyable.sort()
+        return buyable
+
+    def get_current_special_options(self, instance_id: str) -> dict[str, Any]:
+        unit = self.get_unit(instance_id)
+        if unit is None:
+            raise KeyError(f"Unknown unit_id: {instance_id}")
+        options: dict[str, Any] = {
+            "can_heal": (
+                unit.owner_id == self.active_player_id
+                and unit.action.is_available
+                and unit.action.actions_remaining > 0
+                and unit.hp < self._unit_max_hp(unit)
+            ),
+            "can_capture": self._can_begin_capture(unit),
+            "can_bury": self._can_bury(unit),
+            "can_resurface": self._can_resurface(unit),
+            "can_submerge": False,
+            "can_surface": False,
+            "teleport_destinations": [],
+            "plague_targets": [],
+            "transform_targets": {},
+            "can_emp": False,
+            "can_uv": False,
+        }
+        if self._ability_config(unit, "submerge") is not None:
+            if unit.status.hidden_mode is None:
+                tile = self.game_map.get_tile(unit.position)
+                options["can_submerge"] = (
+                    tile is not None
+                    and tile.hidden_unit_id in {None, unit.instance_id}
+                    and tile.terrain_id not in self._hidden_mode_forbidden_terrains(unit)
+                )
+            elif unit.status.hidden_mode == HiddenMode.SUBMERGED:
+                tile = self.game_map.get_tile(unit.position)
+                options["can_surface"] = (
+                    tile is not None and tile.surface_unit_id in {None, unit.instance_id}
+                )
+        if self._ability_config(unit, "teleport") is not None:
+            options["teleport_destinations"] = self.get_teleport_destinations(instance_id)
+        if self._ability_config(unit, "plague") is not None:
+            options["plague_targets"] = self.get_plague_targets(instance_id)
+        if self._ability_config(unit, "emp") is not None:
+            options["can_emp"] = (
+                unit.action.is_available
+                and unit.action.actions_remaining > 0
+                and not unit.action.has_moved_this_turn
+                and unit.status.ability_cooldowns.get("emp", 0) <= 0
+            )
+        if self._ability_config(unit, "uv") is not None:
+            options["can_uv"] = (
+                unit.action.is_available
+                and unit.action.actions_remaining > 0
+                and not unit.action.has_moved_this_turn
+                and unit.status.ability_cooldowns.get("uv", 0) <= 0
+            )
+        for transform_ability in ("re_program", "assimilate", "infect"):
+            if self._ability_config(unit, transform_ability) is not None:
+                options["transform_targets"][transform_ability] = self.get_transform_targets(
+                    instance_id,
+                    ability_id=transform_ability,
+                )
+        return options
 
     def end_turn(self) -> str:
         outgoing_player_id = self.active_player_id
@@ -1390,7 +1858,19 @@ class GameState:
             if other.owner_id == unit.owner_id
         ]
 
-    def _consume_action_if_needed(self, unit: UnitState) -> None:
+    def _consume_action_if_needed(
+        self,
+        unit: UnitState,
+        *,
+        action_kind: str | None = None,
+    ) -> None:
+        if (
+            action_kind == "move"
+            and unit.action.move_points_remaining not in {None, 0}
+            and unit.action.has_attacked_this_turn
+            and self._uses_move_after_attack_profile(unit)
+        ):
+            return
         current_window = unit.action.current_action_window
         if current_window is not None:
             if not current_window.in_progress and unit.action.actions_remaining > 0:
@@ -1398,7 +1878,12 @@ class GameState:
                 current_window.in_progress = True
             return
 
+        if unit.action.atomic_action_locked:
+            return
+
         if unit.action.configured_action_count != 1:
+            if unit.action.actions_remaining > 0:
+                unit.action.actions_remaining -= 1
             return
 
         if unit.action.actions_remaining <= 0:
@@ -1412,6 +1897,50 @@ class GameState:
             return
 
         unit.action.actions_remaining -= 1
+
+    def _unit_action_profile_id(self, unit: UnitState) -> str | None:
+        return _unit_action_profile_id(unit.unit_id)
+
+    def _uses_move_or_attack_profile(self, unit: UnitState) -> bool:
+        return self._unit_action_profile_id(unit) == "single_action_move_or_attack_artillery"
+
+    def _uses_move_after_attack_profile(self, unit: UnitState) -> bool:
+        return (
+            self._unit_action_profile_id(unit)
+            == "single_action_move_attack_conditional_post_move"
+        )
+
+    def _after_attack_mobility(self, unit: UnitState) -> int:
+        movement = self._unit_dictionary_entry(unit).get("movement") or {}
+        return int(movement.get("after_attack", 0))
+
+    def _ability_config(
+        self,
+        unit: UnitState,
+        ability_id: str,
+    ) -> dict[str, Any] | None:
+        for ability in _unit_abilities(unit.unit_id):
+            if str(ability.get("id")) == ability_id:
+                return ability
+        return None
+
+    def _consume_special_ability(
+        self,
+        unit: UnitState,
+        *,
+        ability_id: str,
+        block_attack: bool = True,
+    ) -> None:
+        self._consume_action_if_needed(unit, action_kind="special")
+        unit.action.has_used_special_this_turn = True
+        if block_attack:
+            unit.action.attacks_remaining = 0
+        ability = self._ability_config(unit, ability_id)
+        if ability is None:
+            return
+        recharge_rounds = ability.get("recharge_rounds")
+        if recharge_rounds not in {None, ""}:
+            unit.status.ability_cooldowns[str(ability_id)] = int(recharge_rounds)
 
     def _unit_dictionary_entry(self, unit: UnitState) -> dict[str, Any]:
         return dict(_cached_game_dictionary()["units"].get(unit.unit_id, {}))
@@ -1427,6 +1956,12 @@ class GameState:
         return int(movement.get("surface", 0))
 
     def _can_query_unit_movement(self, unit: UnitState) -> bool:
+        if (
+            unit.action.is_available
+            and not unit.status.movement_blocked
+            and unit.action.move_points_remaining not in {None, 0}
+        ):
+            return True
         return (
             unit.action.is_available
             and unit.action.actions_remaining > 0
@@ -1439,6 +1974,9 @@ class GameState:
             unit.action.is_available
             and unit.action.attacks_remaining > 0
             and not unit.status.movement_blocked
+            and not (
+                unit.action.has_moved_this_turn and self._uses_move_or_attack_profile(unit)
+            )
         )
 
     def _reachable_move_destinations(
@@ -1749,12 +2287,17 @@ class GameState:
     def _can_attack_after_move_in_same_action(self, unit: UnitState) -> bool:
         if not self._can_query_unit_attack(unit):
             return False
+        if self._uses_move_or_attack_profile(unit):
+            return False
         if unit.unit_id == "borfly" and unit.status.hidden_mode is None:
             return False
         return True
 
     def _can_surface_move_continue_as_atomic_attack(self, unit: UnitState) -> bool:
-        return self._is_underling_family(unit) and unit.status.hidden_mode is None
+        return (
+            (self._is_underling_family(unit) and unit.status.hidden_mode is None)
+            or unit.unit_id == "marauder"
+        )
 
     def _can_bury(self, unit: UnitState) -> bool:
         if not self._is_underling_family(unit):
@@ -1779,6 +2322,27 @@ class GameState:
         if tile is None:
             return False
         return tile.surface_unit_id in (None, unit.instance_id)
+
+    def _can_begin_capture(self, unit: UnitState) -> bool:
+        if unit.owner_id != self.active_player_id:
+            return False
+        if unit.status.hidden_mode is not None:
+            return False
+        if not unit.action.is_available or unit.action.actions_remaining <= 0:
+            return False
+        if self._target_class_for_unit(unit) in {"air", "aquatic"}:
+            return False
+        tile = self.game_map.get_tile(unit.position)
+        if tile is None:
+            return False
+        terrain_data = _cached_game_dictionary()["terrains"].get(tile.terrain_id, {})
+        if not bool(terrain_data.get("capturable", False)):
+            return False
+        if tile.owner_id == unit.owner_id:
+            return False
+        if tile.capture_state is not None:
+            return False
+        return tile.surface_unit_id == unit.instance_id
 
     def _assert_no_pending_atomic_actions(self, player_id: str) -> None:
         for unit in self.units.values():
@@ -1927,6 +2491,8 @@ class GameState:
         return best_index
 
     def _can_unit_attack_target(self, attacker: UnitState, defender: UnitState) -> bool:
+        if attacker.action.has_moved_this_turn and self._uses_move_or_attack_profile(attacker):
+            return False
         attack_range = self._current_attack_range(attacker)
         if attack_range is None:
             return False
