@@ -1,5 +1,7 @@
 {
   "name": "ending_p1_turn_heals_and_cures_plague_on_medical_tile",
+  "suite_name": "Turn Transition Rules",
+  "case_name": "ending p1 turn heals and cures plague on medical tile",
   "input_state": "states/plague-cure-medical.json",
   "actions": [
     {
@@ -7,8 +9,41 @@
     }
   ],
   "expected_changes": {
-    "active_player_id": "p2",
-    "units.u_medical_marine.hp": 10,
-    "units.u_medical_marine.status.plague_infected": false
+    "active_player_id": {
+      "before": "p1",
+      "after": "p2"
+    },
+    "players.p1.has_ended_turn": {
+      "before": false,
+      "after": true
+    },
+    "players.p2.credits": {
+      "before": 0,
+      "after": 100
+    },
+    "round_number": {
+      "before": 1,
+      "after": 2
+    },
+    "turn_number": {
+      "before": 1,
+      "after": 2
+    },
+    "units.u_medical_marine.action.actions_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_medical_marine.action.is_available": {
+      "before": true,
+      "after": false
+    },
+    "units.u_medical_marine.hp": {
+      "before": 7,
+      "after": 10
+    },
+    "units.u_medical_marine.status.plague_infected": {
+      "before": true,
+      "after": false
+    }
   }
 }

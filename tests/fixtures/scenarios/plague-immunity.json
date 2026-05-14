@@ -1,5 +1,7 @@
 {
   "name": "starting_p2_turn_clears_plague_from_engineer_and_submarine_without_damage",
+  "suite_name": "Turn Transition Rules",
+  "case_name": "starting p2 turn clears plague from engineer and submarine without damage",
   "input_state": "states/plague-immunity.json",
   "actions": [
     {
@@ -7,10 +9,29 @@
     }
   ],
   "expected_changes": {
-    "active_player_id": "p2",
-    "units.u_engineer.hp": 8,
-    "units.u_engineer.status.plague_infected": false,
-    "units.u_submarine.hp": 8,
-    "units.u_submarine.status.plague_infected": false
+    "active_player_id": {
+      "before": "p1",
+      "after": "p2"
+    },
+    "players.p1.has_ended_turn": {
+      "before": false,
+      "after": true
+    },
+    "round_number": {
+      "before": 1,
+      "after": 2
+    },
+    "turn_number": {
+      "before": 1,
+      "after": 2
+    },
+    "units.u_engineer.status.plague_infected": {
+      "before": true,
+      "after": false
+    },
+    "units.u_submarine.status.plague_infected": {
+      "before": true,
+      "after": false
+    }
   }
 }

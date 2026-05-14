@@ -1,5 +1,5 @@
 {
-  "name": "surface_vs_submerged_attack_rules",
+  "name": "Surface Vs Submerged Attack Rules",
   "input_state": "states/surface-vs-submerged-attack-ready.json",
   "cases": [
     {
@@ -15,9 +15,46 @@
         }
       ],
       "expected_changes": {
-        "units.u_bopper.action.actions_remaining": 0,
-        "units.u_bopper.action.has_attacked_this_turn": true,
-        "units.u_sub_bopper.hp": 9
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 1
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_sub_bopper"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "units.u_bopper.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_bopper.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_bopper.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_sub_bopper.hp": {
+          "before": 10,
+          "after": 9
+        }
       }
     },
     {
@@ -33,9 +70,46 @@
         }
       ],
       "expected_changes": {
-        "units.u_borfly.action.actions_remaining": 0,
-        "units.u_borfly.action.has_attacked_this_turn": true,
-        "units.u_sub_borfly.hp": 9
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 1
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_sub_borfly"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 2
+        },
+        "units.u_borfly.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_borfly.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_borfly.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_sub_borfly.hp": {
+          "before": 10,
+          "after": 9
+        }
       }
     },
     {
@@ -51,9 +125,46 @@
         }
       ],
       "expected_changes": {
-        "units.u_guardian.action.actions_remaining": 0,
-        "units.u_guardian.action.has_attacked_this_turn": true,
-        "units.u_sub_guardian.hp": 9
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 1
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_sub_guardian"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 4
+        },
+        "units.u_guardian.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_guardian.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_guardian.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_sub_guardian.hp": {
+          "before": 10,
+          "after": 9
+        }
       }
     },
     {
@@ -69,9 +180,50 @@
         }
       ],
       "expected_changes": {
-        "units.u_marine.action.actions_remaining": 0,
-        "units.u_marine.action.has_attacked_this_turn": true,
-        "units.u_sub_marine.hp": 9
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 1
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_sub_marine"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 6
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "units.u_marine.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_marine.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_marine.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_sub_marine.hp": {
+          "before": 10,
+          "after": 9
+        }
       }
     }
   ]

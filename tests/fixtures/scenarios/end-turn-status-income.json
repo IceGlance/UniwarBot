@@ -1,5 +1,7 @@
 {
   "name": "ending_p1_turn_starts_p2_turn_with_income_plague_spread_and_cooldowns",
+  "suite_name": "Turn Transition Rules",
+  "case_name": "ending p1 turn starts p2 turn with income plague spread and cooldowns",
   "input_state": "states/end-turn-status-income.json",
   "actions": [
     {
@@ -7,19 +9,49 @@
     }
   ],
   "expected_changes": {
-    "active_player_id": "p2",
-    "turn_number": 2,
-    "round_number": 2,
-    "players.p1.has_ended_turn": true,
-    "players.p2.credits": 150,
-    "units.u_infected.hp": 5,
-    "units.u_infected.status.emp_disabled_rounds": 1,
-    "units.u_infected.status.ability_cooldowns.uv": 2,
-    "units.u_friendly_target.hp": 10,
-    "units.u_friendly_target.status.plague_infected": true,
-    "units.u_enemy_target.hp": 10,
-    "units.u_enemy_target.status.plague_infected": false,
-    "units.u_engineer.status.plague_infected": false,
-    "units.u_submarine.status.plague_infected": false
+    "active_player_id": {
+      "before": "p1",
+      "after": "p2"
+    },
+    "players.p1.has_ended_turn": {
+      "before": false,
+      "after": true
+    },
+    "players.p2.credits": {
+      "before": 0,
+      "after": 150
+    },
+    "round_number": {
+      "before": 1,
+      "after": 2
+    },
+    "turn_number": {
+      "before": 1,
+      "after": 2
+    },
+    "units.u_enemy_target.action.actions_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_enemy_target.action.is_available": {
+      "before": true,
+      "after": false
+    },
+    "units.u_friendly_target.status.plague_infected": {
+      "before": false,
+      "after": true
+    },
+    "units.u_infected.hp": {
+      "before": 6,
+      "after": 5
+    },
+    "units.u_infected.status.ability_cooldowns.uv": {
+      "before": 3,
+      "after": 2
+    },
+    "units.u_infected.status.emp_disabled_rounds": {
+      "before": 2,
+      "after": 1
+    }
   }
 }

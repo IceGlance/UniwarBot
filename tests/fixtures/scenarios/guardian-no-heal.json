@@ -1,5 +1,7 @@
 {
   "name": "ending_p1_turn_does_not_heal_guardian_with_actions_remaining",
+  "suite_name": "Turn Transition Rules",
+  "case_name": "ending p1 turn does not heal guardian with actions remaining",
   "input_state": "states/guardian-no-heal.json",
   "actions": [
     {
@@ -7,9 +9,33 @@
     }
   ],
   "expected_changes": {
-    "active_player_id": "p2",
-    "turn_number": 2,
-    "round_number": 2,
-    "units.u_guardian.hp": 7
+    "active_player_id": {
+      "before": "p1",
+      "after": "p2"
+    },
+    "players.p1.has_ended_turn": {
+      "before": false,
+      "after": true
+    },
+    "players.p2.credits": {
+      "before": 0,
+      "after": 100
+    },
+    "round_number": {
+      "before": 1,
+      "after": 2
+    },
+    "turn_number": {
+      "before": 1,
+      "after": 2
+    },
+    "units.u_guardian.action.actions_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_guardian.action.is_available": {
+      "before": true,
+      "after": false
+    }
   }
 }

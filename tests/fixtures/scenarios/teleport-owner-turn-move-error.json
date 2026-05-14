@@ -1,19 +1,18 @@
 {
   "name": "teleported_unit_cannot_be_moved_during_owner_turn_lock",
+  "suite_name": "Teleport Lock Rules",
+  "case_name": "teleported unit cannot be moved during owner turn lock",
   "input_state": "states/teleport-owner-turn-lock.json",
   "actions": [
     {
       "type": "move_unit",
       "unit_id": "u_mecha",
-      "destination": {"q": 1, "r": 0},
+      "destination": {
+        "q": 1,
+        "r": 0
+      },
       "expect_error": "Unit cannot move while teleport-locked or disabled"
     }
   ],
-  "expected_changes": {
-    "active_player_id": "p1",
-    "units.u_mecha.position.q": 1,
-    "units.u_mecha.position.r": 1,
-    "units.u_mecha.status.teleport_lock_phase": "owner_turn",
-    "units.u_mecha.status.movement_blocked": true
-  }
+  "expected_changes": {}
 }

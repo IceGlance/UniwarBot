@@ -1,5 +1,7 @@
 {
   "name": "ending_p1_turn_applies_immediate_healing_before_p2_turn_starts",
+  "suite_name": "Turn Transition Rules",
+  "case_name": "ending p1 turn applies immediate healing before p2 turn starts",
   "input_state": "states/end-turn-heal.json",
   "actions": [
     {
@@ -7,15 +9,97 @@
     }
   ],
   "expected_changes": {
-    "active_player_id": "p2",
-    "turn_number": 2,
-    "round_number": 2,
-    "units.u_idle_marine.hp": 9,
-    "units.u_idle_marine.action.actions_remaining": 0,
-    "units.u_tank_medical.hp": 9,
-    "units.u_marauder_idle.hp": 9,
-    "units.u_marauder_one_left.hp": 8,
-    "units.u_plagued_marine.hp": 9,
-    "units.u_plagued_marine.status.plague_infected": false
+    "active_player_id": {
+      "before": "p1",
+      "after": "p2"
+    },
+    "players.p1.has_ended_turn": {
+      "before": false,
+      "after": true
+    },
+    "players.p2.credits": {
+      "before": 0,
+      "after": 100
+    },
+    "round_number": {
+      "before": 1,
+      "after": 2
+    },
+    "turn_number": {
+      "before": 1,
+      "after": 2
+    },
+    "units.u_engineer.action.actions_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_engineer.action.is_available": {
+      "before": true,
+      "after": false
+    },
+    "units.u_idle_marine.action.actions_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_idle_marine.action.is_available": {
+      "before": true,
+      "after": false
+    },
+    "units.u_idle_marine.hp": {
+      "before": 8,
+      "after": 9
+    },
+    "units.u_marauder_idle.action.actions_remaining": {
+      "before": 2,
+      "after": 0
+    },
+    "units.u_marauder_idle.action.is_available": {
+      "before": true,
+      "after": false
+    },
+    "units.u_marauder_idle.hp": {
+      "before": 7,
+      "after": 9
+    },
+    "units.u_marauder_one_left.action.actions_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_marauder_one_left.action.is_available": {
+      "before": true,
+      "after": false
+    },
+    "units.u_marauder_one_left.hp": {
+      "before": 7,
+      "after": 8
+    },
+    "units.u_plagued_marine.action.actions_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_plagued_marine.action.is_available": {
+      "before": true,
+      "after": false
+    },
+    "units.u_plagued_marine.hp": {
+      "before": 7,
+      "after": 9
+    },
+    "units.u_plagued_marine.status.plague_infected": {
+      "before": true,
+      "after": false
+    },
+    "units.u_tank_medical.action.actions_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_tank_medical.action.is_available": {
+      "before": true,
+      "after": false
+    },
+    "units.u_tank_medical.hp": {
+      "before": 3,
+      "after": 9
+    }
   }
 }

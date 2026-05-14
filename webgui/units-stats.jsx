@@ -212,9 +212,6 @@ function UnitStatsApp() {
             <code> move/atk/def </code>. Hidden-capable units get a dedicated buried or submerged row.
           </p>
         </div>
-        <a className="catalog-home-link" href="/">
-          Back To Home
-        </a>
       </header>
 
       {error ? <div className="error-banner">{error}</div> : null}

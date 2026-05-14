@@ -182,7 +182,6 @@ function App() {
   const [selectedUnitId, setSelectedUnitId] = useState(null);
   const [possibleMoves, setPossibleMoves] = useState(null);
   const [possibleMovesError, setPossibleMovesError] = useState("");
-  const [search, setSearch] = useState("");
   const [error, setError] = useState("");
   const [zoom, setZoom] = useState(0.9);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
@@ -242,22 +241,9 @@ function App() {
       });
   }, [selectedScenarioId]);
 
-  const filteredScenarios = useMemo(() => {
-    const needle = search.trim().toLowerCase();
-    if (!needle) {
-      return scenarios;
-    }
-    return scenarios.filter((scenario) =>
-      [scenario.name, scenario.relative_file, scenario.suite_name ?? "", scenario.case_name ?? ""]
-        .join(" ")
-        .toLowerCase()
-        .includes(needle),
-    );
-  }, [scenarios, search]);
-
   const groupedScenarios = useMemo(() => {
     const groups = new Map();
-    for (const scenario of filteredScenarios) {
+    for (const scenario of scenarios) {
       const groupName = scenarioGroupName(scenario);
       if (!groups.has(groupName)) {
         groups.set(groupName, []);
@@ -270,9 +256,9 @@ function App() {
         items: items.slice().sort((left, right) =>
           scenarioCaseName(left).localeCompare(scenarioCaseName(right)),
         ),
-      }))
-      .sort((left, right) => left.groupName.localeCompare(right.groupName));
-  }, [filteredScenarios]);
+        }))
+        .sort((left, right) => left.groupName.localeCompare(right.groupName));
+  }, [scenarios]);
 
   useEffect(() => {
     if (groupedScenarios.length === 0) {
@@ -572,42 +558,17 @@ function App() {
             <h1>UniwarBot Scenario Inspector</h1>
             <p>Choose a UT scenario, step actions, and inspect the rendered board, units, and state changes.</p>
           </div>
-          <div className="status-cards">
-          <div className="status-card">
-            <span>Scenarios</span>
-            <strong>{scenarios.length}</strong>
-          </div>
-          <div className="status-card">
-            <span>Selected Step</span>
-            <strong>{selectedStepIndex < 0 ? "Initial" : `#${selectedStepIndex + 1}`}</strong>
-          </div>
-          <div className="status-card">
-            <span>Diff Paths</span>
-            <strong>{Object.keys(diffObject).length}</strong>
-          </div>
-        </div>
-      </header>
+        </header>
 
       {error ? <div className="error-banner">{error}</div> : null}
 
       <main className="workspace-grid">
-        <section className="panel panel-controls">
-          <div className="panel-header">
-            <h2>Scenario</h2>
-            <p className="panel-copy">Use the dropdown to pick a UT case. The board and diff update immediately.</p>
-          </div>
+          <section className="panel panel-controls">
+            <div className="panel-header">
+              <h2>{`Scenario (${scenarios.length})`}</h2>
+            </div>
 
           <div className="control-stack">
-            <label className="field-label" htmlFor="scenario-filter">
-              Filter
-            </label>
-            <input
-              id="scenario-filter"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Type part of a scenario name"
-            />
-
             <label className="field-label" htmlFor="scenario-select">
               Group
             </label>

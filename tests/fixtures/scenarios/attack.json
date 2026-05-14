@@ -1,5 +1,7 @@
 {
   "name": "melee_attack_uses_base_bonus_and_original_hp_retaliation",
+  "suite_name": "Attack Resolution",
+  "case_name": "melee attack uses base bonus and original hp retaliation",
   "input_state": "states/attack-ready.json",
   "actions": [
     {
@@ -9,17 +11,57 @@
     }
   ],
   "expected_changes": {
-    "units.u_attacker.action.actions_remaining": 0,
-    "units.u_attacker.action.attacks_remaining": 0,
-    "units.u_attacker.action.has_attacked_this_turn": true,
-    "units.u_attacker.hp": 6,
-    "units.u_defender.hp": 4,
-    "current_rseed": -2704195468370554623,
-    "fight_context.last_attacked_unit_id": "u_defender",
-    "fight_context.previous_attack_origin.q": 0,
-    "fight_context.previous_attack_origin.r": 0,
-    "fight_context.previous_attack_was_melee": true,
-    "fight_context.acting_player_id": "p1",
-    "fight_context.chain_index": 1
+    "current_rseed": {
+      "before": 12345,
+      "after": -2704195468370554623
+    },
+    "fight_context.acting_player_id": {
+      "before": null,
+      "after": "p1"
+    },
+    "fight_context.chain_index": {
+      "before": 0,
+      "after": 1
+    },
+    "fight_context.last_attacked_unit_id": {
+      "before": null,
+      "after": "u_defender"
+    },
+    "fight_context.previous_attack_origin": {
+      "before": null,
+      "after": "__missing__"
+    },
+    "fight_context.previous_attack_origin.q": {
+      "before": "__missing__",
+      "after": 0
+    },
+    "fight_context.previous_attack_origin.r": {
+      "before": "__missing__",
+      "after": 0
+    },
+    "fight_context.previous_attack_was_melee": {
+      "before": false,
+      "after": true
+    },
+    "units.u_attacker.action.actions_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_attacker.action.attacks_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_attacker.action.has_attacked_this_turn": {
+      "before": false,
+      "after": true
+    },
+    "units.u_attacker.hp": {
+      "before": 10,
+      "after": 6
+    },
+    "units.u_defender.hp": {
+      "before": 10,
+      "after": 4
+    }
   }
 }

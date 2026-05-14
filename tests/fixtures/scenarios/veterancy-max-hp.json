@@ -1,5 +1,7 @@
 {
   "name": "ending_p1_turn_heals_units_up_to_veterancy_hp_caps",
+  "suite_name": "Turn Transition Rules",
+  "case_name": "ending p1 turn heals units up to veterancy hp caps",
   "input_state": "states/veterancy-max-hp.json",
   "actions": [
     {
@@ -7,8 +9,49 @@
     }
   ],
   "expected_changes": {
-    "active_player_id": "p2",
-    "units.u_vet1.hp": 11,
-    "units.u_vet2.hp": 12
+    "active_player_id": {
+      "before": "p1",
+      "after": "p2"
+    },
+    "players.p1.has_ended_turn": {
+      "before": false,
+      "after": true
+    },
+    "players.p2.credits": {
+      "before": 0,
+      "after": 100
+    },
+    "round_number": {
+      "before": 1,
+      "after": 2
+    },
+    "turn_number": {
+      "before": 1,
+      "after": 2
+    },
+    "units.u_vet1.action.actions_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_vet1.action.is_available": {
+      "before": true,
+      "after": false
+    },
+    "units.u_vet1.hp": {
+      "before": 10,
+      "after": 11
+    },
+    "units.u_vet2.action.actions_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_vet2.action.is_available": {
+      "before": true,
+      "after": false
+    },
+    "units.u_vet2.hp": {
+      "before": 11,
+      "after": 12
+    }
   }
 }

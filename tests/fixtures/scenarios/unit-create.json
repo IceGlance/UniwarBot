@@ -1,5 +1,7 @@
 {
   "name": "unit_create_updates_tile_occupancy",
+  "suite_name": "Unit State Mutation Rules",
+  "case_name": "unit create updates tile occupancy",
   "input_state": "states/map-only.json",
   "actions": [
     {
@@ -8,7 +10,149 @@
     }
   ],
   "expected_changes": {
-    "units.u_marine.unit_id": "marine",
-    "tile.0:0.occupying_unit_id": "u_marine"
+    "tile.0:0.occupying_unit_id": {
+      "before": null,
+      "after": "u_marine"
+    },
+    "tile.0:0.surface_unit_id": {
+      "before": null,
+      "after": "u_marine"
+    },
+    "units.u_marine.action.action_phase_index": {
+      "before": "__missing__",
+      "after": 0
+    },
+    "units.u_marine.action.actions_remaining": {
+      "before": "__missing__",
+      "after": 1
+    },
+    "units.u_marine.action.atomic_action_label": {
+      "before": "__missing__",
+      "after": null
+    },
+    "units.u_marine.action.atomic_action_locked": {
+      "before": "__missing__",
+      "after": false
+    },
+    "units.u_marine.action.attacks_remaining": {
+      "before": "__missing__",
+      "after": 1
+    },
+    "units.u_marine.action.can_interleave_between_action_windows": {
+      "before": "__missing__",
+      "after": true
+    },
+    "units.u_marine.action.configured_action_count": {
+      "before": "__missing__",
+      "after": 1
+    },
+    "units.u_marine.action.current_action_index": {
+      "before": "__missing__",
+      "after": 0
+    },
+    "units.u_marine.action.has_attacked_this_turn": {
+      "before": "__missing__",
+      "after": false
+    },
+    "units.u_marine.action.has_moved_this_turn": {
+      "before": "__missing__",
+      "after": false
+    },
+    "units.u_marine.action.has_used_special_this_turn": {
+      "before": "__missing__",
+      "after": false
+    },
+    "units.u_marine.action.is_available": {
+      "before": "__missing__",
+      "after": true
+    },
+    "units.u_marine.action.move_points_remaining": {
+      "before": "__missing__",
+      "after": null
+    },
+    "units.u_marine.action.special_actions_remaining": {
+      "before": "__missing__",
+      "after": null
+    },
+    "units.u_marine.capture_target": {
+      "before": "__missing__",
+      "after": null
+    },
+    "units.u_marine.experience_points": {
+      "before": "__missing__",
+      "after": 0
+    },
+    "units.u_marine.hp": {
+      "before": "__missing__",
+      "after": 10
+    },
+    "units.u_marine.instance_id": {
+      "before": "__missing__",
+      "after": "u_marine"
+    },
+    "units.u_marine.owner_id": {
+      "before": "__missing__",
+      "after": "p1"
+    },
+    "units.u_marine.position.q": {
+      "before": "__missing__",
+      "after": 0
+    },
+    "units.u_marine.position.r": {
+      "before": "__missing__",
+      "after": 0
+    },
+    "units.u_marine.status.buried_resurface_bonus": {
+      "before": "__missing__",
+      "after": 0
+    },
+    "units.u_marine.status.control_zones_suppressed": {
+      "before": "__missing__",
+      "after": false
+    },
+    "units.u_marine.status.emp_disabled_rounds": {
+      "before": "__missing__",
+      "after": 0
+    },
+    "units.u_marine.status.hidden_mode": {
+      "before": "__missing__",
+      "after": null
+    },
+    "units.u_marine.status.movement_blocked": {
+      "before": "__missing__",
+      "after": false
+    },
+    "units.u_marine.status.plague_infected": {
+      "before": "__missing__",
+      "after": false
+    },
+    "units.u_marine.status.retaliation_blocked": {
+      "before": "__missing__",
+      "after": false
+    },
+    "units.u_marine.status.submerged_attack_penalty": {
+      "before": "__missing__",
+      "after": 0
+    },
+    "units.u_marine.status.teleport_cooldown_rounds": {
+      "before": "__missing__",
+      "after": 0
+    },
+    "units.u_marine.status.teleport_disabled_rounds": {
+      "before": "__missing__",
+      "after": 0
+    },
+    "units.u_marine.status.teleport_lock_phase": {
+      "before": "__missing__",
+      "after": null
+    },
+    "units.u_marine.unit_id": {
+      "before": "__missing__",
+      "after": "marine"
+    },
+    "units.u_marine.veterancy_level": {
+      "before": "__missing__",
+      "after": 0
+    }
   }
 }

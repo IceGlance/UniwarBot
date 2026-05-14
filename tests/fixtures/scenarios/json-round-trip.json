@@ -1,5 +1,7 @@
 {
   "name": "json_round_trip_preserves_nested_state",
+  "suite_name": "Serialization Rules",
+  "case_name": "json round trip preserves nested state",
   "input_state": "states/serialization-rich.json",
   "assert_final_dict_equals_input": true,
   "actions": [

@@ -1,5 +1,5 @@
 {
-  "name": "submerged_same_hex_attack_rules",
+  "name": "Submerged Same-Hex Attack Rules",
   "input_state": "states/submerged-same-hex-attack-ready.json",
   "cases": [
     {
@@ -12,11 +12,54 @@
         }
       ],
       "expected_changes": {
-        "units.u_destroyer_same.action.actions_remaining": 0,
-        "units.u_destroyer_same.action.has_attacked_this_turn": true,
-        "units.u_destroyer_same.hp": 5,
-        "units.u_sub_destroyer_same.hp": 6,
-        "current_rseed": -2704195468370554623
+        "current_rseed": {
+          "before": 12345,
+          "after": -2704195468370554623
+        },
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 1
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_sub_destroyer_same"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "units.u_destroyer_same.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_destroyer_same.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_destroyer_same.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_destroyer_same.hp": {
+          "before": 10,
+          "after": 5
+        },
+        "units.u_sub_destroyer_same.hp": {
+          "before": 10,
+          "after": 6
+        }
       }
     },
     {
@@ -29,11 +72,7 @@
           "expect_error": "Attacker cannot attack the selected target"
         }
       ],
-      "expected_changes": {
-        "units.u_hydronaut_same.action.actions_remaining": 1,
-        "units.u_hydronaut_same.action.has_attacked_this_turn": false,
-        "units.u_sub_hydronaut_same.hp": 10
-      }
+      "expected_changes": {}
     },
     {
       "name": "borfly_cannot_attack_submerged_target_on_same_hex",
@@ -45,11 +84,7 @@
           "expect_error": "Attacker cannot attack the selected target"
         }
       ],
-      "expected_changes": {
-        "units.u_borfly_same.action.actions_remaining": 1,
-        "units.u_borfly_same.action.has_attacked_this_turn": false,
-        "units.u_sub_borfly_same.hp": 10
-      }
+      "expected_changes": {}
     }
   ]
 }

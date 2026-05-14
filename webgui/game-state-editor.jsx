@@ -170,6 +170,7 @@ function buildBlankMap(config, width, height, playerCount, fillTerrainId = "plai
       city_income: config?.defaults?.city_income ?? 50,
       starting_credits: config?.defaults?.starting_credits ?? 100,
     },
+    start_random_seed: config?.defaults?.start_random_seed ?? null,
     units: [],
     tiles: Array.from({ length: height }, (_, r) =>
       Array.from({ length: width }, (_, q) => ({
@@ -1307,6 +1308,7 @@ function App() {
     recreated.name = mapData?.name ?? recreated.name;
     recreated.map_id = mapData?.map_id ?? recreated.map_id;
     recreated.economy = cloneMapPayload(mapData?.economy ?? recreated.economy);
+    recreated.start_random_seed = mapData?.start_random_seed ?? null;
     recreated.players = cloneMapPayload(
       normalizePlayers(mapData?.players, recreated.player_count, config.factions),
     );
@@ -1323,21 +1325,7 @@ function App() {
             <h1>UniwarBot Game State Editor</h1>
             <p>Create and save map JSON locally with terrain painting, player settings, ownership, and economy controls.</p>
           </div>
-          <div className="status-cards">
-          <div className="status-card">
-            <span>Map Size</span>
-            <strong>{mapData ? `${mapData.size.width} x ${mapData.size.height}` : "-"}</strong>
-          </div>
-          <div className="status-card">
-            <span>Players</span>
-            <strong>{mapData?.player_count ?? "-"}</strong>
-          </div>
-          <div className="status-card">
-            <span>File</span>
-            <strong>{mapData?.file_name || "unsaved"}</strong>
-          </div>
-        </div>
-      </header>
+        </header>
 
       {error ? <div className="error-banner">{error}</div> : null}
       <main className="workspace-grid editor-workspace-grid">
@@ -1391,7 +1379,6 @@ function App() {
                 <div className="editor-button-row">
                   <button className="step-chip" onClick={createNewMap}>New</button>
                   <button className="step-chip" onClick={() => saveMap("save")}>Save</button>
-                  <button className="step-chip" onClick={() => saveMap("save_as")}>Save As</button>
                 </div>
 
                 <label className="field-label">Load Saved Map</label>
@@ -1404,6 +1391,24 @@ function App() {
                   ))}
                 </select>
                 <button className="step-chip" onClick={loadSelectedMap}>Load</button>
+
+                <label className="field-label">Start Random Seed</label>
+                <input
+                  type="number"
+                  step="1"
+                  value={mapData?.start_random_seed ?? ""}
+                  placeholder="blank = random each game"
+                  onChange={(event) =>
+                    setMapData((current) => (
+                      current
+                        ? {
+                            ...current,
+                            start_random_seed: nullableInt(event.target.value),
+                          }
+                        : current
+                    ))
+                  }
+                />
 
                 <div className="editor-section">
                   <span className="field-label">Map Size</span>
@@ -1477,12 +1482,12 @@ function App() {
                                 }
                               : current
                           ))
-                        }
-                      />
-                    </label>
-                  </div>
-                  <button
-                    className="step-chip"
+                          }
+                        />
+                      </label>
+                    </div>
+                    <button
+                      className="step-chip"
                     onClick={() =>
                       setMapData((current) => (
                         current
@@ -1697,6 +1702,10 @@ function App() {
               <span>Base income: {mapData?.economy?.base_income ?? "-"}</span>
               <span>City income: {mapData?.economy?.city_income ?? "-"}</span>
               <span>Start income: {mapData?.economy?.starting_credits ?? "-"}</span>
+              <span>
+                Start seed:{" "}
+                {mapData?.start_random_seed == null ? "random each game" : String(mapData.start_random_seed)}
+              </span>
             </div>
           </div>
           <div className="board-card">

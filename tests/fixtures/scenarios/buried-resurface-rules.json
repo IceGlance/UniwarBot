@@ -11,12 +11,30 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": 12345,
-        "tile.0:0.surface_unit_id": null,
-        "tile.0:0.hidden_unit_id": "u_underling",
-        "units.u_underling.hp": 10,
-        "units.u_underling.status.hidden_mode": "buried",
-        "units.u_underling.action.actions_remaining": 0
+        "tile.0:0.hidden_unit_id": {
+          "before": null,
+          "after": "u_underling"
+        },
+        "tile.0:0.occupying_unit_id": {
+          "before": "u_underling",
+          "after": null
+        },
+        "tile.0:0.surface_unit_id": {
+          "before": "u_underling",
+          "after": null
+        },
+        "units.u_underling.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_underling.action.has_used_special_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_underling.status.hidden_mode": {
+          "before": null,
+          "after": "buried"
+        }
       }
     },
     {
@@ -36,16 +54,82 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": -2704195468370554623,
-        "tile.0:0.surface_unit_id": null,
-        "tile.0:1.surface_unit_id": "u_underling",
-        "units.u_underling.position.q": 0,
-        "units.u_underling.position.r": 1,
-        "units.u_underling.hp": 5,
-        "units.u_defender.hp": 5,
-        "units.u_underling.action.atomic_action_locked": false,
-        "units.u_underling.action.actions_remaining": 0,
-        "fight_context.chain_index": 1
+        "current_rseed": {
+          "before": 12345,
+          "after": -2704195468370554623
+        },
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 1
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_defender"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 1
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "tile.0:0.occupying_unit_id": {
+          "before": "u_underling",
+          "after": null
+        },
+        "tile.0:0.surface_unit_id": {
+          "before": "u_underling",
+          "after": null
+        },
+        "tile.0:1.occupying_unit_id": {
+          "before": null,
+          "after": "u_underling"
+        },
+        "tile.0:1.surface_unit_id": {
+          "before": null,
+          "after": "u_underling"
+        },
+        "units.u_defender.hp": {
+          "before": 10,
+          "after": 5
+        },
+        "units.u_underling.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_underling.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_underling.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_underling.action.has_moved_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_underling.hp": {
+          "before": 10,
+          "after": 5
+        },
+        "units.u_underling.position.r": {
+          "before": 0,
+          "after": 1
+        }
       }
     },
     {
@@ -66,15 +150,42 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": 12345,
-        "tile.0:0.surface_unit_id": null,
-        "tile.0:1.surface_unit_id": "u_underling",
-        "tile.2:2.surface_unit_id": "u_helper",
-        "units.u_underling.status.hidden_mode": null,
-        "units.u_underling.action.atomic_action_locked": true,
-        "units.u_underling.action.atomic_action_label": "surface_move_attack",
-        "units.u_underling.action.actions_remaining": 0,
-        "units.u_defender.hp": 10
+        "tile.0:0.occupying_unit_id": {
+          "before": "u_underling",
+          "after": null
+        },
+        "tile.0:0.surface_unit_id": {
+          "before": "u_underling",
+          "after": null
+        },
+        "tile.0:1.occupying_unit_id": {
+          "before": null,
+          "after": "u_underling"
+        },
+        "tile.0:1.surface_unit_id": {
+          "before": null,
+          "after": "u_underling"
+        },
+        "units.u_underling.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_underling.action.atomic_action_label": {
+          "before": null,
+          "after": "surface_move_attack"
+        },
+        "units.u_underling.action.atomic_action_locked": {
+          "before": false,
+          "after": true
+        },
+        "units.u_underling.action.has_moved_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_underling.position.r": {
+          "before": 0,
+          "after": 1
+        }
       }
     },
     {
@@ -91,16 +202,78 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": 12345,
-        "active_player_id": "p2",
-        "turn_number": 2,
-        "round_number": 2,
-        "tile.0:0.surface_unit_id": null,
-        "tile.0:1.surface_unit_id": "u_underling",
-        "units.u_underling.action.atomic_action_locked": false,
-        "units.u_underling.action.atomic_action_label": null,
-        "units.u_underling.action.actions_remaining": 0,
-        "units.u_underling.action.attacks_remaining": 0
+        "active_player_id": {
+          "before": "p1",
+          "after": "p2"
+        },
+        "players.p1.has_ended_turn": {
+          "before": false,
+          "after": true
+        },
+        "round_number": {
+          "before": 1,
+          "after": 2
+        },
+        "tile.0:0.occupying_unit_id": {
+          "before": "u_underling",
+          "after": null
+        },
+        "tile.0:0.surface_unit_id": {
+          "before": "u_underling",
+          "after": null
+        },
+        "tile.0:1.occupying_unit_id": {
+          "before": null,
+          "after": "u_underling"
+        },
+        "tile.0:1.surface_unit_id": {
+          "before": null,
+          "after": "u_underling"
+        },
+        "turn_number": {
+          "before": 1,
+          "after": 2
+        },
+        "units.u_friend_far_surface.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_friend_far_surface.action.is_available": {
+          "before": true,
+          "after": false
+        },
+        "units.u_friend_hidden.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_friend_hidden.action.is_available": {
+          "before": true,
+          "after": false
+        },
+        "units.u_helper.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_helper.action.is_available": {
+          "before": true,
+          "after": false
+        },
+        "units.u_underling.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_underling.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_underling.action.has_moved_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_underling.position.r": {
+          "before": 0,
+          "after": 1
+        }
       }
     },
     {
@@ -114,14 +287,26 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": 12345,
-        "tile.0:0.hidden_unit_id": null,
-        "tile.1:0.hidden_unit_id": "u_underling",
-        "units.u_underling.position.q": 1,
-        "units.u_underling.position.r": 0,
-        "units.u_underling.hp": 10,
-        "units.u_underling.status.hidden_mode": "buried",
-        "units.u_underling.action.actions_remaining": 0
+        "tile.0:0.hidden_unit_id": {
+          "before": "u_underling",
+          "after": null
+        },
+        "tile.1:0.hidden_unit_id": {
+          "before": null,
+          "after": "u_underling"
+        },
+        "units.u_underling.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_underling.action.has_moved_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_underling.position.q": {
+          "before": 0,
+          "after": 1
+        }
       }
     },
     {
@@ -134,14 +319,30 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": 12345,
-        "tile.0:0.hidden_unit_id": null,
-        "tile.0:0.surface_unit_id": "u_underling",
-        "units.u_underling.hp": 10,
-        "units.u_underling.status.hidden_mode": null,
-        "units.u_underling.status.buried_resurface_bonus": 0,
-        "units.u_underling.action.actions_remaining": 0,
-        "units.u_underling.action.atomic_action_locked": false
+        "tile.0:0.hidden_unit_id": {
+          "before": "u_underling",
+          "after": null
+        },
+        "tile.0:0.occupying_unit_id": {
+          "before": null,
+          "after": "u_underling"
+        },
+        "tile.0:0.surface_unit_id": {
+          "before": null,
+          "after": "u_underling"
+        },
+        "units.u_underling.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_underling.action.has_used_special_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_underling.status.hidden_mode": {
+          "before": "buried",
+          "after": null
+        }
       }
     },
     {
@@ -160,16 +361,78 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": -2704195468370554623,
-        "tile.0:0.hidden_unit_id": null,
-        "tile.0:0.surface_unit_id": "u_underling",
-        "units.u_underling.hp": 5,
-        "units.u_defender.hp": 3,
-        "units.u_underling.status.hidden_mode": null,
-        "units.u_underling.status.buried_resurface_bonus": 0,
-        "units.u_underling.action.atomic_action_locked": false,
-        "units.u_underling.action.actions_remaining": 0,
-        "fight_context.chain_index": 1
+        "current_rseed": {
+          "before": 12345,
+          "after": -2704195468370554623
+        },
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 1
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_defender"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "tile.0:0.hidden_unit_id": {
+          "before": "u_underling",
+          "after": null
+        },
+        "tile.0:0.occupying_unit_id": {
+          "before": null,
+          "after": "u_underling"
+        },
+        "tile.0:0.surface_unit_id": {
+          "before": null,
+          "after": "u_underling"
+        },
+        "units.u_defender.hp": {
+          "before": 10,
+          "after": 3
+        },
+        "units.u_underling.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_underling.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_underling.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_underling.action.has_used_special_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_underling.hp": {
+          "before": 10,
+          "after": 5
+        },
+        "units.u_underling.status.hidden_mode": {
+          "before": "buried",
+          "after": null
+        }
       }
     },
     {
@@ -189,18 +452,42 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": 12345,
-        "tile.0:0.hidden_unit_id": null,
-        "tile.0:0.surface_unit_id": "u_underling",
-        "tile.2:2.surface_unit_id": "u_helper",
-        "units.u_underling.hp": 10,
-        "units.u_defender.hp": 10,
-        "units.u_underling.action.atomic_action_locked": true,
-        "units.u_underling.action.atomic_action_label": "resurface_attack",
-        "units.u_underling.action.actions_remaining": 0,
-        "units.u_underling.status.buried_resurface_bonus": 4,
-        "units.u_helper.position.q": 2,
-        "units.u_helper.position.r": 2
+        "tile.0:0.hidden_unit_id": {
+          "before": "u_underling",
+          "after": null
+        },
+        "tile.0:0.occupying_unit_id": {
+          "before": null,
+          "after": "u_underling"
+        },
+        "tile.0:0.surface_unit_id": {
+          "before": null,
+          "after": "u_underling"
+        },
+        "units.u_underling.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_underling.action.atomic_action_label": {
+          "before": null,
+          "after": "resurface_attack"
+        },
+        "units.u_underling.action.atomic_action_locked": {
+          "before": false,
+          "after": true
+        },
+        "units.u_underling.action.has_used_special_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_underling.status.buried_resurface_bonus": {
+          "before": 0,
+          "after": 4
+        },
+        "units.u_underling.status.hidden_mode": {
+          "before": "buried",
+          "after": null
+        }
       }
     },
     {
@@ -219,16 +506,78 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": -2704195468370554623,
-        "tile.0:0.hidden_unit_id": null,
-        "tile.0:0.surface_unit_id": "u_attacker",
-        "units.u_attacker.hp": 6,
-        "units.u_defender.hp": 2,
-        "units.u_attacker.status.hidden_mode": null,
-        "units.u_attacker.status.buried_resurface_bonus": 0,
-        "units.u_attacker.action.atomic_action_locked": false,
-        "units.u_attacker.action.actions_remaining": 0,
-        "fight_context.chain_index": 1
+        "current_rseed": {
+          "before": 12345,
+          "after": -2704195468370554623
+        },
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 1
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_defender"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "tile.0:0.hidden_unit_id": {
+          "before": "u_attacker",
+          "after": null
+        },
+        "tile.0:0.occupying_unit_id": {
+          "before": null,
+          "after": "u_attacker"
+        },
+        "tile.0:0.surface_unit_id": {
+          "before": null,
+          "after": "u_attacker"
+        },
+        "units.u_attacker.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_attacker.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_attacker.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_attacker.action.has_used_special_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_attacker.hp": {
+          "before": 10,
+          "after": 6
+        },
+        "units.u_attacker.status.hidden_mode": {
+          "before": "buried",
+          "after": null
+        },
+        "units.u_defender.hp": {
+          "before": 10,
+          "after": 2
+        }
       }
     },
     {
@@ -259,17 +608,234 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": 5971266674099280749,
-        "tile.2:0.hidden_unit_id": null,
-        "tile.2:0.surface_unit_id": "u_curr",
-        "units.u_prev.hp": 5,
-        "units.u_curr.hp": 8,
-        "units.u_defender": "__missing__",
-        "units.u_curr.status.hidden_mode": null,
-        "units.u_curr.status.buried_resurface_bonus": 0,
-        "units.u_curr.action.atomic_action_locked": false,
-        "units.u_curr.action.actions_remaining": 0,
-        "fight_context.chain_index": 2
+        "current_rseed": {
+          "before": 12345,
+          "after": 5971266674099280749
+        },
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 2
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_defender"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": 2
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "tile.1:0.occupying_unit_id": {
+          "before": "u_defender",
+          "after": null
+        },
+        "tile.1:0.surface_unit_id": {
+          "before": "u_defender",
+          "after": null
+        },
+        "tile.2:0.hidden_unit_id": {
+          "before": "u_curr",
+          "after": null
+        },
+        "tile.2:0.occupying_unit_id": {
+          "before": null,
+          "after": "u_curr"
+        },
+        "tile.2:0.surface_unit_id": {
+          "before": null,
+          "after": "u_curr"
+        },
+        "units.u_curr.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.action.has_used_special_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.hp": {
+          "before": 10,
+          "after": 8
+        },
+        "units.u_curr.status.hidden_mode": {
+          "before": "buried",
+          "after": null
+        },
+        "units.u_defender.action.action_phase_index": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_defender.action.actions_remaining": {
+          "before": 1,
+          "after": "__missing__"
+        },
+        "units.u_defender.action.atomic_action_label": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "units.u_defender.action.atomic_action_locked": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_defender.action.attacks_remaining": {
+          "before": 1,
+          "after": "__missing__"
+        },
+        "units.u_defender.action.can_interleave_between_action_windows": {
+          "before": true,
+          "after": "__missing__"
+        },
+        "units.u_defender.action.configured_action_count": {
+          "before": 1,
+          "after": "__missing__"
+        },
+        "units.u_defender.action.current_action_index": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_defender.action.has_attacked_this_turn": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_defender.action.has_moved_this_turn": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_defender.action.has_used_special_this_turn": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_defender.action.is_available": {
+          "before": true,
+          "after": "__missing__"
+        },
+        "units.u_defender.action.move_points_remaining": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "units.u_defender.action.special_actions_remaining": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "units.u_defender.capture_target": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "units.u_defender.experience_points": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_defender.hp": {
+          "before": 10,
+          "after": "__missing__"
+        },
+        "units.u_defender.instance_id": {
+          "before": "u_defender",
+          "after": "__missing__"
+        },
+        "units.u_defender.owner_id": {
+          "before": "p2",
+          "after": "__missing__"
+        },
+        "units.u_defender.position.q": {
+          "before": 1,
+          "after": "__missing__"
+        },
+        "units.u_defender.position.r": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_defender.status.buried_resurface_bonus": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_defender.status.control_zones_suppressed": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_defender.status.emp_disabled_rounds": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_defender.status.hidden_mode": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "units.u_defender.status.movement_blocked": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_defender.status.plague_infected": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_defender.status.retaliation_blocked": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_defender.status.submerged_attack_penalty": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_defender.status.teleport_cooldown_rounds": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_defender.status.teleport_disabled_rounds": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_defender.status.teleport_lock_phase": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "units.u_defender.unit_id": {
+          "before": "marine",
+          "after": "__missing__"
+        },
+        "units.u_defender.veterancy_level": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_prev.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_prev.hp": {
+          "before": 10,
+          "after": 5
+        }
       }
     }
   ]

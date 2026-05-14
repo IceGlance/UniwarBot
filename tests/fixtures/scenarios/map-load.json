@@ -1,5 +1,7 @@
 {
   "name": "map_load_exposes_expected_tiles",
+  "suite_name": "Map State Rules",
+  "case_name": "map load exposes expected tiles",
   "input_state": "states/map-only.json",
   "actions": [],
   "expected_state": {

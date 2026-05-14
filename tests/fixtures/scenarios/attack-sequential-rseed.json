@@ -1,5 +1,7 @@
 {
   "name": "second_attack_uses_updated_rseed_from_first_pair",
+  "suite_name": "Attack Resolution",
+  "case_name": "second attack uses updated rseed from first pair",
   "input_state": "states/attack-sequential-ready.json",
   "actions": [
     {
@@ -14,18 +16,77 @@
     }
   ],
   "expected_changes": {
-    "units.u_a1.hp": 5,
-    "units.u_d1.hp": 5,
-    "units.u_a2.hp": 5,
-    "units.u_d2.hp": 6,
-    "units.u_a1.action.actions_remaining": 0,
-    "units.u_a2.action.actions_remaining": 0,
-    "current_rseed": 7666781423912587628,
-    "fight_context.last_attacked_unit_id": "u_d2",
-    "fight_context.previous_attack_origin.q": 0,
-    "fight_context.previous_attack_origin.r": 2,
-    "fight_context.previous_attack_was_melee": true,
-    "fight_context.acting_player_id": "p1",
-    "fight_context.chain_index": 2
+    "current_rseed": {
+      "before": 12345,
+      "after": 7666781423912587628
+    },
+    "fight_context.acting_player_id": {
+      "before": null,
+      "after": "p1"
+    },
+    "fight_context.chain_index": {
+      "before": 0,
+      "after": 2
+    },
+    "fight_context.last_attacked_unit_id": {
+      "before": null,
+      "after": "u_d2"
+    },
+    "fight_context.previous_attack_origin": {
+      "before": null,
+      "after": "__missing__"
+    },
+    "fight_context.previous_attack_origin.q": {
+      "before": "__missing__",
+      "after": 0
+    },
+    "fight_context.previous_attack_origin.r": {
+      "before": "__missing__",
+      "after": 2
+    },
+    "fight_context.previous_attack_was_melee": {
+      "before": false,
+      "after": true
+    },
+    "units.u_a1.action.actions_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_a1.action.attacks_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_a1.action.has_attacked_this_turn": {
+      "before": false,
+      "after": true
+    },
+    "units.u_a1.hp": {
+      "before": 10,
+      "after": 5
+    },
+    "units.u_a2.action.actions_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_a2.action.attacks_remaining": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_a2.action.has_attacked_this_turn": {
+      "before": false,
+      "after": true
+    },
+    "units.u_a2.hp": {
+      "before": 10,
+      "after": 5
+    },
+    "units.u_d1.hp": {
+      "before": 10,
+      "after": 5
+    },
+    "units.u_d2.hp": {
+      "before": 10,
+      "after": 6
+    }
   }
 }

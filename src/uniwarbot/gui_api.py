@@ -216,6 +216,13 @@ def _suggest_city_income(base_income: int) -> int:
     return int(math.ceil((int(base_income) / 2) / 5.0) * 5)
 
 
+def _normalize_optional_int32(value: object) -> int | None:
+    if value in {None, ""}:
+        return None
+    normalized = int(value)
+    return max(-(2**31), min((2**31) - 1, normalized))
+
+
 def _unit_sprite_id(unit_id: str) -> str:
     return "mecha_2" if unit_id == "mecha_ii" else unit_id
 
@@ -317,6 +324,7 @@ def _normalize_editor_map(payload: dict[str, object] | None) -> dict[str, object
         else max(0, int(city_income_raw))
     )
     starting_credits = max(0, int(economy_payload.get("starting_credits", 100) or 100))
+    start_random_seed = _normalize_optional_int32(payload.get("start_random_seed"))
 
     tiles: list[dict[str, object]] = []
     valid_owner_ids = {f"p{index + 1}" for index in range(player_count)}
@@ -500,6 +508,7 @@ def _normalize_editor_map(payload: dict[str, object] | None) -> dict[str, object
             "city_income": city_income,
             "starting_credits": starting_credits,
         },
+        "start_random_seed": start_random_seed,
         "tiles": tiles,
         "units": units,
     }
@@ -580,6 +589,7 @@ def _build_map_editor_config() -> dict[str, object]:
             "base_income": 100,
             "city_income": _suggest_city_income(100),
             "starting_credits": 100,
+            "start_random_seed": None,
         },
     }
 

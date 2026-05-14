@@ -1,5 +1,5 @@
 {
-  "name": "submerged_ground_air_attack_rules",
+  "name": "Submerged Ground Air Attack Rules",
   "input_state": "states/submerged-ground-air-attack-ready.json",
   "cases": [
     {
@@ -14,12 +14,50 @@
         }
       ],
       "expected_changes": {
-        "units.u_submarine.action.actions_remaining": 0,
-        "units.u_submarine.action.attacks_remaining": 0,
-        "units.u_submarine.action.has_attacked_this_turn": true,
-        "units.u_submarine.hp": 10,
-        "units.u_marine_submarine.hp": 9,
-        "current_rseed": 12345
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 1
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_marine_submarine"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "units.u_marine_submarine.hp": {
+          "before": 10,
+          "after": 9
+        },
+        "units.u_submarine.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_submarine.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_submarine.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        }
       }
     },
     {
@@ -32,12 +70,7 @@
           "expect_error": "Attacker cannot attack the selected target"
         }
       ],
-      "expected_changes": {
-        "units.u_kraken.action.actions_remaining": 1,
-        "units.u_kraken.action.has_attacked_this_turn": false,
-        "units.u_marine_kraken.hp": 10,
-        "current_rseed": 12345
-      }
+      "expected_changes": {}
     },
     {
       "name": "skimmer_cannot_attack_ground_from_underwater",
@@ -49,12 +82,7 @@
           "expect_error": "Attacker cannot attack the selected target"
         }
       ],
-      "expected_changes": {
-        "units.u_skimmer.action.actions_remaining": 1,
-        "units.u_skimmer.action.has_attacked_this_turn": false,
-        "units.u_marine_skimmer.hp": 10,
-        "current_rseed": 12345
-      }
+      "expected_changes": {}
     }
   ]
 }

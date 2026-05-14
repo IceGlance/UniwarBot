@@ -23,10 +23,182 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": 5176335776358260987,
-        "units.u_defender.hp": 12,
-        "fight_context.chain_index": 2,
-        "units.u_attacker": "__missing__"
+        "current_rseed": {
+          "before": 12345,
+          "after": 5176335776358260987
+        },
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 2
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_defender"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": 1
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "tile.1:0.occupying_unit_id": {
+          "before": "u_attacker",
+          "after": null
+        },
+        "tile.1:0.surface_unit_id": {
+          "before": "u_attacker",
+          "after": null
+        },
+        "units.u_attacker.action.action_phase_index": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_attacker.action.actions_remaining": {
+          "before": 2,
+          "after": "__missing__"
+        },
+        "units.u_attacker.action.atomic_action_label": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "units.u_attacker.action.atomic_action_locked": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_attacker.action.attacks_remaining": {
+          "before": 2,
+          "after": "__missing__"
+        },
+        "units.u_attacker.action.can_interleave_between_action_windows": {
+          "before": true,
+          "after": "__missing__"
+        },
+        "units.u_attacker.action.configured_action_count": {
+          "before": 2,
+          "after": "__missing__"
+        },
+        "units.u_attacker.action.current_action_index": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_attacker.action.has_attacked_this_turn": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_attacker.action.has_moved_this_turn": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_attacker.action.has_used_special_this_turn": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_attacker.action.is_available": {
+          "before": true,
+          "after": "__missing__"
+        },
+        "units.u_attacker.action.move_points_remaining": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "units.u_attacker.action.special_actions_remaining": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "units.u_attacker.capture_target": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "units.u_attacker.experience_points": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_attacker.hp": {
+          "before": 10,
+          "after": "__missing__"
+        },
+        "units.u_attacker.instance_id": {
+          "before": "u_attacker",
+          "after": "__missing__"
+        },
+        "units.u_attacker.owner_id": {
+          "before": "p1",
+          "after": "__missing__"
+        },
+        "units.u_attacker.position.q": {
+          "before": 1,
+          "after": "__missing__"
+        },
+        "units.u_attacker.position.r": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_attacker.status.buried_resurface_bonus": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_attacker.status.control_zones_suppressed": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_attacker.status.emp_disabled_rounds": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_attacker.status.hidden_mode": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "units.u_attacker.status.movement_blocked": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_attacker.status.plague_infected": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_attacker.status.retaliation_blocked": {
+          "before": false,
+          "after": "__missing__"
+        },
+        "units.u_attacker.status.submerged_attack_penalty": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_attacker.status.teleport_cooldown_rounds": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_attacker.status.teleport_disabled_rounds": {
+          "before": 0,
+          "after": "__missing__"
+        },
+        "units.u_attacker.status.teleport_lock_phase": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "units.u_attacker.unit_id": {
+          "before": "marauder",
+          "after": "__missing__"
+        },
+        "units.u_attacker.veterancy_level": {
+          "before": 0,
+          "after": "__missing__"
+        }
       },
       "input_state": "states/gang_up_rules/001_marauder_second_hit_from_same_hex_gets_2_and_keeps_carried_seed.json"
     },
@@ -52,10 +224,70 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": -586585493963396526,
-        "units.u_curr.hp": 2,
-        "units.u_defender.hp": 12,
-        "fight_context.chain_index": 2
+        "current_rseed": {
+          "before": 12345,
+          "after": -586585493963396526
+        },
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 2
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_defender"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": 1
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": -1
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.hp": {
+          "before": 10,
+          "after": 2
+        },
+        "units.u_prev.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_prev.hp": {
+          "before": 10,
+          "after": 2
+        }
       },
       "input_state": "states/gang_up_rules/002_melee_geometry_1_clockwise.json"
     },
@@ -81,10 +313,74 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": -586585493963396526,
-        "units.u_curr.hp": 2,
-        "units.u_defender.hp": 11,
-        "fight_context.chain_index": 2
+        "current_rseed": {
+          "before": 12345,
+          "after": -586585493963396526
+        },
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 2
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_defender"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": -1
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.hp": {
+          "before": 10,
+          "after": 2
+        },
+        "units.u_defender.hp": {
+          "before": 12,
+          "after": 11
+        },
+        "units.u_prev.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_prev.hp": {
+          "before": 10,
+          "after": 2
+        }
       },
       "input_state": "states/gang_up_rules/003_melee_geometry_2_second_ring.json"
     },
@@ -110,10 +406,74 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": -586585493963396526,
-        "units.u_curr.hp": 2,
-        "units.u_defender.hp": 11,
-        "fight_context.chain_index": 2
+        "current_rseed": {
+          "before": 12345,
+          "after": -586585493963396526
+        },
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 2
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_defender"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": -1
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.hp": {
+          "before": 10,
+          "after": 2
+        },
+        "units.u_defender.hp": {
+          "before": 12,
+          "after": 11
+        },
+        "units.u_prev.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_prev.hp": {
+          "before": 10,
+          "after": 2
+        }
       },
       "input_state": "states/gang_up_rules/004_melee_geometry_3_opposite_side.json"
     },
@@ -139,10 +499,74 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": -586585493963396526,
-        "units.u_curr.hp": 2,
-        "units.u_defender.hp": 11,
-        "fight_context.chain_index": 2
+        "current_rseed": {
+          "before": 12345,
+          "after": -586585493963396526
+        },
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 2
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_defender"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": -1
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 1
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.hp": {
+          "before": 10,
+          "after": 2
+        },
+        "units.u_defender.hp": {
+          "before": 12,
+          "after": 11
+        },
+        "units.u_prev.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_prev.hp": {
+          "before": 10,
+          "after": 2
+        }
       },
       "input_state": "states/gang_up_rules/005_melee_geometry_2_wrap.json"
     },
@@ -168,10 +592,70 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": -586585493963396526,
-        "units.u_curr.hp": 2,
-        "units.u_defender.hp": 12,
-        "fight_context.chain_index": 2
+        "current_rseed": {
+          "before": 12345,
+          "after": -586585493963396526
+        },
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 2
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_defender"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 1
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.hp": {
+          "before": 10,
+          "after": 2
+        },
+        "units.u_prev.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_prev.hp": {
+          "before": 10,
+          "after": 2
+        }
       },
       "input_state": "states/gang_up_rules/006_melee_geometry_1_wrap.json"
     },
@@ -197,10 +681,70 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": 4386191502629356608,
-        "units.u_curr.hp": 2,
-        "units.u_defender.hp": 11,
-        "fight_context.chain_index": 2
+        "current_rseed": {
+          "before": 12345,
+          "after": 4386191502629356608
+        },
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 2
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_defender"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": -1
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.hp": {
+          "before": 10,
+          "after": 2
+        },
+        "units.u_defender.hp": {
+          "before": 12,
+          "after": 11
+        },
+        "units.u_prev.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        }
       },
       "input_state": "states/gang_up_rules/007_ranged_first_attack_forces_next_gang_up_bonus_to_1.json"
     },
@@ -231,10 +775,106 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": -586585493963396526,
-        "units.u_curr.hp": 2,
-        "units.u_defender.hp": 11,
-        "fight_context.chain_index": 2
+        "current_rseed": {
+          "before": 12345,
+          "after": -586585493963396526
+        },
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 2
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_defender"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": -1
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "tile.2:1.occupying_unit_id": {
+          "before": "u_mover",
+          "after": null
+        },
+        "tile.2:1.surface_unit_id": {
+          "before": "u_mover",
+          "after": null
+        },
+        "tile.3:2.occupying_unit_id": {
+          "before": null,
+          "after": "u_mover"
+        },
+        "tile.3:2.surface_unit_id": {
+          "before": null,
+          "after": "u_mover"
+        },
+        "units.u_curr.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.hp": {
+          "before": 10,
+          "after": 2
+        },
+        "units.u_defender.hp": {
+          "before": 12,
+          "after": 11
+        },
+        "units.u_mover.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_mover.action.has_moved_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_mover.position.q": {
+          "before": 2,
+          "after": 3
+        },
+        "units.u_mover.position.r": {
+          "before": 1,
+          "after": 2
+        },
+        "units.u_prev.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_prev.hp": {
+          "before": 10,
+          "after": 2
+        }
       },
       "input_state": "states/gang_up_rules/008_non_attack_action_between_attacks_does_not_break_gang_up_chain.json"
     },
@@ -260,10 +900,70 @@
         }
       ],
       "expected_changes": {
-        "current_rseed": -586585493963396526,
-        "units.u_curr.hp": 2,
-        "units.u_defender_2.hp": 12,
-        "fight_context.chain_index": 2
+        "current_rseed": {
+          "before": 12345,
+          "after": -586585493963396526
+        },
+        "fight_context.acting_player_id": {
+          "before": null,
+          "after": "p1"
+        },
+        "fight_context.chain_index": {
+          "before": 0,
+          "after": 2
+        },
+        "fight_context.last_attacked_unit_id": {
+          "before": null,
+          "after": "u_defender_2"
+        },
+        "fight_context.previous_attack_origin": {
+          "before": null,
+          "after": "__missing__"
+        },
+        "fight_context.previous_attack_origin.q": {
+          "before": "__missing__",
+          "after": -1
+        },
+        "fight_context.previous_attack_origin.r": {
+          "before": "__missing__",
+          "after": 0
+        },
+        "fight_context.previous_attack_was_melee": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_curr.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_curr.hp": {
+          "before": 10,
+          "after": 2
+        },
+        "units.u_prev.action.actions_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.attacks_remaining": {
+          "before": 1,
+          "after": 0
+        },
+        "units.u_prev.action.has_attacked_this_turn": {
+          "before": false,
+          "after": true
+        },
+        "units.u_prev.hp": {
+          "before": 10,
+          "after": 2
+        }
       },
       "input_state": "states/gang_up_rules/009_attacking_a_different_target_resets_gang_up_bonus_to_zero.json"
     }

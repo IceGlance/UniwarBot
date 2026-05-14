@@ -1,5 +1,7 @@
 {
   "name": "ending_p1_turn_starts_p2_turn_and_capture_resolves_before_income",
+  "suite_name": "Turn Transition Rules",
+  "case_name": "ending p1 turn starts p2 turn and capture resolves before income",
   "input_state": "states/capture-ready.json",
   "actions": [
     {
@@ -7,13 +9,209 @@
     }
   ],
   "expected_changes": {
-    "active_player_id": "p2",
-    "turn_number": 2,
-    "round_number": 2,
-    "players.p2.credits": 100,
-    "tile.2:0.owner_id": "p2",
-    "tile.2:0.capture_state": null,
-    "tile.2:0.occupying_unit_id": null,
-    "units.u_capture": "__missing__"
+    "active_player_id": {
+      "before": "p1",
+      "after": "p2"
+    },
+    "players.p1.has_ended_turn": {
+      "before": false,
+      "after": true
+    },
+    "players.p2.credits": {
+      "before": 0,
+      "after": 100
+    },
+    "round_number": {
+      "before": 1,
+      "after": 2
+    },
+    "tile.2:0.capture_state": {
+      "before": "__missing__",
+      "after": null
+    },
+    "tile.2:0.capture_state.capturing_player_id": {
+      "before": "p2",
+      "after": "__missing__"
+    },
+    "tile.2:0.capture_state.capturing_unit_id": {
+      "before": "u_capture",
+      "after": "__missing__"
+    },
+    "tile.2:0.capture_state.defense_penalty_applies": {
+      "before": true,
+      "after": "__missing__"
+    },
+    "tile.2:0.capture_state.rounds_remaining": {
+      "before": 1,
+      "after": "__missing__"
+    },
+    "tile.2:0.capture_state.structure_owner_id": {
+      "before": "p1",
+      "after": "__missing__"
+    },
+    "tile.2:0.capture_state.tile.q": {
+      "before": 2,
+      "after": "__missing__"
+    },
+    "tile.2:0.capture_state.tile.r": {
+      "before": 0,
+      "after": "__missing__"
+    },
+    "tile.2:0.occupying_unit_id": {
+      "before": "u_capture",
+      "after": null
+    },
+    "tile.2:0.owner_id": {
+      "before": "p1",
+      "after": "p2"
+    },
+    "tile.2:0.surface_unit_id": {
+      "before": "u_capture",
+      "after": null
+    },
+    "turn_number": {
+      "before": 1,
+      "after": 2
+    },
+    "units.u_capture.action.action_phase_index": {
+      "before": 0,
+      "after": "__missing__"
+    },
+    "units.u_capture.action.actions_remaining": {
+      "before": 1,
+      "after": "__missing__"
+    },
+    "units.u_capture.action.atomic_action_label": {
+      "before": null,
+      "after": "__missing__"
+    },
+    "units.u_capture.action.atomic_action_locked": {
+      "before": false,
+      "after": "__missing__"
+    },
+    "units.u_capture.action.attacks_remaining": {
+      "before": 1,
+      "after": "__missing__"
+    },
+    "units.u_capture.action.can_interleave_between_action_windows": {
+      "before": true,
+      "after": "__missing__"
+    },
+    "units.u_capture.action.configured_action_count": {
+      "before": 1,
+      "after": "__missing__"
+    },
+    "units.u_capture.action.current_action_index": {
+      "before": 0,
+      "after": "__missing__"
+    },
+    "units.u_capture.action.has_attacked_this_turn": {
+      "before": false,
+      "after": "__missing__"
+    },
+    "units.u_capture.action.has_moved_this_turn": {
+      "before": false,
+      "after": "__missing__"
+    },
+    "units.u_capture.action.has_used_special_this_turn": {
+      "before": false,
+      "after": "__missing__"
+    },
+    "units.u_capture.action.is_available": {
+      "before": true,
+      "after": "__missing__"
+    },
+    "units.u_capture.action.move_points_remaining": {
+      "before": null,
+      "after": "__missing__"
+    },
+    "units.u_capture.action.special_actions_remaining": {
+      "before": null,
+      "after": "__missing__"
+    },
+    "units.u_capture.capture_target.q": {
+      "before": 2,
+      "after": "__missing__"
+    },
+    "units.u_capture.capture_target.r": {
+      "before": 0,
+      "after": "__missing__"
+    },
+    "units.u_capture.experience_points": {
+      "before": 0,
+      "after": "__missing__"
+    },
+    "units.u_capture.hp": {
+      "before": 10,
+      "after": "__missing__"
+    },
+    "units.u_capture.instance_id": {
+      "before": "u_capture",
+      "after": "__missing__"
+    },
+    "units.u_capture.owner_id": {
+      "before": "p2",
+      "after": "__missing__"
+    },
+    "units.u_capture.position.q": {
+      "before": 2,
+      "after": "__missing__"
+    },
+    "units.u_capture.position.r": {
+      "before": 0,
+      "after": "__missing__"
+    },
+    "units.u_capture.status.buried_resurface_bonus": {
+      "before": 0,
+      "after": "__missing__"
+    },
+    "units.u_capture.status.control_zones_suppressed": {
+      "before": false,
+      "after": "__missing__"
+    },
+    "units.u_capture.status.emp_disabled_rounds": {
+      "before": 0,
+      "after": "__missing__"
+    },
+    "units.u_capture.status.hidden_mode": {
+      "before": null,
+      "after": "__missing__"
+    },
+    "units.u_capture.status.movement_blocked": {
+      "before": false,
+      "after": "__missing__"
+    },
+    "units.u_capture.status.plague_infected": {
+      "before": false,
+      "after": "__missing__"
+    },
+    "units.u_capture.status.retaliation_blocked": {
+      "before": false,
+      "after": "__missing__"
+    },
+    "units.u_capture.status.submerged_attack_penalty": {
+      "before": 0,
+      "after": "__missing__"
+    },
+    "units.u_capture.status.teleport_cooldown_rounds": {
+      "before": 0,
+      "after": "__missing__"
+    },
+    "units.u_capture.status.teleport_disabled_rounds": {
+      "before": 0,
+      "after": "__missing__"
+    },
+    "units.u_capture.status.teleport_lock_phase": {
+      "before": null,
+      "after": "__missing__"
+    },
+    "units.u_capture.unit_id": {
+      "before": "marine",
+      "after": "__missing__"
+    },
+    "units.u_capture.veterancy_level": {
+      "before": 0,
+      "after": "__missing__"
+    }
   }
 }

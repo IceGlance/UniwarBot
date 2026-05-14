@@ -139,11 +139,19 @@ def load_scenarios() -> list[dict[str, Any]]:
                 merged["scenario_id"] = scenario_id_for(relative_file, merged_name)
                 scenarios.append(merged)
             continue
+        suite_name = payload.get("suite_name")
+        case_name = payload.get("case_name")
+        display_name = (
+            f"{suite_name} :: {case_name}"
+            if suite_name is not None and case_name is not None
+            else str(payload["name"])
+        )
         payload["_relative_file"] = relative_file
-        payload["_suite_name"] = None
-        payload["_case_name"] = None
+        payload["_suite_name"] = suite_name
+        payload["_case_name"] = case_name
         payload["_case_index"] = 0
-        payload["scenario_id"] = scenario_id_for(relative_file, str(payload["name"]))
+        payload["name"] = display_name
+        payload["scenario_id"] = scenario_id_for(relative_file, display_name)
         scenarios.append(payload)
     return scenarios
 
@@ -215,7 +223,10 @@ def compute_state_changes(before: dict[str, Any], after: dict[str, Any]) -> dict
         before_value = before_flat.get(path, MISSING)
         after_value = after_flat.get(path, MISSING)
         if before_value != after_value:
-            changes[path] = "__missing__" if after_value is MISSING else after_value
+            changes[path] = {
+                "before": "__missing__" if before_value is MISSING else before_value,
+                "after": "__missing__" if after_value is MISSING else after_value,
+            }
     return changes
 
 

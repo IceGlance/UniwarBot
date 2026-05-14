@@ -1,5 +1,7 @@
 {
   "name": "ending_p1_turn_starts_p2_turn_and_unblocks_teleported_unit_while_cooldown_counts_down",
+  "suite_name": "Teleport Lock Rules",
+  "case_name": "ending p1 turn starts p2 turn and unblocks teleported unit while cooldown counts down",
   "input_state": "states/teleport-owner-turn-lock.json",
   "actions": [
     {
@@ -7,12 +9,41 @@
     }
   ],
   "expected_changes": {
-    "active_player_id": "p2",
-    "units.u_mecha.status.teleport_lock_phase": null,
-    "units.u_mecha.status.teleport_disabled_rounds": 0,
-    "units.u_mecha.status.teleport_cooldown_rounds": 2,
-    "units.u_mecha.status.retaliation_blocked": false,
-    "units.u_mecha.status.control_zones_suppressed": false,
-    "units.u_mecha.status.movement_blocked": false
+    "active_player_id": {
+      "before": "p1",
+      "after": "p2"
+    },
+    "players.p1.has_ended_turn": {
+      "before": false,
+      "after": true
+    },
+    "players.p2.has_ended_turn": {
+      "before": true,
+      "after": false
+    },
+    "round_number": {
+      "before": 3,
+      "after": 4
+    },
+    "turn_number": {
+      "before": 3,
+      "after": 4
+    },
+    "units.u_mecha.status.movement_blocked": {
+      "before": true,
+      "after": false
+    },
+    "units.u_mecha.status.teleport_cooldown_rounds": {
+      "before": 3,
+      "after": 2
+    },
+    "units.u_mecha.status.teleport_disabled_rounds": {
+      "before": 1,
+      "after": 0
+    },
+    "units.u_mecha.status.teleport_lock_phase": {
+      "before": "owner_turn",
+      "after": null
+    }
   }
 }

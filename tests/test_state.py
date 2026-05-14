@@ -30,6 +30,7 @@ from uniwarbot import (  # noqa: E402
     game_state_to_json,
     json_to_game_state,
 )
+from uniwarbot.scenario_inspector import flatten_state_dict  # noqa: E402
 
 
 class GameStateScenarioTestCase(unittest.TestCase):
@@ -60,6 +61,10 @@ class GameStateScenarioTestCase(unittest.TestCase):
                     merged["name"] = f"{suite_name} :: {case['name']}"
                     scenarios.append(merged)
                 continue
+            suite_name = payload.get("suite_name")
+            case_name = payload.get("case_name")
+            if suite_name is not None and case_name is not None:
+                payload["name"] = f"{suite_name} :: {case_name}"
             scenarios.append(payload)
         return scenarios
 
@@ -310,6 +315,53 @@ class GameStateScenarioTestCase(unittest.TestCase):
                         msg=f"{scenario_name}: path {path}",
                     )
 
+    def assert_expected_changes(
+        self,
+        before_state_dict: dict[str, Any],
+        after_state: GameState,
+        expectations: dict[str, Any],
+        *,
+        scenario_name: str,
+    ) -> None:
+        before_flat = flatten_state_dict(before_state_dict)
+        after_flat = flatten_state_dict(after_state.to_dict())
+        for path, expected in expectations.items():
+            with self.subTest(scenario=scenario_name, path=path):
+                actual_before = before_flat.get(path, MISSING)
+                actual_after = after_flat.get(path, MISSING)
+                if isinstance(expected, dict) and "before" in expected and "after" in expected:
+                    expected_before = expected["before"]
+                    expected_after = expected["after"]
+                else:
+                    expected_before = MISSING
+                    expected_after = expected
+
+                if expected_before == "__missing__":
+                    self.assertIs(
+                        actual_before,
+                        MISSING,
+                        msg=f"{scenario_name}: expected missing previous path {path}, got {actual_before!r}",
+                    )
+                elif expected_before is not MISSING:
+                    self.assertEqual(
+                        actual_before,
+                        expected_before,
+                        msg=f"{scenario_name}: previous value for path {path}",
+                    )
+
+                if expected_after == "__missing__":
+                    self.assertIs(
+                        actual_after,
+                        MISSING,
+                        msg=f"{scenario_name}: expected missing final path {path}, got {actual_after!r}",
+                    )
+                else:
+                    self.assertEqual(
+                        actual_after,
+                        expected_after,
+                        msg=f"{scenario_name}: final value for path {path}",
+                    )
+
     def run_scenario(self, scenario: dict[str, Any]) -> None:
         scenario_name = str(scenario["name"])
         state = self.load_state_from_scenario(scenario)
@@ -330,7 +382,8 @@ class GameStateScenarioTestCase(unittest.TestCase):
                 scenario_name=scenario_name,
             )
         if "expected_changes" in scenario:
-            self.assert_partial_state(
+            self.assert_expected_changes(
+                input_state_dict,
                 state,
                 dict(scenario["expected_changes"]),
                 scenario_name=scenario_name,
@@ -363,6 +416,10 @@ def _load_all_scenarios() -> list[dict[str, Any]]:
                 merged["name"] = f"{suite_name} :: {case['name']}"
                 scenarios.append(merged)
             continue
+        suite_name = payload.get("suite_name")
+        case_name = payload.get("case_name")
+        if suite_name is not None and case_name is not None:
+            payload["name"] = f"{suite_name} :: {case_name}"
         scenarios.append(payload)
     return scenarios
 
