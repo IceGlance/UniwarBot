@@ -2328,7 +2328,7 @@ class GameState:
             return False
         if unit.status.hidden_mode is not None:
             return False
-        if not unit.action.is_available or unit.action.actions_remaining <= 0:
+        if unit.action.has_attacked_this_turn or unit.action.has_used_special_this_turn:
             return False
         if self._target_class_for_unit(unit) in {"air", "aquatic"}:
             return False

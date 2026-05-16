@@ -870,6 +870,13 @@ def _apply_play_action(state: GameState, action: dict[str, object]) -> dict[str,
             _parse_hex_coord(action["destination"], field_name="destination"),
             continue_as_atomic_attack=bool(action.get("continue_as_atomic_attack", False)),
         )
+    elif action_type == "move_then_attack":
+        state.move_unit(
+            str(action["unit_id"]),
+            _parse_hex_coord(action["destination"], field_name="destination"),
+            continue_as_atomic_attack=True,
+        )
+        state.attack_unit(str(action["unit_id"]), str(action["defender_id"]))
     elif action_type == "attack_unit":
         state.attack_unit(str(action["attacker_id"]), str(action["defender_id"]))
     elif action_type == "bury_unit":

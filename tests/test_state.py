@@ -499,6 +499,165 @@ class GameStartFromMapTestCase(unittest.TestCase):
                 player_factions={"p1": "titans"},
             )
 
+    def test_build_game_state_from_map_exposes_capture_on_neutral_base_and_harbor(self) -> None:
+        map_payload = {
+            "map_id": "capture-map",
+            "name": "Capture Map",
+            "size": {"width": 3, "height": 1},
+            "players": [
+                {"player_id": "p1", "allowed_factions": ["khraleans"]},
+                {"player_id": "p2", "allowed_factions": ["titans"]},
+            ],
+            "economy": {"base_income": 100, "city_income": 50, "starting_credits": 100},
+            "tiles": [
+                {"coord": {"q": 0, "r": 0}, "terrain_id": "base", "owner_id": None},
+                {"coord": {"q": 1, "r": 0}, "terrain_id": "harbor", "owner_id": None},
+                {"coord": {"q": 2, "r": 0}, "terrain_id": "plain", "owner_id": None},
+            ],
+            "units": [
+                {
+                    "instance_id": "u_underling",
+                    "unit_id": "underling",
+                    "owner_id": "p1",
+                    "position": {"q": 0, "r": 0},
+                    "hp": 10,
+                },
+                {
+                    "instance_id": "u_salamander",
+                    "unit_id": "salamander",
+                    "owner_id": "p1",
+                    "position": {"q": 1, "r": 0},
+                    "hp": 10,
+                },
+            ],
+        }
+
+        state = build_game_state_from_map(map_payload, player_factions={"p1": "khraleans", "p2": "titans"})
+
+        self.assertTrue(state.get_current_special_options("u_underling")["can_capture"])
+        self.assertTrue(state.get_current_special_options("u_salamander")["can_capture"])
+
+    def test_build_game_state_from_map_exposes_adjacent_attack_targets(self) -> None:
+        map_payload = {
+            "map_id": "attack-map",
+            "name": "Attack Map",
+            "size": {"width": 3, "height": 1},
+            "players": [
+                {"player_id": "p1", "allowed_factions": ["sapiens"]},
+                {"player_id": "p2", "allowed_factions": ["sapiens"]},
+            ],
+            "economy": {"base_income": 100, "city_income": 50, "starting_credits": 100},
+            "tiles": [
+                {"coord": {"q": 0, "r": 0}, "terrain_id": "plain", "owner_id": None},
+                {"coord": {"q": 1, "r": 0}, "terrain_id": "plain", "owner_id": None},
+                {"coord": {"q": 2, "r": 0}, "terrain_id": "plain", "owner_id": None},
+            ],
+            "units": [
+                {
+                    "instance_id": "u_marine_p1",
+                    "unit_id": "marine",
+                    "owner_id": "p1",
+                    "position": {"q": 0, "r": 0},
+                    "hp": 10,
+                },
+                {
+                    "instance_id": "u_marine_p2_adjacent",
+                    "unit_id": "marine",
+                    "owner_id": "p2",
+                    "position": {"q": 1, "r": 0},
+                    "hp": 10,
+                },
+                {
+                    "instance_id": "u_marine_p2_far",
+                    "unit_id": "marine",
+                    "owner_id": "p2",
+                    "position": {"q": 2, "r": 0},
+                    "hp": 10,
+                },
+            ],
+        }
+
+        state = build_game_state_from_map(map_payload)
+        move_info = state.get_possible_moves("u_marine_p1")
+
+        self.assertEqual(["u_marine_p2_adjacent"], move_info["current_attack_targets"])
+
+    def test_begin_capture_marks_unit_capture_target_and_tile_capture_state(self) -> None:
+        map_payload = {
+            "map_id": "capture-begin-map",
+            "name": "Capture Begin Map",
+            "size": {"width": 1, "height": 1},
+            "players": [
+                {"player_id": "p1", "allowed_factions": ["khraleans"]},
+            ],
+            "economy": {"base_income": 100, "city_income": 50, "starting_credits": 100},
+            "tiles": [
+                {"coord": {"q": 0, "r": 0}, "terrain_id": "base", "owner_id": None},
+            ],
+            "units": [
+                {
+                    "instance_id": "u_underling",
+                    "unit_id": "underling",
+                    "owner_id": "p1",
+                    "position": {"q": 0, "r": 0},
+                    "hp": 10,
+                },
+            ],
+        }
+
+        state = build_game_state_from_map(map_payload, player_factions={"p1": "khraleans"})
+        state.begin_capture("u_underling", HexCoord(0, 0))
+
+        self.assertEqual(HexCoord(0, 0), state.get_unit("u_underling").capture_target)
+        self.assertIsNotNone(state.game_map.get_tile(HexCoord(0, 0)).capture_state)
+        self.assertEqual(
+            "u_underling",
+            state.game_map.get_tile(HexCoord(0, 0)).capture_state.capturing_unit_id,
+        )
+
+    def test_move_onto_base_then_capture_is_allowed(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="capture-after-move", name="Capture After Move")
+        )
+        for coord, terrain_id in (
+            (HexCoord(0, 0), "plain"),
+            (HexCoord(1, 0), "base"),
+        ):
+            game_map.add_tile(TileState(coord=coord, terrain_id=terrain_id, owner_id=None))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="khraleans", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="titans", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_underling",
+                unit_id="underling",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("underling"),
+            )
+        )
+
+        state.move_unit("u_underling", HexCoord(1, 0))
+        self.assertTrue(state.get_current_special_options("u_underling")["can_capture"])
+
+        state.begin_capture("u_underling", HexCoord(1, 0))
+
+        self.assertEqual(HexCoord(1, 0), state.get_unit("u_underling").capture_target)
+        self.assertIsNotNone(state.game_map.get_tile(HexCoord(1, 0)).capture_state)
+
     def test_surface_underling_move_then_attack_requires_atomic_move_flag(self) -> None:
         game_map = GameMap(
             metadata=MapMetadata(map_id="underling-move-attack", name="Underling Move Attack")

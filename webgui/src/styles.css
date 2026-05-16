@@ -433,6 +433,10 @@ select {
   fill: rgba(22, 163, 74, 0.96);
 }
 
+.status-badge-capture {
+  fill: rgba(59, 130, 246, 0.96);
+}
+
 .status-badge-text {
   font-size: 8px;
   font-weight: 900;
@@ -803,6 +807,9 @@ select {
   justify-content: flex-start;
   gap: 6px;
   padding: 12px 14px;
+  width: 280px;
+  flex: 0 0 280px;
+  align-self: flex-start;
 }
 
 .playgame-state-card strong {
@@ -841,6 +848,23 @@ select {
   padding: 4px 8px;
   border-radius: 999px;
   background: rgba(226, 232, 240, 0.75);
+}
+
+.playgame-state-seed {
+  margin-top: 2px;
+}
+
+.playgame-state-seed span {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: rgba(226, 232, 240, 0.75);
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .playgame-player-row {

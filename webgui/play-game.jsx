@@ -44,6 +44,13 @@ function axialToPixel(coord) {
   return { x, y };
 }
 
+function hexDistance(left, right) {
+  const dq = Number(left.q) - Number(right.q);
+  const dr = Number(left.r) - Number(right.r);
+  const ds = (Number(left.q) + Number(left.r)) - (Number(right.q) + Number(right.r));
+  return Math.max(Math.abs(dq), Math.abs(dr), Math.abs(ds));
+}
+
 function hexPoints(centerX, centerY, hexSize) {
   const points = [];
   for (let i = 0; i < 6; i += 1) {
@@ -103,6 +110,9 @@ function renderVeterancy(unit) {
 
 function unitStatusBadges(unit) {
   const badges = [];
+  if (unit?.capture_target) {
+    badges.push({ text: "CA", className: "status-badge-capture" });
+  }
   if (Boolean(unit?.status?.plague_infected)) {
     badges.push({ text: "P", className: "status-badge-plague" });
   }
@@ -654,6 +664,30 @@ function App() {
     return null;
   }
 
+  function chooseMoveAttackDestination(targetUnitId) {
+    if (!selectedUnitId || !selectedUnit) {
+      return null;
+    }
+    const candidates = Object.entries(moveAttackTargets ?? {})
+      .filter(([, targetIds]) => Array.isArray(targetIds) && targetIds.includes(targetUnitId))
+      .map(([destinationKey]) => parseCoordKey(destinationKey));
+    if (candidates.length === 0) {
+      return null;
+    }
+    candidates.sort((left, right) => {
+      const byDistance = hexDistance(selectedUnit.position, left) - hexDistance(selectedUnit.position, right);
+      if (byDistance !== 0) {
+        return byDistance;
+      }
+      const byQ = Number(left.q) - Number(right.q);
+      if (byQ !== 0) {
+        return byQ;
+      }
+      return Number(left.r) - Number(right.r);
+    });
+    return candidates[0];
+  }
+
   function handleTileClick(tile, clickedUnitOverride = null) {
     const tileKey = coordKey(tile.coord);
     const clickedUnit = clickedUnitOverride ?? targetUnitAtTile(tile);
@@ -703,16 +737,41 @@ function App() {
       );
       return;
     }
+    if (
+      selectedUnitId &&
+      clickedUnit &&
+      clickedUnit.instance_id !== selectedUnitId &&
+      clickedUnit.owner_id !== selectedUnit?.owner_id
+    ) {
+      const destination = chooseMoveAttackDestination(clickedUnit.instance_id);
+      if (destination) {
+        applyAction(
+          {
+            type: "move_then_attack",
+            unit_id: selectedUnitId,
+            destination,
+            defender_id: clickedUnit.instance_id,
+          },
+          {
+            nextSelectedUnitId: selectedUnitId,
+            nextSelectedTileKey: coordKey(destination),
+            nextMode: null,
+          },
+        );
+        return;
+      }
+      applyAction(
+        { type: "attack_unit", attacker_id: selectedUnitId, defender_id: clickedUnit.instance_id },
+        { nextSelectedUnitId: selectedUnitId, nextSelectedTileKey: selectedTileKey, nextMode: null },
+      );
+      return;
+    }
     if (selectedUnitId && moveDestinations.has(tileKey)) {
-      const destinationAttackTargets = Array.isArray(moveAttackTargets?.[tileKey])
-        ? moveAttackTargets[tileKey]
-        : [];
       applyAction(
         {
           type: "move_unit",
           unit_id: selectedUnitId,
           destination: tile.coord,
-          continue_as_atomic_attack: destinationAttackTargets.length > 0,
         },
         { nextSelectedUnitId: selectedUnitId, nextSelectedTileKey: tileKey, nextMode: null },
       );
@@ -1000,6 +1059,8 @@ function App() {
                   <div className="playgame-state-meta">
                     <span>{`Turn ${currentStateValue.turn_number}`}</span>
                     <span>{`Round ${currentStateValue.round_number}`}</span>
+                  </div>
+                  <div className="playgame-state-seed">
                     <span>{`Seed ${currentStateValue.current_rseed}`}</span>
                   </div>
                 </>

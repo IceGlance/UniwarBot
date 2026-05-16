@@ -124,6 +124,9 @@ function renderVeterancy(unit) {
 
 function unitStatusBadges(unit) {
   const badges = [];
+  if (unit?.capture_target) {
+    badges.push({ text: "CA", className: "status-badge-capture" });
+  }
   if (Boolean(unit?.status?.plague_infected)) {
     badges.push({ text: "P", className: "status-badge-plague" });
   }
