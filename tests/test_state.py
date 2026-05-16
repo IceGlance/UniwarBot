@@ -27,9 +27,11 @@ from uniwarbot import (  # noqa: E402
     UnitState,
     UnitActionState,
     UnitStatusState,
+    build_default_unit_action_state,
     game_state_to_json,
     json_to_game_state,
 )
+from uniwarbot.gui_api import build_game_state_from_map  # noqa: E402
 from uniwarbot.scenario_inspector import flatten_state_dict  # noqa: E402
 
 
@@ -388,6 +390,180 @@ class GameStateScenarioTestCase(unittest.TestCase):
                 dict(scenario["expected_changes"]),
                 scenario_name=scenario_name,
             )
+
+
+class GameStartFromMapTestCase(unittest.TestCase):
+    def test_build_game_state_from_map_remaps_units_to_selected_factions(self) -> None:
+        map_payload = {
+            "map_id": "start-map",
+            "name": "Start Map",
+            "size": {"width": 3, "height": 2},
+            "players": [
+                {"player_id": "p1", "allowed_factions": ["titans", "sapiens"]},
+                {"player_id": "p2", "allowed_factions": ["sapiens", "khraleans"]},
+            ],
+            "economy": {"base_income": 100, "city_income": 50, "starting_credits": 250},
+            "start_random_seed": 123,
+            "tiles": [
+                {"coord": {"q": 0, "r": 0}, "terrain_id": "plain", "owner_id": None},
+                {"coord": {"q": 1, "r": 0}, "terrain_id": "plain", "owner_id": None},
+                {"coord": {"q": 2, "r": 0}, "terrain_id": "water", "owner_id": None},
+                {"coord": {"q": 0, "r": 1}, "terrain_id": "plain", "owner_id": None},
+            ],
+            "units": [
+                {
+                    "instance_id": "u1",
+                    "unit_id": "marine",
+                    "owner_id": "p1",
+                    "position": {"q": 0, "r": 0},
+                    "hp": 9,
+                    "status": {"plague_infected": True},
+                },
+                {
+                    "instance_id": "u2",
+                    "unit_id": "submarine",
+                    "owner_id": "p1",
+                    "position": {"q": 2, "r": 0},
+                    "hp": 10,
+                    "status": {"hidden_mode": "submerged"},
+                },
+                {
+                    "instance_id": "u3",
+                    "unit_id": "mecha",
+                    "owner_id": "p2",
+                    "position": {"q": 1, "r": 0},
+                    "hp": 10,
+                    "status": {
+                        "teleport_lock_phase": "owner_turn",
+                        "teleport_cooldown_rounds": 2,
+                    },
+                },
+                {
+                    "instance_id": "u4",
+                    "unit_id": "underling",
+                    "owner_id": "p2",
+                    "position": {"q": 0, "r": 1},
+                    "hp": 10,
+                    "status": {
+                        "hidden_mode": "buried",
+                        "buried_resurface_bonus": 4,
+                    },
+                },
+            ],
+        }
+
+        state = build_game_state_from_map(
+            map_payload,
+            player_factions={"p1": "titans", "p2": "sapiens"},
+        )
+
+        self.assertEqual("titans", state.players["p1"].faction)
+        self.assertEqual("sapiens", state.players["p2"].faction)
+        self.assertEqual("mecha", state.units["u1"].unit_id)
+        self.assertFalse(state.units["u1"].status.plague_infected)
+        self.assertEqual("skimmer", state.units["u2"].unit_id)
+        self.assertIsNotNone(state.units["u2"].status.hidden_mode)
+        self.assertEqual("submerged", state.units["u2"].status.hidden_mode.value)
+        self.assertEqual("marine", state.units["u3"].unit_id)
+        self.assertIsNone(state.units["u3"].status.teleport_lock_phase)
+        self.assertEqual(0, state.units["u3"].status.teleport_cooldown_rounds)
+        self.assertEqual("marine", state.units["u4"].unit_id)
+        self.assertIsNone(state.units["u4"].status.hidden_mode)
+        self.assertEqual(0, state.units["u4"].status.buried_resurface_bonus)
+
+    def test_build_game_state_from_map_uses_seed_override_and_validates_factions(self) -> None:
+        map_payload = {
+            "map_id": "seed-map",
+            "name": "Seed Map",
+            "size": {"width": 1, "height": 1},
+            "players": [
+                {"player_id": "p1", "allowed_factions": ["sapiens"]},
+            ],
+            "economy": {"base_income": 100, "city_income": 50, "starting_credits": 100},
+            "start_random_seed": 321,
+            "tiles": [
+                {"coord": {"q": 0, "r": 0}, "terrain_id": "plain", "owner_id": None},
+            ],
+            "units": [],
+        }
+
+        default_seed_state = build_game_state_from_map(map_payload)
+        self.assertEqual(321, default_seed_state.current_rseed)
+
+        override_seed_state = build_game_state_from_map(map_payload, seed_override=777)
+        self.assertEqual(777, override_seed_state.current_rseed)
+
+        with self.assertRaisesRegex(ValueError, "not allowed"):
+            build_game_state_from_map(
+                map_payload,
+                player_factions={"p1": "titans"},
+            )
+
+    def test_surface_underling_move_then_attack_requires_atomic_move_flag(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="underling-move-attack", name="Underling Move Attack")
+        )
+        for coord in (
+            HexCoord(0, 0),
+            HexCoord(1, 0),
+            HexCoord(2, 0),
+            HexCoord(0, 1),
+            HexCoord(1, 1),
+            HexCoord(2, 1),
+        ):
+            game_map.add_tile(TileState(coord=coord, terrain_id="plain"))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="khraleans", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="sapiens", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_underling",
+                unit_id="underling",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("underling"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine",
+                unit_id="marine",
+                owner_id="p2",
+                position=HexCoord(2, 0),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+
+        state.move_unit(
+            "u_underling",
+            HexCoord(1, 0),
+            continue_as_atomic_attack=True,
+        )
+        move_options = state.get_possible_moves("u_underling")
+        self.assertIn("u_marine", move_options["current_attack_targets"])
+        self.assertTrue(state.get_unit("u_underling").action.atomic_action_locked)
+
+        state.attack_unit("u_underling", "u_marine")
+
+        self.assertLess(state.get_unit("u_marine").hp, 10)
+        self.assertFalse(state.get_unit("u_underling").action.atomic_action_locked)
 
 
 def _safe_test_name(name: str) -> str:

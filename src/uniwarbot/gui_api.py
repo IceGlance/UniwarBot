@@ -40,6 +40,24 @@ MAPS_DIR = ROOT / "maps"
 SAVED_GAMES_DIR = ROOT / "saved_games"
 EDITOR_FACTIONS = ["sapiens", "khraleans", "titans"]
 FRONTEND_SHELL_VERSION = "20260514a"
+UNIT_FACTION_VARIANT_GROUPS: tuple[dict[str, str], ...] = (
+    {"sapiens": "marine", "khraleans": "underling", "titans": "mecha"},
+    {"sapiens": "engineer", "khraleans": "infector", "titans": "assimilator"},
+    {"sapiens": "mecha_ii", "khraleans": "infected_marine", "titans": "cyber_underling"},
+    {"sapiens": "marauder", "khraleans": "swarmer", "titans": "speeder"},
+    {"sapiens": "bopper", "khraleans": "borfly", "titans": "guardian"},
+    {"sapiens": "tank", "khraleans": "pinzer", "titans": "plasma_tank"},
+    {"sapiens": "helicopter", "khraleans": "garuda", "titans": "eclipse"},
+    {"sapiens": "battery", "khraleans": "wyrm", "titans": "walker"},
+    {"sapiens": "destroyer", "khraleans": "leviathan", "titans": "hydronaut"},
+    {"sapiens": "fuze", "khraleans": "salamander", "titans": "mantisse"},
+    {"sapiens": "submarine", "khraleans": "kraken", "titans": "skimmer"},
+)
+UNIT_TO_FACTION_GROUP_INDEX = {
+    unit_id: index
+    for index, group in enumerate(UNIT_FACTION_VARIANT_GROUPS)
+    for unit_id in group.values()
+}
 
 app = FastAPI(
     title="UniwarBot Scenario Inspector API",
@@ -664,7 +682,7 @@ def _parse_hex_coord(value: object, *, field_name: str = "coord") -> HexCoord:
     raise ValueError(f"Invalid {field_name}")
 
 
-def _build_new_game_state_from_map(
+def build_game_state_from_map(
     map_payload: dict[str, object],
     *,
     player_factions: dict[str, str] | None = None,
@@ -748,17 +766,26 @@ def _build_new_game_state_from_map(
 
     for raw_unit in list(normalized.get("units") or []):
         coord = _parse_hex_coord(raw_unit.get("position"), field_name="unit position")
-        status = UnitStatusState.from_dict(dict(raw_unit.get("status") or {}))
+        owner_id = str(raw_unit["owner_id"])
+        owner_player = state.players.get(owner_id)
+        target_faction = owner_player.faction if owner_player is not None else str(
+            load_game_dictionary()["units"].get(str(raw_unit["unit_id"]), {}).get("faction", "")
+        )
+        mapped_unit_id = remap_unit_id_to_faction(str(raw_unit["unit_id"]), target_faction)
+        status = _normalized_mapped_unit_status(
+            mapped_unit_id,
+            UnitStatusState.from_dict(dict(raw_unit.get("status") or {})),
+        )
         unit = UnitState(
             instance_id=str(raw_unit["instance_id"]),
-            unit_id=str(raw_unit["unit_id"]),
-            owner_id=str(raw_unit["owner_id"]),
+            unit_id=mapped_unit_id,
+            owner_id=owner_id,
             position=coord,
             hp=int(raw_unit.get("hp", 10)),
             veterancy_level=int(raw_unit.get("veterancy_level", 0)),
             experience_points=int(raw_unit.get("experience_points", 0)),
             status=status,
-            action=build_default_unit_action_state(str(raw_unit["unit_id"])),
+            action=build_default_unit_action_state(mapped_unit_id),
             capture_target=None,
             metadata=dict(raw_unit.get("metadata", {})),
         )
@@ -767,12 +794,71 @@ def _build_new_game_state_from_map(
     return state
 
 
+def _build_new_game_state_from_map(
+    map_payload: dict[str, object],
+    *,
+    player_factions: dict[str, str] | None = None,
+    seed_override: object = None,
+) -> GameState:
+    return build_game_state_from_map(
+        map_payload,
+        player_factions=player_factions,
+        seed_override=seed_override,
+    )
+
+
 def _play_state_payload(state: GameState) -> dict[str, object]:
     return state.to_dict()
 
 
 def _load_state_from_payload(payload: dict[str, object]) -> GameState:
     return GameState.from_dict(dict(payload))
+
+
+def remap_unit_id_to_faction(unit_id: str, target_faction: str) -> str:
+    group_index = UNIT_TO_FACTION_GROUP_INDEX.get(unit_id)
+    if group_index is None:
+        return unit_id
+    return UNIT_FACTION_VARIANT_GROUPS[group_index].get(target_faction, unit_id)
+
+
+def _unit_has_ability(unit_id: str, ability_id: str) -> bool:
+    unit_entry = load_game_dictionary()["units"].get(unit_id, {})
+    return any(
+        str(ability.get("id", "")) == ability_id
+        for ability in list(unit_entry.get("abilities") or [])
+        if isinstance(ability, dict)
+    )
+
+
+def _normalized_mapped_unit_status(
+    mapped_unit_id: str,
+    original_status: UnitStatusState,
+) -> UnitStatusState:
+    unit_entry = load_game_dictionary()["units"].get(mapped_unit_id, {})
+    hidden_config = dict(unit_entry.get("hidden_mode") or {})
+    allowed_hidden_mode = str(hidden_config.get("mode") or "")
+    mapped_status = UnitStatusState.from_dict(original_status.to_dict())
+    if mapped_status.hidden_mode is not None and mapped_status.hidden_mode.value != allowed_hidden_mode:
+        mapped_status.hidden_mode = None
+        mapped_status.buried_resurface_bonus = 0
+        mapped_status.submerged_attack_penalty = 0
+    if not _unit_has_ability(mapped_unit_id, "teleport"):
+        mapped_status.teleport_disabled_rounds = 0
+        mapped_status.teleport_lock_phase = None
+        mapped_status.teleport_cooldown_rounds = 0
+    mapped_status.ability_cooldowns = {
+        str(key): int(value)
+        for key, value in mapped_status.ability_cooldowns.items()
+        if any(
+            str(ability.get("id", "")) == str(key)
+            for ability in list(unit_entry.get("abilities") or [])
+            if isinstance(ability, dict)
+        )
+    }
+    if str(unit_entry.get("faction", "")) == "titans" or mapped_unit_id in {"engineer", "submarine"}:
+        mapped_status.plague_infected = False
+    return mapped_status
 
 
 def _apply_play_action(state: GameState, action: dict[str, object]) -> dict[str, object]:
@@ -1047,6 +1133,84 @@ def list_saved_games() -> list[dict[str, object]]:
     return _list_saved_games()
 
 
+def _delete_saved_game_by_name(file_name: str) -> dict[str, object]:
+    try:
+        sanitized = _sanitize_map_file_name(file_name)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    path = SAVED_GAMES_DIR / sanitized
+    if not path.exists():
+        raise HTTPException(status_code=404, detail=f"Unknown saved game: {sanitized}")
+    path.unlink()
+    return {"deleted": True, "file_name": sanitized}
+
+
+def _normalize_saved_game_history(
+    history_payload: object,
+    fallback_state_payload: dict[str, object],
+) -> tuple[list[dict[str, object]], int]:
+    normalized_history: list[dict[str, object]] = []
+    if isinstance(history_payload, list):
+        for entry in history_payload:
+            if not isinstance(entry, dict):
+                continue
+            raw_state = entry.get("state")
+            if not isinstance(raw_state, dict):
+                continue
+            state = _load_state_from_payload(raw_state)
+            normalized_history.append(
+                {
+                    "state": _play_state_payload(state),
+                    "label": str(entry.get("label", "")),
+                }
+            )
+    if not normalized_history:
+        fallback_state = _load_state_from_payload(fallback_state_payload)
+        normalized_history = [{"state": _play_state_payload(fallback_state), "label": "load_game"}]
+    return normalized_history, len(normalized_history) - 1
+
+
+@app.post("/api/saved-games/save")
+def save_saved_game(payload: dict[str, object] = Body(...)) -> dict[str, object]:
+    try:
+        file_name = _sanitize_map_file_name(str(payload.get("file_name", "")))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    state = _load_state_from_payload(dict(payload.get("state") or {}))
+    normalized_history, default_index = _normalize_saved_game_history(
+        payload.get("history"),
+        _play_state_payload(state),
+    )
+    try:
+        history_index = int(payload.get("history_index", default_index))
+    except (TypeError, ValueError):
+        history_index = default_index
+    history_index = max(0, min(history_index, len(normalized_history) - 1))
+    SAVED_GAMES_DIR.mkdir(parents=True, exist_ok=True)
+    wrapper = {
+        "schema_version": "play-game-save-v2",
+        "name": str(payload.get("name", file_name.removesuffix(".json"))),
+        "state": _play_state_payload(state),
+        "history": normalized_history,
+        "history_index": history_index,
+    }
+    path = SAVED_GAMES_DIR / file_name
+    path.write_text(json.dumps(wrapper, indent=2) + "\n", encoding="utf-8")
+    return {
+        "file_name": file_name,
+        "name": wrapper["name"],
+        "state": wrapper["state"],
+        "history": wrapper["history"],
+        "history_index": wrapper["history_index"],
+    }
+
+
+@app.post("/api/saved-games/delete-file")
+def delete_saved_game_post(payload: dict[str, object] = Body(...)) -> dict[str, object]:
+    file_name = str(payload.get("file_name", ""))
+    return _delete_saved_game_by_name(file_name)
+
+
 @app.get("/api/saved-games/{file_name}")
 def load_saved_game(file_name: str) -> dict[str, object]:
     try:
@@ -1059,33 +1223,27 @@ def load_saved_game(file_name: str) -> dict[str, object]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     state_payload = dict(payload.get("state") or payload)
     state = _load_state_from_payload(state_payload)
+    normalized_history, default_index = _normalize_saved_game_history(
+        payload.get("history"),
+        state_payload,
+    )
+    try:
+        history_index = int(payload.get("history_index", default_index))
+    except (TypeError, ValueError):
+        history_index = default_index
+    history_index = max(0, min(history_index, len(normalized_history) - 1))
     return {
         "file_name": sanitized,
         "name": str(payload.get("name", sanitized.removesuffix(".json"))),
         "state": _play_state_payload(state),
+        "history": normalized_history,
+        "history_index": history_index,
     }
 
 
-@app.post("/api/saved-games/save")
-def save_saved_game(payload: dict[str, object] = Body(...)) -> dict[str, object]:
-    try:
-        file_name = _sanitize_map_file_name(str(payload.get("file_name", "")))
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-    state = _load_state_from_payload(dict(payload.get("state") or {}))
-    SAVED_GAMES_DIR.mkdir(parents=True, exist_ok=True)
-    wrapper = {
-        "schema_version": "play-game-save-v1",
-        "name": str(payload.get("name", file_name.removesuffix(".json"))),
-        "state": _play_state_payload(state),
-    }
-    path = SAVED_GAMES_DIR / file_name
-    path.write_text(json.dumps(wrapper, indent=2) + "\n", encoding="utf-8")
-    return {
-        "file_name": file_name,
-        "name": wrapper["name"],
-        "state": wrapper["state"],
-    }
+@app.delete("/api/saved-games/{file_name}")
+def delete_saved_game(file_name: str) -> dict[str, object]:
+    return _delete_saved_game_by_name(file_name)
 
 
 @app.get("/api/play-game/config")

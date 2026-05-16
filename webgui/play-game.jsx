@@ -163,6 +163,32 @@ function stateMarker(state) {
   return `${state.active_player_id}|${state.turn_number}|${state.round_number}`;
 }
 
+function findTurnStartIndex(history, index) {
+  if (!Array.isArray(history) || history.length === 0 || index < 0) {
+    return -1;
+  }
+  const clampedIndex = Math.min(index, history.length - 1);
+  const marker = stateMarker(history[clampedIndex]?.state);
+  let startIndex = clampedIndex;
+  while (startIndex > 0 && stateMarker(history[startIndex - 1]?.state) === marker) {
+    startIndex -= 1;
+  }
+  return startIndex;
+}
+
+function findNextTurnStartIndex(history, index) {
+  if (!Array.isArray(history) || history.length === 0 || index < 0 || index >= history.length - 1) {
+    return -1;
+  }
+  const currentStart = findTurnStartIndex(history, index);
+  const marker = stateMarker(history[currentStart]?.state);
+  let cursor = currentStart + 1;
+  while (cursor < history.length && stateMarker(history[cursor]?.state) === marker) {
+    cursor += 1;
+  }
+  return cursor < history.length ? cursor : -1;
+}
+
 function buildDisplayTiles(tiles) {
   if (!Array.isArray(tiles) || tiles.length === 0) {
     return [];
@@ -357,9 +383,49 @@ function App() {
   const teleportDestinations = new Set(specialOptions?.teleport_destinations ?? []);
   const transformTargets = specialOptions?.transform_targets ?? {};
   const buyableUnits = playOptions?.buyable_units ?? [];
-  const statusText = currentStateValue
-    ? `Active: ${currentStateValue.active_player_id}  Turn: ${currentStateValue.turn_number}  Round: ${currentStateValue.round_number}  Seed: ${currentStateValue.current_rseed}`
-    : "No game started";
+  const activePlayerId = currentStateValue?.active_player_id ?? null;
+  const playerSummaries = useMemo(() => {
+    const statePlayers = currentStateValue?.players ?? {};
+    const playerEntries = Object.entries(statePlayers)
+      .map(([playerId, player]) => ({ playerId, ...(player ?? {}) }))
+      .sort((left, right) => String(left.playerId).localeCompare(String(right.playerId)));
+    const mapMetadata = currentStateValue?.game_map?.metadata ?? {};
+    const incomePerBase = Number(mapMetadata.income_per_base ?? 100);
+    const incomePerCity = Number(mapMetadata.income_per_city ?? 50);
+    const terrainConfig = config?.terrains ?? {};
+    const incomeForTerrain = (terrainId) => {
+      if (terrainId === "base") {
+        return incomePerBase;
+      }
+      if (terrainId === "city") {
+        return incomePerCity;
+      }
+      const terrain = terrainConfig?.[terrainId] ?? {};
+      if (!terrain.provides_income) {
+        return 0;
+      }
+      if (terrain.income_amount != null) {
+        return Number(terrain.income_amount);
+      }
+      return incomePerBase;
+    };
+    return playerEntries.map((player) => {
+      const income = tiles.reduce((total, tile) => {
+        if (tile.owner_id !== player.playerId) {
+          return total;
+        }
+        const amount = incomeForTerrain(tile.terrain_id);
+        return amount > 0 ? total + amount : total;
+      }, 0);
+      return {
+        playerId: player.playerId,
+        faction: player.faction ?? "-",
+        credits: Number(player.credits ?? 0),
+        income,
+        isActive: currentStateValue?.active_player_id === player.playerId,
+      };
+    });
+  }, [config?.terrains, currentStateValue, tiles]);
 
   function refreshSavedGames() {
     return fetch(`${API_BASE}/play-game/config`)
@@ -426,6 +492,15 @@ function App() {
       setError("No game to save.");
       return;
     }
+    const historyToSave = history.length > 0
+      ? history.map((entry) => ({
+        state: entry.state,
+        label: entry.label ?? "",
+      }))
+      : [{ state: currentStateValue, label: "save_game" }];
+    const historyIndexToSave = history.length > 0
+      ? Math.max(0, Math.min(historyIndex, history.length - 1))
+      : 0;
     fetch(`${API_BASE}/saved-games/save`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -433,6 +508,8 @@ function App() {
         file_name: saveFileName,
         name: saveFileName.replace(/\.json$/i, ""),
         state: currentStateValue,
+        history: historyToSave,
+        history_index: historyIndexToSave,
       }),
     })
       .then(async (response) => {
@@ -467,9 +544,52 @@ function App() {
       })
       .then((payload) => {
         const nextState = payload.state;
-        setHistory([{ state: nextState, label: "load_game" }]);
-        setHistoryIndex(0);
-        resetInteraction(nextState);
+        const nextHistory = Array.isArray(payload.history) && payload.history.length > 0
+          ? payload.history.map((entry) => ({
+            state: entry?.state ?? nextState,
+            label: entry?.label ?? "",
+          }))
+          : [{ state: nextState, label: "load_game" }];
+        const nextHistoryIndex = Math.max(
+          0,
+          Math.min(
+            Number.isFinite(Number(payload.history_index)) ? Number(payload.history_index) : nextHistory.length - 1,
+            nextHistory.length - 1,
+          ),
+        );
+        const restoredState = nextHistory[nextHistoryIndex]?.state ?? nextState;
+        setHistory(nextHistory);
+        setHistoryIndex(nextHistoryIndex);
+        resetInteraction(restoredState);
+      })
+      .catch((reason) => {
+        setError(reason instanceof Error ? reason.message : String(reason));
+      });
+  }
+
+  function handleDeleteSavedGame() {
+    if (!savedGameFileName) {
+      setError("Choose a saved game first.");
+      return;
+    }
+    if (!window.confirm(`Delete saved game "${savedGameFileName}"?`)) {
+      return;
+    }
+    fetch(`${API_BASE}/saved-games/delete-file`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ file_name: savedGameFileName }),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          throw new Error(payload.detail ?? `Failed to delete saved game: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(async () => {
+        setSavedGameFileName("");
+        await refreshSavedGames();
       })
       .catch((reason) => {
         setError(reason instanceof Error ? reason.message : String(reason));
@@ -584,8 +704,16 @@ function App() {
       return;
     }
     if (selectedUnitId && moveDestinations.has(tileKey)) {
+      const destinationAttackTargets = Array.isArray(moveAttackTargets?.[tileKey])
+        ? moveAttackTargets[tileKey]
+        : [];
       applyAction(
-        { type: "move_unit", unit_id: selectedUnitId, destination: tile.coord },
+        {
+          type: "move_unit",
+          unit_id: selectedUnitId,
+          destination: tile.coord,
+          continue_as_atomic_attack: destinationAttackTargets.length > 0,
+        },
         { nextSelectedUnitId: selectedUnitId, nextSelectedTileKey: tileKey, nextMode: null },
       );
       return;
@@ -615,10 +743,13 @@ function App() {
     if (historyIndex <= 0) {
       return;
     }
-    const marker = stateMarker(history[historyIndex].state);
-    let nextIndex = historyIndex;
-    while (nextIndex > 0 && stateMarker(history[nextIndex - 1].state) === marker) {
-      nextIndex -= 1;
+    const currentTurnStart = findTurnStartIndex(history, historyIndex);
+    let nextIndex = currentTurnStart;
+    if (currentTurnStart === historyIndex || historyIndex === currentTurnStart) {
+      const previousTurnProbe = currentTurnStart - 1;
+      if (previousTurnProbe >= 0) {
+        nextIndex = findTurnStartIndex(history, previousTurnProbe);
+      }
     }
     setHistoryIndex(nextIndex);
     resetInteraction(history[nextIndex].state);
@@ -628,10 +759,9 @@ function App() {
     if (historyIndex < 0 || historyIndex >= history.length - 1) {
       return;
     }
-    const marker = stateMarker(history[historyIndex].state);
-    let nextIndex = historyIndex;
-    while (nextIndex < history.length - 1 && stateMarker(history[nextIndex + 1].state) === marker) {
-      nextIndex += 1;
+    const nextIndex = findNextTurnStartIndex(history, historyIndex);
+    if (nextIndex < 0) {
+      return;
     }
     setHistoryIndex(nextIndex);
     resetInteraction(history[nextIndex].state);
@@ -721,8 +851,6 @@ function App() {
         )}
       </header>
 
-      {error ? <div className="error-banner">{error}</div> : null}
-
       <main className="workspace-grid editor-workspace-grid">
         <section className="panel panel-controls">
           <div className="panel-header">
@@ -730,11 +858,6 @@ function App() {
           </div>
           <div className="control-stack editor-control-stack">
             <div className="editor-tab-panel">
-              <div className="summary-card">
-                <span className="summary-label">Current State</span>
-                <strong>{statusText}</strong>
-              </div>
-
               <div className="detail-card">
                 <h2>New Game</h2>
                 <div className="control-stack" style={{ padding: 0 }}>
@@ -786,34 +909,35 @@ function App() {
               </div>
 
               <div className="detail-card">
-                <h2>Save / Load</h2>
+                <h2>Save</h2>
                 <div className="control-stack" style={{ padding: 0 }}>
-                  <label>
-                    <div className="field-label">Save File</div>
-                    <input
-                      value={saveFileName}
-                      onChange={(event) => setSaveFileName(event.target.value)}
-                    />
-                  </label>
+                  <input
+                    value={saveFileName}
+                    placeholder="file name"
+                    onChange={(event) => setSaveFileName(event.target.value)}
+                  />
                   <div className="editor-button-row playgame-single-button-row">
                     <button className="step-chip" type="button" onClick={handleSaveGame}>
                       Save Game
                     </button>
                   </div>
-                  <label>
-                    <div className="field-label">Saved Game</div>
-                    <select
-                      value={savedGameFileName}
-                      onChange={(event) => setSavedGameFileName(event.target.value)}
-                    >
-                      <option value="">Choose saved game</option>
-                      {(config?.saved_games ?? []).map((item) => (
-                        <option key={item.file_name} value={item.file_name}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                </div>
+              </div>
+
+              <div className="detail-card">
+                <h2>Load</h2>
+                <div className="control-stack" style={{ padding: 0 }}>
+                  <select
+                    value={savedGameFileName}
+                    onChange={(event) => setSavedGameFileName(event.target.value)}
+                  >
+                    <option value="">Choose saved game</option>
+                    {(config?.saved_games ?? []).map((item) => (
+                      <option key={item.file_name} value={item.file_name}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
                   <div className="editor-button-row playgame-single-button-row">
                     <button className="step-chip" type="button" onClick={handleLoadGame}>
                       Load Game
@@ -823,38 +947,106 @@ function App() {
               </div>
 
               <div className="detail-card">
-                <h2>History</h2>
-                <div className="editor-button-row playgame-history-row">
-                  <button className="step-chip" type="button" onClick={handleHistoryUndo}>
-                    Undo
-                  </button>
-                  <button className="step-chip" type="button" onClick={handleHistoryRedo}>
-                    Redo
-                  </button>
-                </div>
-                <div className="editor-button-row playgame-history-row">
-                  <button className="step-chip" type="button" onClick={handleTurnUndo}>
-                    Undo Turn
-                  </button>
-                  <button className="step-chip" type="button" onClick={handleTurnRedo}>
-                    Redo Turn
-                  </button>
-                </div>
-                <div className="muted" style={{ fontSize: 12 }}>
-                  {historyIndex >= 0 ? `History step ${historyIndex + 1} / ${history.length}` : "No history yet"}
+                <h2>Delete Save</h2>
+                <div className="control-stack" style={{ padding: 0 }}>
+                  <select
+                    value={savedGameFileName}
+                    onChange={(event) => setSavedGameFileName(event.target.value)}
+                  >
+                    <option value="">Choose saved game</option>
+                    {(config?.saved_games ?? []).map((item) => (
+                      <option key={item.file_name} value={item.file_name}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="editor-button-row playgame-single-button-row">
+                    <button className="step-chip" type="button" onClick={handleDeleteSavedGame}>
+                      Delete Saved Game
+                    </button>
+                  </div>
                 </div>
               </div>
+
             </div>
           </div>
         </section>
 
         <section className="panel panel-board">
-          <div className="panel-header">
-            <h2>Board</h2>
-            <div className="meta-line">
-              <span>{statusText}</span>
-              {selectedUnit ? <span>Selected unit: {selectedUnit.unit_id}</span> : null}
-              {mode ? <span>Special mode: {mode}</span> : null}
+          {mode ? (
+            <div className="panel-header">
+              <div className="meta-line">
+                {mode ? <span>Special mode: {mode}</span> : null}
+              </div>
+            </div>
+          ) : null}
+          <div className="playgame-status-panel">
+            <div className="playgame-state-card">
+              <span className="summary-label">Current State</span>
+              {currentStateValue ? (
+                <>
+                  <div className="playgame-state-active">
+                    <svg className="playgame-owner-badge" viewBox="-10 -10 20 20" aria-hidden="true">
+                      <circle r="8" className={`owner-disc owner-${activePlayerId}`} />
+                      <text className="owner-text playgame-owner-text" x="0" y="1">
+                        {String(activePlayerId).toUpperCase()}
+                      </text>
+                    </svg>
+                    <div className="playgame-state-active-copy">
+                      <strong>{playerSummaries.find((player) => player.playerId === activePlayerId)?.faction ?? activePlayerId}</strong>
+                      <span>to move</span>
+                    </div>
+                  </div>
+                  <div className="playgame-state-meta">
+                    <span>{`Turn ${currentStateValue.turn_number}`}</span>
+                    <span>{`Round ${currentStateValue.round_number}`}</span>
+                    <span>{`Seed ${currentStateValue.current_rseed}`}</span>
+                  </div>
+                </>
+              ) : (
+                <strong>No game started</strong>
+              )}
+            </div>
+            <div className="playgame-history-panel">
+              <div className="playgame-history-head">
+                <span className="summary-label">History</span>
+                <span className="muted playgame-history-label">
+                  {historyIndex >= 0 ? `${historyIndex + 1} / ${history.length}` : "No history"}
+                </span>
+              </div>
+              <div className="playgame-history-buttons">
+                <button className="step-chip" type="button" title="Undo" onClick={handleHistoryUndo}>
+                  {"<"}
+                </button>
+                <button className="step-chip" type="button" title="Undo Turn" onClick={handleTurnUndo}>
+                  {"<<"}
+                </button>
+                <button className="step-chip" type="button" title="Redo" onClick={handleHistoryRedo}>
+                  {">"}
+                </button>
+                <button className="step-chip" type="button" title="Redo Turn" onClick={handleTurnRedo}>
+                  {">>"}
+                </button>
+              </div>
+            </div>
+            <div className="playgame-player-row">
+              {playerSummaries.map((player) => (
+                <div key={player.playerId} className={`playgame-player-card ${player.isActive ? "active" : ""}`}>
+                  <div className="playgame-player-head">
+                    <svg className="playgame-owner-badge" viewBox="-10 -10 20 20" aria-hidden="true">
+                      <circle r="8" className={`owner-disc owner-${player.playerId}`} />
+                      <text className="owner-text playgame-owner-text" x="0" y="1">
+                        {player.playerId.toUpperCase()}
+                      </text>
+                    </svg>
+                    <strong>{player.faction}</strong>
+                  </div>
+                  <div className="playgame-player-stats">
+                    <span>{player.credits}</span>
+                    <span>{`(+${player.income})`}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
           <div className="board-card">
@@ -1140,6 +1332,7 @@ function App() {
           <div className="detail-stack">
             <div className="detail-card">
               <h2>Actions</h2>
+              {error ? <div className="error-banner" style={{ marginBottom: 10 }}>{error}</div> : null}
               <div className="muted" style={{ marginBottom: 8 }}>
                 Move by clicking a highlighted hex. Attack by clicking a highlighted enemy unit.
               </div>
