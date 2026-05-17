@@ -424,6 +424,8 @@ function App() {
   }, [boardBounds, panOffset.x, panOffset.y, zoom]);
   const selectedTile = selectedTileKey ? tileByKey.get(selectedTileKey) ?? null : null;
   const selectedUnit = selectedUnitId ? units[selectedUnitId] ?? null : null;
+  const selectedTileOccupantIds = selectedTile ? occupantUnitIdsForTile(selectedTile, units) : [];
+  const selectedTileOccupants = selectedTileOccupantIds.map((unitId) => units[unitId]).filter(Boolean);
   const moveInfo = playOptions?.possible_moves ?? null;
   const specialOptions = playOptions?.special_options ?? null;
   const moveDestinations = new Set(moveInfo?.legal_move_destinations ?? []);
@@ -739,6 +741,8 @@ function App() {
   }
 
   function selectTileAndUnit(tileKey, preferredUnitId = null) {
+    const previousTileKey = selectedTileKeyRef.current;
+    const previousSelectedUnitId = selectedUnitIdRef.current;
     selectedTileKeyRef.current = tileKey;
     setSelectedTileKey(tileKey);
     const compoundCandidate = lastCompoundMoveRef.current;
@@ -757,7 +761,12 @@ function App() {
       setCompoundMoveCandidate(null);
       return;
     }
-    const unitId = tile.surface_unit_id ?? tile.hidden_unit_id ?? null;
+    const occupantIds = occupantUnitIdsForTile(tile, units);
+    let unitId = occupantIds[0] ?? null;
+    if (previousTileKey === tileKey && occupantIds.length > 1) {
+      const currentIndex = occupantIds.indexOf(previousSelectedUnitId);
+      unitId = occupantIds[(currentIndex + 1 + occupantIds.length) % occupantIds.length];
+    }
     selectedUnitIdRef.current = unitId;
     setSelectedUnitId(unitId);
     if (!compoundCandidate || compoundCandidate.unitId !== unitId) {
@@ -851,6 +860,20 @@ function targetUnitAtTile(tile) {
       return units[tile.hidden_unit_id];
   }
   return null;
+}
+
+function occupantUnitIdsForTile(tile, unitsById) {
+  if (!tile) {
+    return [];
+  }
+  const result = [];
+  if (tile.surface_unit_id && unitsById[tile.surface_unit_id]) {
+    result.push(tile.surface_unit_id);
+  }
+  if (tile.hidden_unit_id && unitsById[tile.hidden_unit_id]) {
+    result.push(tile.hidden_unit_id);
+  }
+  return result;
 }
 
   function chooseMoveAttackDestination(targetUnitId) {
@@ -1783,6 +1806,28 @@ function targetUnitAtTile(tile) {
                       <span>Owner: {selectedTile.owner_id ?? "-"}</span>
                     </div>
                   </div>
+                    {selectedTileOccupants.length > 1 ? (
+                      <div className="occupant-switcher">
+                        {selectedTileOccupants.map((unit) => (
+                          <button
+                            key={unit.instance_id}
+                            className={`occupant-chip ${selectedUnitId === unit.instance_id ? "selected" : ""}`}
+                            type="button"
+                            onClick={() => selectTileAndUnit(coordKey(selectedTile.coord), unit.instance_id)}
+                          >
+                          <img
+                            className="occupant-chip-sprite"
+                            src={unitAsset(unit.unit_id, unit.owner_id)}
+                            alt={unit.unit_id}
+                          />
+                          <span>{config?.units?.[unit.unit_id]?.display_name ?? unit.unit_id}</span>
+                          <span className="occupant-chip-layer">
+                            {unit.status?.hidden_mode ?? "surface"}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
                 </>
               ) : (
                 <div className="muted">null</div>

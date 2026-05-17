@@ -711,6 +711,29 @@ select {
   opacity: 1;
 }
 
+.occupant-switcher {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.occupant-chip-sprite {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.occupant-chip-layer {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 11px;
+  opacity: 0.75;
+  text-transform: capitalize;
+}
+
 .terrain-inspector-sprite {
   width: 88px;
   height: 88px;

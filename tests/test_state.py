@@ -21,6 +21,7 @@ from uniwarbot import (  # noqa: E402
     GameMap,
     GameState,
     HexCoord,
+    HiddenMode,
     MapMetadata,
     PlayerState,
     TileState,
@@ -537,6 +538,132 @@ class GameStartFromMapTestCase(unittest.TestCase):
 
         self.assertTrue(state.get_current_special_options("u_underling")["can_capture"])
         self.assertTrue(state.get_current_special_options("u_salamander")["can_capture"])
+
+    def test_buy_submerged_harbor_unit_starts_submerged(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="buy-submerged-harbor", name="Buy Submerged Harbor")
+        )
+        game_map.add_tile(TileState(coord=HexCoord(0, 0), terrain_id="harbor", owner_id="p1"))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=1000))
+        state.add_player(PlayerState(player_id="p2", faction="khraleans", credits=0))
+
+        created_id = state.buy_unit(HexCoord(0, 0), "submarine")
+        created = state.get_unit(created_id)
+        tile = state.game_map.get_tile(HexCoord(0, 0))
+
+        self.assertIsNotNone(created)
+        self.assertEqual(HiddenMode.SUBMERGED, created.status.hidden_mode)
+        self.assertEqual(created_id, tile.hidden_unit_id)
+        self.assertIsNone(tile.surface_unit_id)
+
+    def test_harbor_production_is_blocked_when_hidden_slot_is_occupied(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="buy-harbor-occupied-hidden", name="Buy Harbor Occupied Hidden")
+        )
+        game_map.add_tile(TileState(coord=HexCoord(0, 0), terrain_id="harbor", owner_id="p1"))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=500))
+        state.add_player(PlayerState(player_id="p2", faction="khraleans", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_existing_sub",
+                unit_id="submarine",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=10,
+                veterancy_level=VeterancyLevel.NONE,
+                experience_points=0,
+                status=UnitStatusState(hidden_mode=HiddenMode.SUBMERGED),
+                action=build_default_unit_action_state("submarine"),
+            )
+        )
+
+        options = {option["unit_id"] for option in state.get_production_options_for_tile(HexCoord(0, 0))}
+        self.assertNotIn("submarine", options)
+        self.assertIn("destroyer", options)
+        with self.assertRaisesRegex(ValueError, "Unit cannot be produced on this tile"):
+            state.buy_unit(HexCoord(0, 0), "submarine")
+
+    def test_harbor_can_produce_submerged_then_surface_unit_on_same_turn(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="buy-harbor-hidden-then-surface", name="Buy Harbor Hidden Then Surface")
+        )
+        game_map.add_tile(TileState(coord=HexCoord(0, 0), terrain_id="harbor", owner_id="p1"))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=1200))
+        state.add_player(PlayerState(player_id="p2", faction="khraleans", credits=0))
+
+        submarine_id = state.buy_unit(HexCoord(0, 0), "submarine")
+        options_after_sub = {option["unit_id"] for option in state.get_production_options_for_tile(HexCoord(0, 0))}
+
+        self.assertIn("destroyer", options_after_sub)
+
+        destroyer_id = state.buy_unit(HexCoord(0, 0), "destroyer")
+        tile = state.game_map.get_tile(HexCoord(0, 0))
+
+        self.assertEqual(submarine_id, tile.hidden_unit_id)
+        self.assertEqual(destroyer_id, tile.surface_unit_id)
+        self.assertEqual(HiddenMode.SUBMERGED, state.get_unit(submarine_id).status.hidden_mode)
+        self.assertIsNone(state.get_unit(destroyer_id).status.hidden_mode)
+
+    def test_harbor_can_produce_surface_then_submerged_unit_on_same_turn(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="buy-harbor-surface-then-hidden", name="Buy Harbor Surface Then Hidden")
+        )
+        game_map.add_tile(TileState(coord=HexCoord(0, 0), terrain_id="harbor", owner_id="p1"))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=1200))
+        state.add_player(PlayerState(player_id="p2", faction="khraleans", credits=0))
+
+        destroyer_id = state.buy_unit(HexCoord(0, 0), "destroyer")
+        options_after_destroyer = {option["unit_id"] for option in state.get_production_options_for_tile(HexCoord(0, 0))}
+
+        self.assertIn("submarine", options_after_destroyer)
+
+        submarine_id = state.buy_unit(HexCoord(0, 0), "submarine")
+        tile = state.game_map.get_tile(HexCoord(0, 0))
+
+        self.assertEqual(destroyer_id, tile.surface_unit_id)
+        self.assertEqual(submarine_id, tile.hidden_unit_id)
+        self.assertIsNone(state.get_unit(destroyer_id).status.hidden_mode)
+        self.assertEqual(HiddenMode.SUBMERGED, state.get_unit(submarine_id).status.hidden_mode)
 
     def test_build_game_state_from_map_exposes_adjacent_attack_targets(self) -> None:
         map_payload = {

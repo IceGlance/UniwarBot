@@ -1415,14 +1415,18 @@ class GameState:
             raise ValueError("Production tile does not exist")
         if tile.owner_id != self.active_player_id:
             raise ValueError("Only owned structures may produce units")
-        if tile.surface_unit_id is not None:
-            raise ValueError("Production tile is occupied")
         if unit_id not in self.get_buyable_units_for_tile(tile_coord):
             raise ValueError("Unit cannot be produced on this tile")
         player = self.players.get(self.active_player_id)
         if player is None:
             raise ValueError("Active player does not exist")
         unit_data = _cached_game_dictionary()["units"].get(unit_id, {})
+        produces_hidden = self._production_uses_hidden_slot(tile, str(unit_id))
+        if produces_hidden:
+            if tile.hidden_unit_id is not None:
+                raise ValueError("Production tile hidden slot is occupied")
+        elif tile.surface_unit_id is not None:
+            raise ValueError("Production tile surface slot is occupied")
         cost = int(unit_data.get("cost", 0))
         if player.credits < cost:
             raise ValueError("Not enough credits")
@@ -1432,6 +1436,12 @@ class GameState:
         while instance_id in self.units:
             instance_id = f"{base_instance_id}_{suffix}"
             suffix += 1
+        hidden_mode_config = dict(unit_data.get("hidden_mode") or {})
+        initial_hidden_mode = (
+            HiddenMode.SUBMERGED
+            if produces_hidden
+            else None
+        )
         unit = UnitState(
             instance_id=instance_id,
             unit_id=str(unit_id),
@@ -1440,7 +1450,7 @@ class GameState:
             hp=int(unit_data.get("base_max_hp", 10)),
             veterancy_level=VeterancyLevel.NONE,
             experience_points=0,
-            status=UnitStatusState(),
+            status=UnitStatusState(hidden_mode=initial_hidden_mode),
             action=build_default_unit_action_state(str(unit_id)),
             capture_target=None,
             metadata={},
@@ -1646,8 +1656,6 @@ class GameState:
             return []
         if tile.owner_id != self.active_player_id:
             return []
-        if tile.surface_unit_id is not None:
-            return []
         terrain = _cached_game_dictionary()["terrains"].get(tile.terrain_id, {})
         if not bool(terrain.get("supports_production", False)):
             return []
@@ -1677,6 +1685,11 @@ class GameState:
                 and (surface_effects[tile.terrain_id] or {}).get("mobility_cost") is None
             ):
                 continue
+            if self._production_uses_hidden_slot(tile, str(unit_id)):
+                if tile.hidden_unit_id is not None:
+                    continue
+            elif tile.surface_unit_id is not None:
+                continue
             options.append(
                 {
                     "unit_id": str(unit_id),
@@ -1686,6 +1699,13 @@ class GameState:
             )
         options.sort(key=lambda item: str(item["unit_id"]))
         return options
+
+    def _production_uses_hidden_slot(self, tile: TileState, unit_id: str) -> bool:
+        if tile.terrain_id != "harbor":
+            return False
+        unit_data = _cached_game_dictionary()["units"].get(unit_id, {})
+        hidden_mode_config = dict(unit_data.get("hidden_mode") or {})
+        return str(hidden_mode_config.get("mode") or "") == HiddenMode.SUBMERGED.value
 
     def get_buyable_units_for_tile(self, tile_coord: HexCoord) -> list[str]:
         return [
