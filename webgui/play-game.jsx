@@ -274,6 +274,10 @@ function App() {
   const [lastCompoundMove, setLastCompoundMove] = useState(null);
   const [mode, setMode] = useState(null);
   const [error, setError] = useState("");
+  const [seedDraft, setSeedDraft] = useState("");
+  const [creditsDrafts, setCreditsDrafts] = useState({});
+  const [unitHpDraft, setUnitHpDraft] = useState("");
+  const [unitVeterancyDraft, setUnitVeterancyDraft] = useState("0");
   const [zoom, setZoom] = useState(0.9);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [isPanningBoard, setIsPanningBoard] = useState(false);
@@ -392,6 +396,15 @@ function App() {
     }
   }, [currentStateValue]);
 
+  useEffect(() => {
+    setSeedDraft(currentStateValue?.current_rseed == null ? "" : String(currentStateValue.current_rseed));
+    const nextCredits = {};
+    for (const [playerId, player] of Object.entries(currentStateValue?.players ?? {})) {
+      nextCredits[playerId] = String(player?.credits ?? 0);
+    }
+    setCreditsDrafts(nextCredits);
+  }, [currentStateValue?.current_rseed, currentStateValue?.players]);
+
   const tiles = currentStateValue?.game_map?.tiles ?? [];
   const units = currentStateValue?.units ?? {};
   const displayTiles = useMemo(() => buildDisplayTiles(tiles), [tiles]);
@@ -505,6 +518,16 @@ function App() {
       };
     });
   }, [config?.terrains, currentStateValue, tiles]);
+
+  useEffect(() => {
+    if (!selectedUnit) {
+      setUnitHpDraft("");
+      setUnitVeterancyDraft("0");
+      return;
+    }
+    setUnitHpDraft(String(selectedUnit.hp ?? ""));
+    setUnitVeterancyDraft(String(selectedUnit.veterancy_level ?? 0));
+  }, [selectedUnitId, selectedUnit?.hp, selectedUnit?.veterancy_level]);
 
   function refreshSavedGames() {
     return fetch(`${API_BASE}/play-game/config`)
@@ -692,6 +715,60 @@ function App() {
       .catch((reason) => {
         setError(reason instanceof Error ? reason.message : String(reason));
       });
+  }
+
+  function handleManualSeedApply() {
+    if (!currentStateValue) {
+      return;
+    }
+    const parsedSeed = nullableInt(seedDraft);
+    if (parsedSeed == null || Number.isNaN(parsedSeed)) {
+      setError("Seed must be a number.");
+      return;
+    }
+    applyAction({ type: "manual_set_seed", seed: parsedSeed }, {}, { clearCompoundMove: true });
+  }
+
+  function handleManualCreditsApply(playerId) {
+    if (!currentStateValue) {
+      return;
+    }
+    const parsedCredits = nullableInt(creditsDrafts[playerId] ?? "");
+    if (parsedCredits == null || Number.isNaN(parsedCredits) || parsedCredits < 0) {
+      setError("Credits must be a non-negative number.");
+      return;
+    }
+    applyAction(
+      { type: "manual_set_player_credits", player_id: playerId, credits: parsedCredits },
+      {},
+      { clearCompoundMove: true },
+    );
+  }
+
+  function handleManualUnitApply() {
+    if (!selectedUnitId || !selectedTileKey) {
+      return;
+    }
+    const parsedHp = nullableInt(unitHpDraft);
+    const parsedVeterancy = nullableInt(unitVeterancyDraft);
+    if (parsedHp == null || Number.isNaN(parsedHp) || parsedHp < 0) {
+      setError("HP must be a non-negative number.");
+      return;
+    }
+    if (parsedVeterancy == null || Number.isNaN(parsedVeterancy) || parsedVeterancy < 0 || parsedVeterancy > 2) {
+      setError("Veterancy must be 0, 1, or 2.");
+      return;
+    }
+    applyAction(
+      {
+        type: "manual_set_unit_state",
+        unit_id: selectedUnitId,
+        hp: parsedHp,
+        veterancy_level: parsedVeterancy,
+      },
+      { nextSelectedUnitId: selectedUnitId, nextSelectedTileKey: selectedTileKey },
+      { clearCompoundMove: true },
+    );
   }
 
   function applyAction(action, options = {}, behavior = {}) {
@@ -1311,13 +1388,23 @@ function occupantUnitIdsForTile(tile, unitsById) {
                     <span>{`Turn ${currentStateValue.turn_number}`}</span>
                     <span>{`Round ${currentStateValue.round_number}`}</span>
                   </div>
-                  <div className="playgame-state-seed">
-                    <span>{`Seed ${currentStateValue.current_rseed}`}</span>
-                  </div>
-                </>
-              ) : (
-                <strong>No game started</strong>
-              )}
+                    <div className="playgame-state-seed">
+                      <span>{`Seed ${currentStateValue.current_rseed}`}</span>
+                    </div>
+                    <div className="playgame-inline-editor">
+                      <input
+                        type="number"
+                        value={seedDraft}
+                        onChange={(event) => setSeedDraft(event.target.value)}
+                      />
+                      <button className="step-chip" type="button" onClick={handleManualSeedApply}>
+                        Set Seed
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <strong>No game started</strong>
+                )}
             </div>
             <div className="playgame-history-panel">
               <div className="playgame-history-head">
@@ -1342,9 +1429,9 @@ function occupantUnitIdsForTile(tile, unitsById) {
               </div>
             </div>
             <div className="playgame-player-row">
-              {playerSummaries.map((player) => (
-                <div key={player.playerId} className={`playgame-player-card ${player.isActive ? "active" : ""}`}>
-                  <div className="playgame-player-head">
+                {playerSummaries.map((player) => (
+                  <div key={player.playerId} className={`playgame-player-card ${player.isActive ? "active" : ""}`}>
+                    <div className="playgame-player-head">
                     <svg className="playgame-owner-badge" viewBox="-10 -10 20 20" aria-hidden="true">
                       <circle r="8" className={`owner-disc owner-${player.playerId}`} />
                       <text className="owner-text playgame-owner-text" x="0" y="1">
@@ -1352,14 +1439,29 @@ function occupantUnitIdsForTile(tile, unitsById) {
                       </text>
                     </svg>
                     <strong>{player.faction}</strong>
+                    </div>
+                    <div className="playgame-player-stats">
+                      <span>{player.credits}</span>
+                      <span>{`(+${player.income})`}</span>
+                    </div>
+                    <div className="playgame-inline-editor">
+                      <input
+                        type="number"
+                        value={creditsDrafts[player.playerId] ?? ""}
+                        onChange={(event) =>
+                          setCreditsDrafts((previous) => ({
+                            ...previous,
+                            [player.playerId]: event.target.value,
+                          }))
+                        }
+                      />
+                      <button className="step-chip" type="button" onClick={() => handleManualCreditsApply(player.playerId)}>
+                        Set
+                      </button>
+                    </div>
                   </div>
-                  <div className="playgame-player-stats">
-                    <span>{player.credits}</span>
-                    <span>{`(+${player.income})`}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
           </div>
           <div className="board-card">
             <div
@@ -1836,20 +1938,44 @@ function occupantUnitIdsForTile(tile, unitsById) {
 
             <div className="detail-card">
               <h2>Unit Inspector</h2>
-              {selectedUnit ? (
-                <>
-                  <div className="visual-inspector">
+                {selectedUnit ? (
+                  <>
+                    <div className="visual-inspector">
                     <img className="unit-inspector-icon" src={unitAsset(selectedUnit.unit_id, selectedUnit.owner_id)} alt={selectedUnit.unit_id} />
                     <div className="visual-copy">
                       <strong>{config?.units?.[selectedUnit.unit_id]?.display_name ?? selectedUnit.unit_id}</strong>
                       <span>Owner: {selectedUnit.owner_id}</span>
-                      <span>HP: {selectedUnit.hp}</span>
-                      <span>Layer: {selectedUnit.status?.hidden_mode ?? "surface"}</span>
+                        <span>HP: {selectedUnit.hp}</span>
+                        <span>Layer: {selectedUnit.status?.hidden_mode ?? "surface"}</span>
+                      </div>
                     </div>
-                  </div>
-                  <pre>{pretty(selectedUnit)}</pre>
-                </>
-              ) : (
+                    <div className="playgame-unit-editor">
+                      <label>
+                        <div className="field-label">HP</div>
+                        <input
+                          type="number"
+                          value={unitHpDraft}
+                          onChange={(event) => setUnitHpDraft(event.target.value)}
+                        />
+                      </label>
+                      <label>
+                        <div className="field-label">Vet</div>
+                        <select
+                          value={unitVeterancyDraft}
+                          onChange={(event) => setUnitVeterancyDraft(event.target.value)}
+                        >
+                          <option value="0">0</option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                        </select>
+                      </label>
+                      <button className="step-chip" type="button" onClick={handleManualUnitApply}>
+                        Apply
+                      </button>
+                    </div>
+                    <pre>{pretty(selectedUnit)}</pre>
+                  </>
+                ) : (
                 <div className="muted">null</div>
               )}
             </div>

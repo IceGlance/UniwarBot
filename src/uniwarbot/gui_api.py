@@ -29,6 +29,7 @@ from .state import (
     TileState,
     UnitState,
     UnitStatusState,
+    VeterancyLevel,
     build_default_unit_action_state,
     load_game_dictionary,
 )
@@ -906,6 +907,32 @@ def _apply_play_action(state: GameState, action: dict[str, object]) -> dict[str,
         )
     elif action_type == "end_turn":
         result["next_player_id"] = state.end_turn()
+    elif action_type == "manual_set_seed":
+        seed_value = action.get("seed")
+        if seed_value in {None, ""}:
+            raise ValueError("Manual seed value is required")
+        state.current_rseed = int(seed_value)
+    elif action_type == "manual_set_player_credits":
+        player_id = str(action["player_id"])
+        player = state.players.get(player_id)
+        if player is None:
+            raise KeyError(f"Unknown player_id: {player_id}")
+        credits = int(action.get("credits", 0))
+        if credits < 0:
+            raise ValueError("Credits cannot be negative")
+        player.credits = credits
+    elif action_type == "manual_set_unit_state":
+        unit_id = str(action["unit_id"])
+        unit = state.get_unit(unit_id)
+        if unit is None:
+            raise KeyError(f"Unknown unit_id: {unit_id}")
+        if "veterancy_level" in action:
+            unit.veterancy_level = VeterancyLevel(max(0, min(2, int(action["veterancy_level"]))))
+        if "hp" in action:
+            hp = int(action["hp"])
+            if hp < 0:
+                raise ValueError("HP cannot be negative")
+            unit.hp = min(state._unit_max_hp(unit), hp)
     else:
         raise ValueError(f"Unsupported play action type: {action_type}")
     return result

@@ -910,6 +910,19 @@ class GameState:
                 tile.surface_unit_id = None
             if tile.hidden_unit_id == instance_id:
                 tile.hidden_unit_id = None
+            if (
+                tile.capture_state is not None
+                and tile.capture_state.capturing_unit_id == instance_id
+            ):
+                tile.capture_state = None
+        if unit.capture_target is not None and unit.capture_target != unit.position:
+            capture_tile = self.game_map.get_tile(unit.capture_target)
+            if (
+                capture_tile is not None
+                and capture_tile.capture_state is not None
+                and capture_tile.capture_state.capturing_unit_id == instance_id
+            ):
+                capture_tile.capture_state = None
         return unit
 
     def get_unit(self, instance_id: str) -> UnitState | None:

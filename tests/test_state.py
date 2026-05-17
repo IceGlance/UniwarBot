@@ -18,6 +18,7 @@ if str(SRC) not in sys.path:
 
 
 from uniwarbot import (  # noqa: E402
+    CaptureState,
     GameMap,
     GameState,
     HexCoord,
@@ -33,7 +34,7 @@ from uniwarbot import (  # noqa: E402
     game_state_to_json,
     json_to_game_state,
 )
-from uniwarbot.gui_api import build_game_state_from_map  # noqa: E402
+from uniwarbot.gui_api import _apply_play_action, build_game_state_from_map  # noqa: E402
 from uniwarbot.scenario_inspector import flatten_state_dict  # noqa: E402
 
 
@@ -961,6 +962,101 @@ class GameStartFromMapTestCase(unittest.TestCase):
         self.assertEqual(HexCoord(1, 0), state.get_unit("u_underling").capture_target)
         self.assertIsNotNone(state.game_map.get_tile(HexCoord(1, 0)).capture_state)
 
+    def test_killing_capturing_unit_clears_capture_state_and_allows_new_capture(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(
+                map_id="capture-reset-after-kill", name="Capture Reset After Kill"
+            )
+        )
+        for coord, terrain_id in (
+            (HexCoord(0, 0), "plain"),
+            (HexCoord(1, 0), "base"),
+            (HexCoord(2, 0), "plain"),
+        ):
+            game_map.add_tile(TileState(coord=coord, terrain_id=terrain_id, owner_id=None))
+        players = {
+            "p1": PlayerState(
+                player_id="p1",
+                faction="khraleans",
+                credits=100,
+                has_ended_turn=False,
+            ),
+            "p2": PlayerState(
+                player_id="p2",
+                faction="sapiens",
+                credits=100,
+                has_ended_turn=False,
+            ),
+        }
+        state = GameState(
+            ruleset_version="test-v1",
+            game_map=game_map,
+            players=players,
+            active_player_id="p2",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=1,
+        )
+        capturing_underling = UnitState(
+            instance_id="u_capture",
+            unit_id="underling",
+            owner_id="p1",
+            position=HexCoord(1, 0),
+            hp=1,
+            action=build_default_unit_action_state("underling"),
+            capture_target=HexCoord(1, 0),
+        )
+        killer = UnitState(
+            instance_id="u_killer",
+            unit_id="marine",
+            owner_id="p2",
+            position=HexCoord(0, 0),
+            hp=10,
+            action=build_default_unit_action_state("marine"),
+        )
+        new_capturer = UnitState(
+            instance_id="u_new_capturer",
+            unit_id="marine",
+            owner_id="p2",
+            position=HexCoord(2, 0),
+            hp=10,
+            action=build_default_unit_action_state("marine"),
+        )
+        state.add_unit(capturing_underling)
+        state.add_unit(killer)
+        state.add_unit(new_capturer)
+        base_tile = state.game_map.get_tile(HexCoord(1, 0))
+        assert base_tile is not None
+        base_tile.capture_state = CaptureState(
+            tile=HexCoord(1, 0),
+            structure_owner_id=None,
+            capturing_player_id="p1",
+            capturing_unit_id="u_capture",
+            rounds_remaining=1,
+            defense_penalty_applies=True,
+        )
+
+        state.attack_unit(
+            "u_killer",
+            "u_capture",
+            defender_damage=1,
+            attacker_damage=0,
+            was_melee=True,
+        )
+
+        self.assertIsNone(state.get_unit("u_capture"))
+        self.assertIsNone(base_tile.capture_state)
+
+        state.move_unit("u_new_capturer", HexCoord(1, 0))
+        self.assertTrue(state.get_current_special_options("u_new_capturer")["can_capture"])
+
+        state.begin_capture("u_new_capturer", HexCoord(1, 0))
+
+        self.assertEqual(HexCoord(1, 0), state.get_unit("u_new_capturer").capture_target)
+        self.assertIsNotNone(base_tile.capture_state)
+        self.assertEqual("u_new_capturer", base_tile.capture_state.capturing_unit_id)
+
     def test_city_cannot_be_captured(self) -> None:
         game_map = GameMap(
             metadata=MapMetadata(map_id="city-no-capture", name="City No Capture")
@@ -1479,6 +1575,104 @@ class GameStartFromMapTestCase(unittest.TestCase):
 
         self.assertIsNone(state.get_unit("u_marine"))
         self.assertEqual(10, state.get_unit("u_tank").experience_points)
+
+    def test_manual_play_action_can_set_seed_player_credits_and_unit_state(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="manual-edit-play", name="Manual Edit Play")
+        )
+        game_map.add_tile(TileState(coord=HexCoord(0, 0), terrain_id="plain"))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=123,
+            game_map=game_map,
+        )
+        state.add_player(
+            PlayerState(
+                player_id="p1",
+                faction="sapiens",
+                credits=100,
+                has_ended_turn=False,
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine",
+                unit_id="marine",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=10,
+                veterancy_level=VeterancyLevel.NONE,
+                experience_points=0,
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+
+        _apply_play_action(state, {"type": "manual_set_seed", "seed": 987654321})
+        self.assertEqual(987654321, state.current_rseed)
+
+        _apply_play_action(
+            state,
+            {"type": "manual_set_player_credits", "player_id": "p1", "credits": 275},
+        )
+        self.assertEqual(275, state.players["p1"].credits)
+
+        _apply_play_action(
+            state,
+            {"type": "manual_set_unit_state", "unit_id": "u_marine", "veterancy_level": 2, "hp": 12},
+        )
+        edited = state.get_unit("u_marine")
+        assert edited is not None
+        self.assertEqual(VeterancyLevel.TWO, edited.veterancy_level)
+        self.assertEqual(12, edited.hp)
+
+    def test_manual_play_action_caps_unit_hp_to_veterancy_max(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="manual-edit-play-cap", name="Manual Edit Play Cap")
+        )
+        game_map.add_tile(TileState(coord=HexCoord(0, 0), terrain_id="plain"))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=123,
+            game_map=game_map,
+        )
+        state.add_player(
+            PlayerState(
+                player_id="p1",
+                faction="sapiens",
+                credits=100,
+                has_ended_turn=False,
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine",
+                unit_id="marine",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=10,
+                veterancy_level=VeterancyLevel.ONE,
+                experience_points=0,
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+
+        _apply_play_action(
+            state,
+            {"type": "manual_set_unit_state", "unit_id": "u_marine", "veterancy_level": 1, "hp": 99},
+        )
+
+        edited = state.get_unit("u_marine")
+        assert edited is not None
+        self.assertEqual(VeterancyLevel.ONE, edited.veterancy_level)
+        self.assertEqual(11, edited.hp)
 
     def test_attack_preview_uses_current_seed_for_direct_and_retaliation_damage(self) -> None:
         payload = json.loads(

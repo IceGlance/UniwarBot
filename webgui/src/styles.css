@@ -998,6 +998,28 @@ select {
   white-space: nowrap;
 }
 
+.playgame-inline-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.playgame-inline-editor input,
+.playgame-unit-editor input,
+.playgame-unit-editor select {
+  min-width: 0;
+  width: 100%;
+}
+
+.playgame-unit-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(88px, 96px) auto;
+  gap: 10px;
+  align-items: end;
+  margin: 10px 0 12px;
+}
+
 .production-groups {
   display: flex;
   flex-direction: column;
