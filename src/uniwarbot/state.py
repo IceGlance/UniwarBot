@@ -1237,8 +1237,11 @@ class GameState:
 
         self.current_rseed = formula.ceq
 
-        defender.hp = max(0, defender_original_hp - max(0, resolved_defender_damage))
-        attacker.hp = max(0, attacker_original_hp - max(0, resolved_attacker_damage))
+        actual_damage_to_defender = min(defender_original_hp, max(0, resolved_defender_damage))
+        actual_damage_to_attacker = min(attacker_original_hp, max(0, resolved_attacker_damage))
+
+        defender.hp = max(0, defender_original_hp - actual_damage_to_defender)
+        attacker.hp = max(0, attacker_original_hp - actual_damage_to_attacker)
         attacker.status.buried_resurface_bonus = 0
         if self._uses_move_after_attack_profile(attacker):
             after_attack_mobility = self._after_attack_mobility(attacker)
@@ -1250,6 +1253,19 @@ class GameState:
         }:
             attacker.action.atomic_action_locked = False
             attacker.action.atomic_action_label = None
+
+        if defender.hp == 0:
+            self._award_kill_experience(
+                killer=attacker,
+                defeated=defender,
+                defeated_hp_removed=actual_damage_to_defender,
+            )
+        if attacker.hp == 0 and defender_can_retaliate:
+            self._award_kill_experience(
+                killer=defender,
+                defeated=attacker,
+                defeated_hp_removed=actual_damage_to_attacker,
+            )
 
         if defender.hp == 0:
             self.remove_unit(defender.instance_id)
@@ -2543,6 +2559,37 @@ class GameState:
             attack_bonus=int(attack_bonus),
             armor_piercing_percent=armor_piercing,
         )
+
+    def _unit_cost(self, unit: UnitState) -> int:
+        return int(self._unit_dictionary_entry(unit).get("cost", 0))
+
+    def _award_kill_experience(
+        self,
+        *,
+        killer: UnitState,
+        defeated: UnitState,
+        defeated_hp_removed: int,
+    ) -> None:
+        hp_removed = max(0, int(defeated_hp_removed))
+        if hp_removed <= 0:
+            return
+        defeated_cost = self._unit_cost(defeated)
+        if defeated_cost <= 0:
+            return
+        experience_gain = (defeated_cost * hp_removed) // 10
+        if experience_gain <= 0:
+            return
+        previous_level = int(killer.veterancy_level)
+        killer.experience_points = int(killer.experience_points) + experience_gain
+        killer_cost = self._unit_cost(killer)
+        if killer_cost <= 0:
+            return
+        threshold_level = min(2, killer.experience_points // killer_cost)
+        next_level = max(previous_level, threshold_level)
+        if next_level <= previous_level:
+            return
+        killer.veterancy_level = VeterancyLevel(next_level)
+        killer.hp = min(self._unit_max_hp(killer), killer.hp + (next_level - previous_level))
 
     def _adjacent_units(self, unit: UnitState) -> list[UnitState]:
         adjacent_units: list[UnitState] = []

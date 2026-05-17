@@ -27,6 +27,7 @@ from uniwarbot import (  # noqa: E402
     UnitState,
     UnitActionState,
     UnitStatusState,
+    VeterancyLevel,
     build_default_unit_action_state,
     game_state_to_json,
     json_to_game_state,
@@ -801,6 +802,305 @@ class GameStartFromMapTestCase(unittest.TestCase):
         state.attack_unit("u_underling", "u_marine")
 
         self.assertIsNone(state.get_unit("u_marine"))
+
+    def test_partial_damage_without_kill_grants_no_experience(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="xp-no-kill", name="XP No Kill")
+        )
+        for coord in (HexCoord(0, 0), HexCoord(1, 0)):
+            game_map.add_tile(TileState(coord=coord, terrain_id="plain"))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p2",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="khraleans", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine",
+                unit_id="marine",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_swarmer",
+                unit_id="swarmer",
+                owner_id="p2",
+                position=HexCoord(1, 0),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("swarmer"),
+            )
+        )
+
+        state.attack_unit("u_swarmer", "u_marine", defender_damage=6, attacker_damage=0)
+
+        self.assertEqual(4, state.get_unit("u_marine").hp)
+        self.assertEqual(0, state.get_unit("u_swarmer").experience_points)
+        self.assertEqual(VeterancyLevel.NONE, state.get_unit("u_swarmer").veterancy_level)
+
+    def test_killing_blow_grants_experience_only_to_the_unit_that_kills(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="xp-kill-credit", name="XP Kill Credit")
+        )
+        for coord in (
+            HexCoord(6, 5),
+            HexCoord(6, 7),
+            HexCoord(8, 5),
+            HexCoord(7, 5),
+        ):
+            game_map.add_tile(TileState(coord=coord, terrain_id="plain"))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p2",
+            player_order=["p1", "p2"],
+            turn_number=12,
+            round_number=12,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="khraleans", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine",
+                unit_id="marine",
+                owner_id="p1",
+                position=HexCoord(6, 5),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_swarmer",
+                unit_id="swarmer",
+                owner_id="p2",
+                position=HexCoord(6, 7),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("swarmer"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_underling",
+                unit_id="underling",
+                owner_id="p2",
+                position=HexCoord(8, 5),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("underling"),
+            )
+        )
+
+        state.attack_unit("u_swarmer", "u_marine", defender_damage=6, attacker_damage=0)
+        state.move_unit("u_underling", HexCoord(7, 5), continue_as_atomic_attack=True)
+        state.attack_unit("u_underling", "u_marine", defender_damage=4, attacker_damage=0)
+
+        self.assertIsNone(state.get_unit("u_marine"))
+        self.assertEqual(0, state.get_unit("u_swarmer").experience_points)
+        self.assertEqual(40, state.get_unit("u_underling").experience_points)
+        self.assertEqual(VeterancyLevel.NONE, state.get_unit("u_underling").veterancy_level)
+        self.assertEqual(10, state.get_unit("u_underling").hp)
+
+    def test_experience_reaching_unit_cost_grants_first_veterancy_and_plus_one_hp(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="xp-first-veterancy", name="XP First Veterancy")
+        )
+        for coord in (HexCoord(0, 0), HexCoord(1, 0)):
+            game_map.add_tile(TileState(coord=coord, terrain_id="plain"))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p2",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="khraleans", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine",
+                unit_id="marine",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=4,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_underling",
+                unit_id="underling",
+                owner_id="p2",
+                position=HexCoord(1, 0),
+                hp=10,
+                veterancy_level=0,
+                experience_points=60,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("underling"),
+            )
+        )
+
+        state.attack_unit("u_underling", "u_marine", defender_damage=4, attacker_damage=0)
+
+        underling = state.get_unit("u_underling")
+        self.assertEqual(100, underling.experience_points)
+        self.assertEqual(VeterancyLevel.ONE, underling.veterancy_level)
+        self.assertEqual(11, underling.hp)
+
+    def test_experience_reaching_second_veterancy_adds_one_more_hp_and_then_caps(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="xp-second-veterancy", name="XP Second Veterancy")
+        )
+        for coord in (HexCoord(0, 0), HexCoord(1, 0), HexCoord(2, 0)):
+            game_map.add_tile(TileState(coord=coord, terrain_id="plain"))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p2",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="khraleans", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine_1",
+                unit_id="marine",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=4,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine_2",
+                unit_id="marine",
+                owner_id="p1",
+                position=HexCoord(2, 0),
+                hp=4,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_underling",
+                unit_id="underling",
+                owner_id="p2",
+                position=HexCoord(1, 0),
+                hp=11,
+                veterancy_level=1,
+                experience_points=160,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("underling"),
+            )
+        )
+
+        state.attack_unit("u_underling", "u_marine_1", defender_damage=4, attacker_damage=0)
+
+        underling = state.get_unit("u_underling")
+        self.assertEqual(200, underling.experience_points)
+        self.assertEqual(VeterancyLevel.TWO, underling.veterancy_level)
+        self.assertEqual(12, underling.hp)
+
+        state.get_unit("u_underling").action.reset_for_new_turn()
+        state.attack_unit("u_underling", "u_marine_2", defender_damage=4, attacker_damage=0)
+
+        underling = state.get_unit("u_underling")
+        self.assertEqual(240, underling.experience_points)
+        self.assertEqual(VeterancyLevel.TWO, underling.veterancy_level)
+        self.assertEqual(12, underling.hp)
+
+    def test_retaliation_kill_grants_experience_to_the_defender(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="xp-retaliation-kill", name="XP Retaliation Kill")
+        )
+        for coord in (HexCoord(0, 0), HexCoord(1, 0)):
+            game_map.add_tile(TileState(coord=coord, terrain_id="plain"))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="sapiens", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine",
+                unit_id="marine",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=1,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_tank",
+                unit_id="tank",
+                owner_id="p2",
+                position=HexCoord(1, 0),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("tank"),
+            )
+        )
+
+        state.attack_unit("u_marine", "u_tank", defender_damage=0, attacker_damage=1)
+
+        self.assertIsNone(state.get_unit("u_marine"))
+        self.assertEqual(10, state.get_unit("u_tank").experience_points)
 
 
 def _safe_test_name(name: str) -> str:
