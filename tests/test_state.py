@@ -724,6 +724,84 @@ class GameStartFromMapTestCase(unittest.TestCase):
         self.assertLess(state.get_unit("u_marine").hp, 10)
         self.assertFalse(state.get_unit("u_underling").action.atomic_action_locked)
 
+    def test_underling_can_still_move_attack_same_target_after_swarmer_attacks_first(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="double-attack-sequence", name="Double Attack Sequence")
+        )
+        for q in range(10):
+            for r in range(10):
+                game_map.add_tile(
+                    TileState(coord=HexCoord(q, r), terrain_id="plain", owner_id=None)
+                )
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p2",
+            player_order=["p1", "p2"],
+            turn_number=12,
+            round_number=12,
+            current_rseed=-4193972046270825500,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="khraleans", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine",
+                unit_id="marine",
+                owner_id="p1",
+                position=HexCoord(6, 5),
+                hp=3,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_swarmer",
+                unit_id="swarmer",
+                owner_id="p2",
+                position=HexCoord(6, 7),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=UnitActionState.from_dict(
+                    {
+                        **build_default_unit_action_state("swarmer").to_dict(),
+                        "attacks_remaining": 0,
+                        "has_attacked_this_turn": True,
+                    }
+                ),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_underling",
+                unit_id="underling",
+                owner_id="p2",
+                position=HexCoord(8, 5),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("underling"),
+            )
+        )
+
+        move_options = state.get_possible_moves("u_underling")
+        self.assertIn("7:5", move_options["legal_move_destinations"])
+        self.assertIn("u_marine", move_options["move_attack_targets"]["7:5"])
+
+        state.move_unit("u_underling", HexCoord(7, 5), continue_as_atomic_attack=True)
+        self.assertIn("u_marine", state.get_possible_moves("u_underling")["current_attack_targets"])
+
+        state.attack_unit("u_underling", "u_marine")
+
+        self.assertIsNone(state.get_unit("u_marine"))
+
 
 def _safe_test_name(name: str) -> str:
     normalized = "".join(ch if ch.isalnum() else "_" for ch in name.lower())

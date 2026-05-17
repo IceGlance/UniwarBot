@@ -247,13 +247,18 @@ function App() {
   const [selectedTileKey, setSelectedTileKey] = useState(null);
   const [selectedUnitId, setSelectedUnitId] = useState(null);
   const [playOptions, setPlayOptions] = useState(null);
+  const [lastCompoundMove, setLastCompoundMove] = useState(null);
   const [mode, setMode] = useState(null);
   const [error, setError] = useState("");
   const [zoom, setZoom] = useState(0.9);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [isPanningBoard, setIsPanningBoard] = useState(false);
+  const selectedUnitIdRef = useRef(null);
+  const selectedTileKeyRef = useRef(null);
+  const lastCompoundMoveRef = useRef(null);
   const boardViewportRef = useRef(null);
   const boardSvgRef = useRef(null);
+  const playOptionsRequestRef = useRef(0);
   const boardPanRef = useRef({
     pointerId: null,
     startClientX: 0,
@@ -321,6 +326,9 @@ function App() {
       setPlayOptions(null);
       return;
     }
+    const requestId = playOptionsRequestRef.current + 1;
+    playOptionsRequestRef.current = requestId;
+    setPlayOptions(null);
     fetch(`${API_BASE}/play-game/options`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -337,8 +345,16 @@ function App() {
         }
         return response.json();
       })
-      .then((payload) => setPlayOptions(payload))
+      .then((payload) => {
+        if (playOptionsRequestRef.current !== requestId) {
+          return;
+        }
+        setPlayOptions(payload);
+      })
       .catch((reason) => {
+        if (playOptionsRequestRef.current !== requestId) {
+          return;
+        }
         setError(reason instanceof Error ? reason.message : String(reason));
       });
   }, [gameState, selectedTileKey, selectedUnitId]);
@@ -449,15 +465,32 @@ function App() {
   }
 
   function resetInteraction(nextState, { nextSelectedUnitId = null, nextSelectedTileKey = null, nextMode = null } = {}) {
+    selectedUnitIdRef.current = nextSelectedUnitId;
+    selectedTileKeyRef.current = nextSelectedTileKey;
     setGameState(nextState);
     setSelectedUnitId(nextSelectedUnitId);
     setSelectedTileKey(nextSelectedTileKey);
     setMode(nextMode);
   }
 
+  function setCompoundMoveCandidate(candidate) {
+    lastCompoundMoveRef.current = candidate;
+    setLastCompoundMove(candidate);
+  }
+
   function pushHistory(nextState, label) {
     setHistory((previous) => {
       const base = previous.slice(0, historyIndex + 1);
+      const next = [...base, { state: nextState, label }];
+      setHistoryIndex(next.length - 1);
+      return next;
+    });
+  }
+
+  function replaceCurrentHistoryEntry(nextState, label) {
+    setHistory((previous) => {
+      const cutoff = Math.max(0, historyIndex);
+      const base = previous.slice(0, cutoff);
       const next = [...base, { state: nextState, label }];
       setHistoryIndex(next.length - 1);
       return next;
@@ -490,6 +523,7 @@ function App() {
         const nextState = payload.state;
         setHistory([{ state: nextState, label: "new_game" }]);
         setHistoryIndex(0);
+        setCompoundMoveCandidate(null);
         resetInteraction(nextState);
       })
       .catch((reason) => {
@@ -570,6 +604,7 @@ function App() {
         const restoredState = nextHistory[nextHistoryIndex]?.state ?? nextState;
         setHistory(nextHistory);
         setHistoryIndex(nextHistoryIndex);
+        setCompoundMoveCandidate(null);
         resetInteraction(restoredState);
       })
       .catch((reason) => {
@@ -606,8 +641,15 @@ function App() {
       });
   }
 
-  function applyAction(action, options = {}) {
-    if (!currentStateValue) {
+  function applyAction(action, options = {}, behavior = {}) {
+    const {
+      stateOverride = null,
+      replaceCurrentHistory = false,
+      nextCompoundMove = null,
+      clearCompoundMove = true,
+    } = behavior;
+    const baseState = stateOverride ?? currentStateValue;
+    if (!baseState) {
       return;
     }
     setError("");
@@ -615,7 +657,7 @@ function App() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        state: currentStateValue,
+        state: baseState,
         action,
       }),
     })
@@ -628,7 +670,16 @@ function App() {
       })
       .then((payload) => {
         const nextState = payload.state;
-        pushHistory(nextState, action.type);
+        if (replaceCurrentHistory) {
+          replaceCurrentHistoryEntry(nextState, action.type);
+        } else {
+          pushHistory(nextState, action.type);
+        }
+        if (clearCompoundMove) {
+          setCompoundMoveCandidate(null);
+        } else {
+          setCompoundMoveCandidate(nextCompoundMove);
+        }
         resetInteraction(nextState, options);
       })
       .catch((reason) => {
@@ -637,32 +688,119 @@ function App() {
   }
 
   function selectTileAndUnit(tileKey, preferredUnitId = null) {
+    selectedTileKeyRef.current = tileKey;
     setSelectedTileKey(tileKey);
+    const compoundCandidate = lastCompoundMoveRef.current;
     if (preferredUnitId) {
+      selectedUnitIdRef.current = preferredUnitId;
       setSelectedUnitId(preferredUnitId);
+      if (!compoundCandidate || compoundCandidate.unitId !== preferredUnitId) {
+        setCompoundMoveCandidate(null);
+      }
       return;
     }
     const tile = tileByKey.get(tileKey);
     if (!tile) {
+      selectedUnitIdRef.current = null;
       setSelectedUnitId(null);
+      setCompoundMoveCandidate(null);
       return;
     }
     const unitId = tile.surface_unit_id ?? tile.hidden_unit_id ?? null;
+    selectedUnitIdRef.current = unitId;
     setSelectedUnitId(unitId);
+    if (!compoundCandidate || compoundCandidate.unitId !== unitId) {
+      setCompoundMoveCandidate(null);
+    }
   }
 
-  function targetUnitAtTile(tile) {
-    if (!tile) {
-      return null;
+  function fetchSelectionOptions(unitId, tileKey = selectedTileKeyRef.current) {
+    if (!currentStateValue || !unitId) {
+      return Promise.resolve(null);
     }
+    return fetch(`${API_BASE}/play-game/options`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        state: currentStateValue,
+        selected_unit_id: unitId,
+        selected_tile: tileKey ? parseCoordKey(tileKey) : null,
+      }),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          throw new Error(payload.detail ?? `Failed to load options: ${response.status}`);
+        }
+        return response.json();
+      });
+  }
+
+  function resolveAttackActionForUnit(attackerId, defender) {
+    if (!attackerId || !defender) {
+      return Promise.resolve(null);
+    }
+    const attacker = units[attackerId];
+    if (!attacker || attacker.owner_id !== activePlayerId) {
+      return Promise.resolve(null);
+    }
+    const attackerTileKey = coordKey(attacker.position);
+    return fetchSelectionOptions(attackerId, attackerTileKey).then((optionsPayload) => {
+      if (!optionsPayload) {
+        return null;
+      }
+      const optionMoveInfo = optionsPayload?.possible_moves ?? {};
+      const currentTargets = new Set(optionMoveInfo.current_attack_targets ?? []);
+      if (currentTargets.has(defender.instance_id)) {
+        return {
+          action: {
+            type: "attack_unit",
+            attacker_id: attackerId,
+            defender_id: defender.instance_id,
+          },
+          selection: {
+            nextSelectedUnitId: attackerId,
+            nextSelectedTileKey: attackerTileKey,
+            nextMode: null,
+          },
+        };
+      }
+      const optionMoveAttackTargets = optionMoveInfo.move_attack_targets ?? {};
+      const destinationEntry = Object.entries(optionMoveAttackTargets).find(([, targets]) =>
+        Array.isArray(targets) && targets.includes(defender.instance_id),
+      );
+      if (!destinationEntry) {
+        return null;
+      }
+      const destination = parseCoordKey(destinationEntry[0]);
+      return {
+        action: {
+          type: "move_then_attack",
+          unit_id: attackerId,
+          destination,
+          defender_id: defender.instance_id,
+        },
+        selection: {
+          nextSelectedUnitId: attackerId,
+          nextSelectedTileKey: coordKey(destination),
+          nextMode: null,
+        },
+      };
+    });
+  }
+
+function targetUnitAtTile(tile) {
+  if (!tile) {
+    return null;
+  }
     if (tile.surface_unit_id && units[tile.surface_unit_id]) {
       return units[tile.surface_unit_id];
     }
     if (tile.hidden_unit_id && units[tile.hidden_unit_id]) {
       return units[tile.hidden_unit_id];
-    }
-    return null;
   }
+  return null;
+}
 
   function chooseMoveAttackDestination(targetUnitId) {
     if (!selectedUnitId || !selectedUnit) {
@@ -691,6 +829,17 @@ function App() {
   function handleTileClick(tile, clickedUnitOverride = null) {
     const tileKey = coordKey(tile.coord);
     const clickedUnit = clickedUnitOverride ?? targetUnitAtTile(tile);
+    const actingUnitId = selectedUnitIdRef.current;
+    if (
+      clickedUnit &&
+      clickedUnit.owner_id === activePlayerId &&
+      clickedUnit.instance_id !== actingUnitId
+    ) {
+      selectTileAndUnit(tileKey, clickedUnit.instance_id);
+      setPlayOptions(null);
+      setMode(null);
+      return;
+    }
     if (mode === "teleport" && selectedUnitId && teleportDestinations.has(tileKey)) {
       applyAction(
         { type: "teleport_unit", unit_id: selectedUnitId, destination: tile.coord },
@@ -726,54 +875,76 @@ function App() {
       }
     }
     if (
-      selectedUnitId &&
+      actingUnitId &&
       clickedUnit &&
-      clickedUnit.instance_id !== selectedUnitId &&
-      attackTargetIds.has(clickedUnit.instance_id)
+      clickedUnit.instance_id !== actingUnitId &&
+      clickedUnit.owner_id !== activePlayerId
     ) {
-      applyAction(
-        { type: "attack_unit", attacker_id: selectedUnitId, defender_id: clickedUnit.instance_id },
-        { nextSelectedUnitId: selectedUnitId, nextSelectedTileKey: selectedTileKey, nextMode: null },
-      );
+      resolveAttackActionForUnit(actingUnitId, clickedUnit)
+        .then((primaryResolution) => {
+          if (primaryResolution) {
+            applyAction(primaryResolution.action, primaryResolution.selection);
+            return;
+          }
+          const compoundCandidate = lastCompoundMoveRef.current;
+          if (
+            compoundCandidate
+            && compoundCandidate.unitId === actingUnitId
+            && Array.isArray(compoundCandidate.targetIds)
+            && compoundCandidate.targetIds.includes(clickedUnit.instance_id)
+          ) {
+            applyAction(
+              {
+                type: "move_then_attack",
+                unit_id: actingUnitId,
+                destination: compoundCandidate.destination,
+                defender_id: clickedUnit.instance_id,
+              },
+              {
+                nextSelectedUnitId: actingUnitId,
+                nextSelectedTileKey: compoundCandidate.destinationKey,
+                nextMode: null,
+              },
+              {
+                stateOverride: compoundCandidate.originState,
+                replaceCurrentHistory: true,
+                clearCompoundMove: true,
+              },
+            );
+            return;
+          }
+          setError("Selected unit cannot attack the chosen target.");
+          selectTileAndUnit(tileKey, clickedUnit.instance_id);
+        })
+        .catch((reason) => {
+          setError(reason instanceof Error ? reason.message : String(reason));
+        });
       return;
     }
-    if (
-      selectedUnitId &&
-      clickedUnit &&
-      clickedUnit.instance_id !== selectedUnitId &&
-      clickedUnit.owner_id !== selectedUnit?.owner_id
-    ) {
-      const destination = chooseMoveAttackDestination(clickedUnit.instance_id);
-      if (destination) {
-        applyAction(
-          {
-            type: "move_then_attack",
-            unit_id: selectedUnitId,
-            destination,
-            defender_id: clickedUnit.instance_id,
-          },
-          {
-            nextSelectedUnitId: selectedUnitId,
-            nextSelectedTileKey: coordKey(destination),
-            nextMode: null,
-          },
-        );
-        return;
-      }
-      applyAction(
-        { type: "attack_unit", attacker_id: selectedUnitId, defender_id: clickedUnit.instance_id },
-        { nextSelectedUnitId: selectedUnitId, nextSelectedTileKey: selectedTileKey, nextMode: null },
-      );
-      return;
-    }
-    if (selectedUnitId && moveDestinations.has(tileKey)) {
+    if (actingUnitId && moveDestinations.has(tileKey)) {
+      const moveAttackTargetIds = Array.isArray(moveAttackTargets?.[tileKey])
+        ? [...moveAttackTargets[tileKey]]
+        : [];
+      const originState = currentStateValue;
       applyAction(
         {
           type: "move_unit",
-          unit_id: selectedUnitId,
+          unit_id: actingUnitId,
           destination: tile.coord,
         },
-        { nextSelectedUnitId: selectedUnitId, nextSelectedTileKey: tileKey, nextMode: null },
+        { nextSelectedUnitId: actingUnitId, nextSelectedTileKey: tileKey, nextMode: null },
+        {
+          nextCompoundMove: moveAttackTargetIds.length > 0
+            ? {
+              unitId: actingUnitId,
+              destination: tile.coord,
+              destinationKey: tileKey,
+              targetIds: moveAttackTargetIds,
+              originState,
+            }
+            : null,
+          clearCompoundMove: moveAttackTargetIds.length === 0,
+        },
       );
       return;
     }
@@ -786,6 +957,7 @@ function App() {
     }
     const nextIndex = historyIndex - 1;
     setHistoryIndex(nextIndex);
+    setCompoundMoveCandidate(null);
     resetInteraction(history[nextIndex].state);
   }
 
@@ -795,6 +967,7 @@ function App() {
     }
     const nextIndex = historyIndex + 1;
     setHistoryIndex(nextIndex);
+    setCompoundMoveCandidate(null);
     resetInteraction(history[nextIndex].state);
   }
 
@@ -811,6 +984,7 @@ function App() {
       }
     }
     setHistoryIndex(nextIndex);
+    setCompoundMoveCandidate(null);
     resetInteraction(history[nextIndex].state);
   }
 
@@ -823,6 +997,7 @@ function App() {
       return;
     }
     setHistoryIndex(nextIndex);
+    setCompoundMoveCandidate(null);
     resetInteraction(history[nextIndex].state);
   }
 

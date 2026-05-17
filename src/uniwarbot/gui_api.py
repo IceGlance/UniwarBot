@@ -39,7 +39,7 @@ WEB_APP = ROOT / "webgui"
 MAPS_DIR = ROOT / "maps"
 SAVED_GAMES_DIR = ROOT / "saved_games"
 EDITOR_FACTIONS = ["sapiens", "khraleans", "titans"]
-FRONTEND_SHELL_VERSION = "20260514a"
+FRONTEND_SHELL_VERSION = "20260517c"
 UNIT_FACTION_VARIANT_GROUPS: tuple[dict[str, str], ...] = (
     {"sapiens": "marine", "khraleans": "underling", "titans": "mecha"},
     {"sapiens": "engineer", "khraleans": "infector", "titans": "assimilator"},
