@@ -26,8 +26,8 @@ For engine design, that "available actions" language is not enough by itself. Th
  Legal patterns are `move`, `attack`, and `move-attack`. This covers the common case where `Attack after move = YES` and `after attack = 0`.
 - `single-action move-attack-conditional-move unit`
  Legal patterns are `move`, `move-attack`, `attack`, `attack-postmove`, and `move-attack-postmove`. The post-attack move is unlocked **only if an attack actually occurred**. Therefore `move-postmove` and `move-move` are illegal. This is the correct pattern for units such as Wyrm, Helicopter, Borfly, and Speeder, whose official pages show non-zero `after attack` mobility.
-- `single-action move-or-attack artillery unit`
- Legal patterns are `move` or `attack`, but not `move-attack`. This is the pattern explicitly stated on units such as Battery, whose official text says it "cannot move and attack in the same turn," even though the page also shows `Moves per turn 2`, which should therefore be treated as a page-field quirk rather than proof of a second full action.
+- `move-or-attack artillery unit`
+ Legal patterns are `move` or `attack`, but not `move-attack`. Battery still cannot move and attack in the same turn, but its `Moves per turn 2` field should be modeled as two action windows rather than discarded as a page quirk.
 - `multi-action unit`
  Marauder is the clearest official example because its page explicitly says it can "take two actions in one turn." For bot purposes this must be modeled as more than one action slot during one activation, not merely as extra mobility. The exact split between its two action slots is not fully formalized in the public web text, so the safest representation is `action_count > 1` with a configurable per-action template rather than hard-coding a specific two-step script until that split is empirically verified.
 

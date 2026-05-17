@@ -478,8 +478,16 @@ function App() {
       }
       return incomePerBase;
     };
+    const unitsById = currentStateValue?.units ?? {};
     return playerEntries.map((player) => {
       const income = tiles.reduce((total, tile) => {
+        if (tile.terrain_id === "city") {
+          const occupantId = tile.surface_unit_id;
+          const occupant = occupantId ? unitsById?.[occupantId] : null;
+          return occupant?.owner_id === player.playerId
+            ? total + incomePerCity
+            : total;
+        }
         if (tile.owner_id !== player.playerId) {
           return total;
         }

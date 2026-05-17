@@ -370,7 +370,7 @@
     },
     "city": {
       "display_name": "City",
-      "capturable": true,
+      "capturable": false,
       "provides_income": true,
       "income_amount": null,
       "supports_production": false,

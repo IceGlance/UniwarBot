@@ -1212,7 +1212,7 @@ class GameState:
         defender_original_hp = defender.hp
         defender_can_retaliate = (
             not defender.status.retaliation_blocked
-            and self._can_unit_attack_target(defender, attacker)
+            and self._can_unit_retaliate_against_target(defender, attacker)
         )
         resolved_attack_bonus = (
             self._calculate_gang_up_bonus(attacker, defender)
@@ -1862,6 +1862,15 @@ class GameState:
     def _income_for_player(self, player_id: str) -> int:
         total = 0
         for tile in self.game_map.tiles.values():
+            if tile.terrain_id == "city":
+                occupying_unit = (
+                    self.get_unit(tile.surface_unit_id)
+                    if tile.surface_unit_id is not None
+                    else None
+                )
+                if occupying_unit is not None and occupying_unit.owner_id == player_id:
+                    total += self.income_per_city
+                continue
             if tile.owner_id != player_id:
                 continue
             income_amount = self._income_amount_for_terrain(tile.terrain_id)
@@ -1954,6 +1963,12 @@ class GameState:
         return _unit_action_profile_id(unit.unit_id)
 
     def _uses_move_or_attack_profile(self, unit: UnitState) -> bool:
+        return self._unit_action_profile_id(unit) in {
+            "single_action_move_or_attack_artillery",
+            "two_action_move_or_attack_artillery",
+        }
+
+    def _uses_single_action_move_or_attack_profile(self, unit: UnitState) -> bool:
         return self._unit_action_profile_id(unit) == "single_action_move_or_attack_artillery"
 
     def _uses_move_after_attack_profile(self, unit: UnitState) -> bool:
@@ -1961,6 +1976,13 @@ class GameState:
             self._unit_action_profile_id(unit)
             == "single_action_move_attack_conditional_post_move"
         )
+
+    def _profile_allows_attack_after_move_in_same_action(self, unit: UnitState) -> bool:
+        if self._uses_move_or_attack_profile(unit):
+            return False
+        if unit.unit_id == "borfly" and unit.status.hidden_mode is None:
+            return False
+        return True
 
     def _after_attack_mobility(self, unit: UnitState) -> int:
         movement = self._unit_dictionary_entry(unit).get("movement") or {}
@@ -2022,12 +2044,24 @@ class GameState:
         )
 
     def _can_query_unit_attack(self, unit: UnitState) -> bool:
+        if (
+            unit.action.actions_remaining <= 0
+            and not unit.action.atomic_action_locked
+            and unit.action.current_action_window is None
+            and not (
+                unit.action.has_moved_this_turn
+                and not unit.action.has_attacked_this_turn
+                and self._profile_allows_attack_after_move_in_same_action(unit)
+            )
+        ):
+            return False
         return (
             unit.action.is_available
             and unit.action.attacks_remaining > 0
             and not unit.status.movement_blocked
             and not (
-                unit.action.has_moved_this_turn and self._uses_move_or_attack_profile(unit)
+                unit.action.has_moved_this_turn
+                and self._uses_single_action_move_or_attack_profile(unit)
             )
         )
 
@@ -2387,11 +2421,7 @@ class GameState:
     def _can_attack_after_move_in_same_action(self, unit: UnitState) -> bool:
         if not self._can_query_unit_attack(unit):
             return False
-        if self._uses_move_or_attack_profile(unit):
-            return False
-        if unit.unit_id == "borfly" and unit.status.hidden_mode is None:
-            return False
-        return True
+        return self._profile_allows_attack_after_move_in_same_action(unit)
 
     def _can_surface_move_continue_as_atomic_attack(self, unit: UnitState) -> bool:
         return (
@@ -2591,7 +2621,21 @@ class GameState:
         return best_index
 
     def _can_unit_attack_target(self, attacker: UnitState, defender: UnitState) -> bool:
-        if attacker.action.has_moved_this_turn and self._uses_move_or_attack_profile(attacker):
+        if (
+            attacker.action.actions_remaining <= 0
+            and not attacker.action.atomic_action_locked
+            and attacker.action.current_action_window is None
+            and not (
+                attacker.action.has_moved_this_turn
+                and not attacker.action.has_attacked_this_turn
+                and self._profile_allows_attack_after_move_in_same_action(attacker)
+            )
+        ):
+            return False
+        if (
+            attacker.action.has_moved_this_turn
+            and self._uses_single_action_move_or_attack_profile(attacker)
+        ):
             return False
         attack_range = self._current_attack_range(attacker)
         if attack_range is None:
@@ -2621,6 +2665,14 @@ class GameState:
         if published_base_attack is None:
             return False
         return int(published_base_attack) > 0
+
+    def _can_unit_retaliate_against_target(self, attacker: UnitState, defender: UnitState) -> bool:
+        return self._can_unit_attack_target_from_position(
+            attacker,
+            defender,
+            position=attacker.position,
+            hidden_mode_override=attacker.status.hidden_mode,
+        )
 
     def _calculate_combat_damage(
         self,
@@ -2672,7 +2724,7 @@ class GameState:
             )
         defender_can_retaliate = (
             not defender.status.retaliation_blocked
-            and self._can_unit_attack_target(defender, preview_attacker)
+            and self._can_unit_retaliate_against_target(defender, preview_attacker)
         )
         resolved_attack_bonus = (
             self._calculate_gang_up_bonus(preview_attacker, defender)

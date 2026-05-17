@@ -269,6 +269,7 @@ def _default_editor_unit(
     hidden_mode: str | None = None,
 ) -> dict[str, object]:
     unit_entry = load_game_dictionary()["units"].get(unit_id, {})
+    default_action = build_default_unit_action_state(unit_id).to_dict()
     return {
         "instance_id": instance_id,
         "unit_id": unit_id,
@@ -288,23 +289,7 @@ def _default_editor_unit(
             "submerged_attack_penalty": 0,
             "ability_cooldowns": {},
         },
-        "action": {
-            "is_available": True,
-            "configured_action_count": 1,
-            "actions_remaining": 1,
-            "can_interleave_between_action_windows": True,
-            "move_points_remaining": None,
-            "attacks_remaining": 1,
-            "special_actions_remaining": None,
-            "action_phase_index": 0,
-            "current_action_index": 0,
-            "action_windows": [],
-            "atomic_action_locked": False,
-            "atomic_action_label": None,
-            "has_moved_this_turn": False,
-            "has_attacked_this_turn": False,
-            "has_used_special_this_turn": False,
-        },
+        "action": default_action,
         "capture_target": None,
         "metadata": {},
     }

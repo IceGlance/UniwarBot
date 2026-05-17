@@ -98,6 +98,33 @@
         "move-attack"
       ]
     },
+    "two_action_move_or_attack_artillery": {
+      "action_count": 2,
+      "can_interleave_between_action_windows": true,
+      "segments": [
+        {
+          "segment_id": "move",
+          "kind": "move",
+          "mobility_source": "surface",
+          "optional": true
+        },
+        {
+          "segment_id": "attack",
+          "kind": "attack",
+          "max_uses": 1,
+          "optional": true
+        }
+      ],
+      "is_atomic": true,
+      "move_and_attack_mutually_exclusive": true,
+      "examples_of_legal_sequences": [
+        "move",
+        "attack"
+      ],
+      "examples_of_illegal_sequences": [
+        "move-attack"
+      ]
+    },
     "single_action_state_toggle_and_attack": {
       "action_count": 1,
       "can_interleave_between_action_windows": false,
@@ -262,7 +289,7 @@
     "bopper": "standard_single_action_attack_after_move",
     "tank": "standard_single_action_attack_after_move",
     "helicopter": "single_action_move_attack_conditional_post_move",
-    "battery": "single_action_move_or_attack_artillery",
+    "battery": "two_action_move_or_attack_artillery",
     "destroyer": "standard_single_action_attack_after_move",
     "fuze": "standard_single_action_attack_after_move",
     "submarine": "single_action_state_toggle_and_attack",

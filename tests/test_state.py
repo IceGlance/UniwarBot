@@ -583,6 +583,181 @@ class GameStartFromMapTestCase(unittest.TestCase):
 
         self.assertEqual(["u_marine_p2_adjacent"], move_info["current_attack_targets"])
 
+    def test_battery_default_action_state_uses_two_actions(self) -> None:
+        action = build_default_unit_action_state("battery")
+
+        self.assertEqual(2, action.configured_action_count)
+        self.assertEqual(2, action.actions_remaining)
+        self.assertEqual(1, action.attacks_remaining)
+
+        action.actions_remaining = 0
+        action.reset_for_new_turn()
+
+        self.assertEqual(2, action.actions_remaining)
+
+    def test_build_game_state_from_map_resets_battery_to_two_action_profile(self) -> None:
+        map_payload = {
+            "map_id": "battery-map",
+            "name": "Battery Map",
+            "size": {"width": 2, "height": 1},
+            "players": [
+                {"player_id": "p1", "allowed_factions": ["sapiens"]},
+            ],
+            "tiles": [
+                {"coord": {"q": 0, "r": 0}, "terrain_id": "plain", "owner_id": None},
+                {"coord": {"q": 1, "r": 0}, "terrain_id": "plain", "owner_id": None},
+            ],
+            "units": [
+                {
+                    "instance_id": "u_battery",
+                    "unit_id": "battery",
+                    "owner_id": "p1",
+                    "position": {"q": 0, "r": 0},
+                    "hp": 10,
+                    "action": {
+                        "is_available": True,
+                        "configured_action_count": 1,
+                        "actions_remaining": 1,
+                        "can_interleave_between_action_windows": True,
+                        "move_points_remaining": None,
+                        "attacks_remaining": 1,
+                        "special_actions_remaining": None,
+                        "action_phase_index": 0,
+                        "current_action_index": 0,
+                        "action_windows": [],
+                        "atomic_action_locked": False,
+                        "atomic_action_label": None,
+                        "has_moved_this_turn": False,
+                        "has_attacked_this_turn": False,
+                        "has_used_special_this_turn": False,
+                    },
+                }
+            ],
+        }
+
+        state = build_game_state_from_map(map_payload, player_factions={"p1": "sapiens"})
+        battery = state.get_unit("u_battery")
+
+        self.assertEqual(2, battery.action.configured_action_count)
+        self.assertEqual(2, battery.action.actions_remaining)
+
+    def test_battery_can_move_then_attack_as_two_separate_actions(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="battery-two-actions", name="Battery Two Actions")
+        )
+        for coord in (
+            HexCoord(0, 0),
+            HexCoord(1, 0),
+            HexCoord(2, 0),
+            HexCoord(3, 0),
+            HexCoord(4, 0),
+        ):
+            game_map.add_tile(TileState(coord=coord, terrain_id="plain"))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+        )
+        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="sapiens", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_battery",
+                unit_id="battery",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=10,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("battery"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_enemy",
+                unit_id="marine",
+                owner_id="p2",
+                position=HexCoord(4, 0),
+                hp=10,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+
+        state.move_unit("u_battery", HexCoord(1, 0))
+        battery = state.get_unit("u_battery")
+        move_options = state.get_possible_moves("u_battery")
+
+        self.assertEqual(1, battery.action.actions_remaining)
+        self.assertEqual(["u_enemy"], move_options["current_attack_targets"])
+        self.assertEqual({}, move_options["move_attack_targets"])
+
+        state.attack_unit("u_battery", "u_enemy", defender_damage=5, attacker_damage=0)
+
+        self.assertEqual(0, battery.action.actions_remaining)
+        self.assertEqual(5, state.get_unit("u_enemy").hp)
+
+    def test_battery_cannot_attack_after_two_moves_when_no_actions_remain(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="battery-no-third-action", name="Battery No Third Action")
+        )
+        for coord in (
+            HexCoord(0, 0),
+            HexCoord(1, 0),
+            HexCoord(2, 0),
+            HexCoord(3, 0),
+            HexCoord(4, 0),
+        ):
+            game_map.add_tile(TileState(coord=coord, terrain_id="plain"))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+        )
+        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="sapiens", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_battery",
+                unit_id="battery",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=10,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("battery"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_enemy",
+                unit_id="marine",
+                owner_id="p2",
+                position=HexCoord(4, 0),
+                hp=10,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+
+        state.move_unit("u_battery", HexCoord(1, 0))
+        state.move_unit("u_battery", HexCoord(2, 0))
+        battery = state.get_unit("u_battery")
+        move_options = state.get_possible_moves("u_battery")
+
+        self.assertEqual(0, battery.action.actions_remaining)
+        self.assertEqual([], move_options["current_attack_targets"])
+        self.assertEqual({}, move_options["move_attack_targets"])
+
+        with self.assertRaisesRegex(ValueError, "Attacker cannot attack the selected target"):
+            state.attack_unit("u_battery", "u_enemy")
+
     def test_begin_capture_marks_unit_capture_target_and_tile_capture_state(self) -> None:
         map_payload = {
             "map_id": "capture-begin-map",
@@ -658,6 +833,82 @@ class GameStartFromMapTestCase(unittest.TestCase):
 
         self.assertEqual(HexCoord(1, 0), state.get_unit("u_underling").capture_target)
         self.assertIsNotNone(state.game_map.get_tile(HexCoord(1, 0)).capture_state)
+
+    def test_city_cannot_be_captured(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="city-no-capture", name="City No Capture")
+        )
+        for coord, terrain_id in (
+            (HexCoord(0, 0), "plain"),
+            (HexCoord(1, 0), "city"),
+        ):
+            game_map.add_tile(TileState(coord=coord, terrain_id=terrain_id, owner_id=None))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="khraleans", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="titans", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_underling",
+                unit_id="underling",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("underling"),
+            )
+        )
+
+        state.move_unit("u_underling", HexCoord(1, 0))
+
+        self.assertFalse(state.get_current_special_options("u_underling")["can_capture"])
+
+    def test_city_income_is_granted_to_occupying_unit_owner(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="city-income-occupancy", name="City Income Occupancy")
+        )
+        game_map.add_tile(TileState(coord=HexCoord(0, 0), terrain_id="city", owner_id=None))
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="khraleans", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine",
+                unit_id="marine",
+                owner_id="p2",
+                position=HexCoord(0, 0),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+
+        next_player_id = state.end_turn()
+
+        self.assertEqual("p2", next_player_id)
+        self.assertEqual(50, state.players["p2"].credits)
+        self.assertEqual(0, state.players["p1"].credits)
 
     def test_surface_underling_move_then_attack_requires_atomic_move_flag(self) -> None:
         game_map = GameMap(
@@ -1118,6 +1369,172 @@ class GameStartFromMapTestCase(unittest.TestCase):
             {"direct_damage": 6, "retaliation_damage": 0},
             previews["u_marine_p1"],
         )
+
+    def test_attack_preview_retaliation_ignores_defender_action_availability(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(
+                map_id="retaliation-preview-no-actions",
+                name="Retaliation Preview No Actions",
+            )
+        )
+        for coord in (HexCoord(7, 3), HexCoord(7, 2)):
+            game_map.add_tile(TileState(coord=coord, terrain_id="plain"))
+        state = GameState(
+            ruleset_version="test.retaliation.v1",
+            active_player_id="p2",
+            player_order=["p1", "p2"],
+            turn_number=7,
+            round_number=3,
+            current_rseed=-2704195468370554400,
+            game_map=game_map,
+            players={
+                "p1": PlayerState(player_id="p1", faction="sapiens", credits=0),
+                "p2": PlayerState(player_id="p2", faction="khraleans", credits=0),
+            },
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_attacker",
+                unit_id="marine",
+                owner_id="p2",
+                position=HexCoord(7, 3),
+                hp=10,
+                status=UnitStatusState(),
+                action=UnitActionState(
+                    is_available=True,
+                    configured_action_count=1,
+                    actions_remaining=0,
+                    can_interleave_between_action_windows=True,
+                    attacks_remaining=1,
+                    move_points_remaining=0,
+                    special_actions_remaining=None,
+                    action_phase_index=0,
+                    current_action_index=0,
+                    action_windows=[],
+                    atomic_action_locked=False,
+                    atomic_action_label=None,
+                    has_moved_this_turn=True,
+                    has_attacked_this_turn=False,
+                    has_used_special_this_turn=False,
+                ),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_defender",
+                unit_id="marine",
+                owner_id="p1",
+                position=HexCoord(7, 2),
+                hp=10,
+                status=UnitStatusState(),
+                action=UnitActionState(
+                    is_available=False,
+                    configured_action_count=1,
+                    actions_remaining=0,
+                    can_interleave_between_action_windows=True,
+                    attacks_remaining=1,
+                    move_points_remaining=0,
+                    special_actions_remaining=None,
+                    action_phase_index=0,
+                    current_action_index=0,
+                    action_windows=[],
+                    atomic_action_locked=False,
+                    atomic_action_label=None,
+                    has_moved_this_turn=False,
+                    has_attacked_this_turn=False,
+                    has_used_special_this_turn=False,
+                ),
+            )
+        )
+
+        previews = state.get_possible_moves("u_attacker")["current_attack_previews"]
+
+        self.assertEqual(
+            {"direct_damage": 6, "retaliation_damage": 6},
+            previews["u_defender"],
+        )
+
+    def test_attack_unit_allows_retaliation_when_defender_has_no_actions_remaining(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(
+                map_id="retaliation-combat-no-actions",
+                name="Retaliation Combat No Actions",
+            )
+        )
+        for coord in (HexCoord(7, 3), HexCoord(7, 2)):
+            game_map.add_tile(TileState(coord=coord, terrain_id="plain"))
+        state = GameState(
+            ruleset_version="test.retaliation.v1",
+            active_player_id="p2",
+            player_order=["p1", "p2"],
+            turn_number=7,
+            round_number=3,
+            current_rseed=-2704195468370554400,
+            game_map=game_map,
+            players={
+                "p1": PlayerState(player_id="p1", faction="sapiens", credits=0),
+                "p2": PlayerState(player_id="p2", faction="khraleans", credits=0),
+            },
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_attacker",
+                unit_id="marine",
+                owner_id="p2",
+                position=HexCoord(7, 3),
+                hp=10,
+                status=UnitStatusState(),
+                action=UnitActionState(
+                    is_available=True,
+                    configured_action_count=1,
+                    actions_remaining=0,
+                    can_interleave_between_action_windows=True,
+                    attacks_remaining=1,
+                    move_points_remaining=0,
+                    special_actions_remaining=None,
+                    action_phase_index=0,
+                    current_action_index=0,
+                    action_windows=[],
+                    atomic_action_locked=False,
+                    atomic_action_label=None,
+                    has_moved_this_turn=True,
+                    has_attacked_this_turn=False,
+                    has_used_special_this_turn=False,
+                ),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_defender",
+                unit_id="marine",
+                owner_id="p1",
+                position=HexCoord(7, 2),
+                hp=10,
+                status=UnitStatusState(),
+                action=UnitActionState(
+                    is_available=False,
+                    configured_action_count=1,
+                    actions_remaining=0,
+                    can_interleave_between_action_windows=True,
+                    attacks_remaining=1,
+                    move_points_remaining=0,
+                    special_actions_remaining=None,
+                    action_phase_index=0,
+                    current_action_index=0,
+                    action_windows=[],
+                    atomic_action_locked=False,
+                    atomic_action_label=None,
+                    has_moved_this_turn=False,
+                    has_attacked_this_turn=False,
+                    has_used_special_this_turn=False,
+                ),
+            )
+        )
+
+        state.attack_unit("u_attacker", "u_defender")
+
+        self.assertEqual(4, state.get_unit("u_defender").hp)
+        self.assertEqual(4, state.get_unit("u_attacker").hp)
 
     def test_move_attack_preview_matches_post_move_preview_for_underling_against_marine(self) -> None:
         game_map = GameMap(
