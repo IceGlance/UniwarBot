@@ -166,6 +166,30 @@ function renderTeleportDisabledLabel(unit, transform) {
   );
 }
 
+function ProductionUnitButton({ option, config, ownerId, onBuy }) {
+  const unitId = String(option?.unit_id ?? "");
+  const unitConfig = config?.units?.[unitId] ?? {};
+  const displayName = unitConfig.display_name ?? unitId;
+  const cost = Number(option?.cost ?? 0);
+  const canAfford = Boolean(option?.can_afford);
+  return (
+    <button
+      className={canAfford ? "production-unit-button" : "production-unit-button disabled"}
+      type="button"
+      disabled={!canAfford}
+      onClick={onBuy}
+      title={`${displayName} (${cost})`}
+    >
+      <img
+        className="production-unit-sprite"
+        src={unitAsset(unitId, ownerId)}
+        alt={displayName}
+      />
+      <span className="production-unit-cost">{cost}</span>
+    </button>
+  );
+}
+
 function stateMarker(state) {
   if (!state) {
     return "";
@@ -404,11 +428,30 @@ function App() {
   const specialOptions = playOptions?.special_options ?? null;
   const moveDestinations = new Set(moveInfo?.legal_move_destinations ?? []);
   const moveAttackTargets = moveInfo?.move_attack_targets ?? {};
+  const moveAttackPreviews = moveInfo?.move_attack_previews ?? {};
   const attackTargetIds = new Set(moveInfo?.current_attack_targets ?? []);
+  const currentAttackPreviews = moveInfo?.current_attack_previews ?? {};
+  const compoundPreviewTargetIds = (
+    lastCompoundMove
+    && lastCompoundMove.unitId === selectedUnitId
+    && Array.isArray(lastCompoundMove.targetIds)
+  ) ? [...lastCompoundMove.targetIds] : [];
+  const displayedAttackTargetIds = (
+    attackTargetIds.size > 0 ? Array.from(attackTargetIds) : compoundPreviewTargetIds
+  );
+  const displayedAttackPreviews = attackTargetIds.size > 0
+    ? currentAttackPreviews
+    : (
+      lastCompoundMove
+      && lastCompoundMove.unitId === selectedUnitId
+      && lastCompoundMove.previews
+    ) ? lastCompoundMove.previews : {};
   const plagueTargetIds = new Set(specialOptions?.plague_targets ?? []);
   const teleportDestinations = new Set(specialOptions?.teleport_destinations ?? []);
   const transformTargets = specialOptions?.transform_targets ?? {};
-  const buyableUnits = playOptions?.buyable_units ?? [];
+  const productionOptions = playOptions?.production_options ?? [];
+  const affordableProductionOptions = productionOptions.filter((option) => Boolean(option?.can_afford));
+  const unaffordableProductionOptions = productionOptions.filter((option) => !Boolean(option?.can_afford));
   const activePlayerId = currentStateValue?.active_player_id ?? null;
   const playerSummaries = useMemo(() => {
     const statePlayers = currentStateValue?.players ?? {};
@@ -925,6 +968,7 @@ function targetUnitAtTile(tile) {
       const moveAttackTargetIds = Array.isArray(moveAttackTargets?.[tileKey])
         ? [...moveAttackTargets[tileKey]]
         : [];
+      const moveAttackPreviewMap = moveAttackPreviews?.[tileKey] ?? {};
       const originState = currentStateValue;
       applyAction(
         {
@@ -940,6 +984,7 @@ function targetUnitAtTile(tile) {
               destination: tile.coord,
               destinationKey: tileKey,
               targetIds: moveAttackTargetIds,
+              previews: moveAttackPreviewMap,
               originState,
             }
             : null,
@@ -1405,12 +1450,13 @@ function targetUnitAtTile(tile) {
                   );
                 })}
 
-                {selectedUnitId ? Array.from(attackTargetIds).map((targetId) => {
+                {selectedUnitId ? displayedAttackTargetIds.map((targetId) => {
                   const unit = units[targetId];
                   if (!unit) {
                     return null;
                   }
                   const center = axialToPixel(unit.position);
+                  const preview = displayedAttackPreviews[targetId] ?? null;
                   return (
                     <g key={`attack-${targetId}`} transform={`translate(${center.x}, ${center.y})`} pointerEvents="none">
                       <polygon
@@ -1419,6 +1465,16 @@ function targetUnitAtTile(tile) {
                         stroke="rgba(220, 38, 38, 0.95)"
                         strokeWidth="3.2"
                       />
+                      {preview ? (
+                        <g className="attack-preview" transform="translate(0,18)">
+                          <text className="attack-preview-direct" x="-8" y="0">
+                            {preview.direct_damage}
+                          </text>
+                          <text className="attack-preview-retaliation" x="8" y="0">
+                            {preview.retaliation_damage}
+                          </text>
+                        </g>
+                      ) : null}
                     </g>
                   );
                 }) : null}
@@ -1654,31 +1710,57 @@ function targetUnitAtTile(tile) {
 
             <div className="detail-card">
               <h2>Production</h2>
-              <div className="editor-button-row">
-                {buyableUnits.length === 0 ? (
-                  <span className="muted">No buy options on selected tile.</span>
-                ) : (
-                  buyableUnits.map((unitId) => (
-                    <button
-                      key={unitId}
-                      className="step-chip"
-                      type="button"
-                      onClick={() =>
-                        applyAction(
-                          {
-                            type: "buy_unit",
-                            tile_coord: selectedTile?.coord,
-                            unit_id: unitId,
-                          },
-                          { nextSelectedTileKey: selectedTileKey },
-                        )
-                      }
-                    >
-                      {config?.units?.[unitId]?.display_name ?? unitId}
-                    </button>
-                  ))
-                )}
-              </div>
+              {productionOptions.length === 0 ? (
+                <span className="muted">No production on selected tile.</span>
+              ) : (
+                <div className="production-groups">
+                  <div className="production-group">
+                    <div className="production-group-label">Can produce</div>
+                    {affordableProductionOptions.length === 0 ? (
+                      <span className="muted">None</span>
+                    ) : (
+                      <div className="production-grid">
+                        {affordableProductionOptions.map((option) => (
+                          <ProductionUnitButton
+                            key={String(option.unit_id)}
+                            option={option}
+                            config={config}
+                            ownerId={activePlayerId}
+                            onBuy={() =>
+                              applyAction(
+                                {
+                                  type: "buy_unit",
+                                  tile_coord: selectedTile?.coord,
+                                  unit_id: String(option.unit_id),
+                                },
+                                { nextSelectedTileKey: selectedTileKey },
+                              )
+                            }
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="production-group blocked">
+                    <div className="production-group-label">Not enough credits</div>
+                    {unaffordableProductionOptions.length === 0 ? (
+                      <span className="muted">None</span>
+                    ) : (
+                      <div className="production-grid">
+                        {unaffordableProductionOptions.map((option) => (
+                          <ProductionUnitButton
+                            key={String(option.unit_id)}
+                            option={option}
+                            config={config}
+                            ownerId={activePlayerId}
+                            onBuy={() => {}}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="detail-card">

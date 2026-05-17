@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from enum import Enum, IntEnum
 from functools import lru_cache
 from pathlib import Path
@@ -13,6 +13,7 @@ def _drop_none(mapping: dict[str, Any]) -> dict[str, Any]:
 
 
 _MASK_64 = (1 << 64) - 1
+_UNSET = object()
 
 
 def _to_signed_64(value: int) -> int:
@@ -948,6 +949,7 @@ class GameState:
 
         move_points = self._movement_points_for_unit(unit)
         current_attack_targets = self._current_attack_targets(unit)
+        current_attack_previews = self._current_attack_previews(unit)
         move_destinations = (
             self._reachable_move_destinations(unit, move_points)
             if self._can_query_unit_movement(unit)
@@ -956,6 +958,14 @@ class GameState:
         move_destination_keys = self._sorted_coord_keys(move_destinations)
         move_attack_targets = (
             self._move_attack_targets_for_destinations(
+                unit,
+                move_destinations,
+            )
+            if self._can_attack_after_move_in_same_action(unit)
+            else {}
+        )
+        move_attack_previews = (
+            self._move_attack_previews_for_destinations(
                 unit,
                 move_destinations,
             )
@@ -989,6 +999,10 @@ class GameState:
             "unit_id": unit.instance_id,
             "move_points": move_points,
             "current_attack_targets": sorted(current_attack_targets),
+            "current_attack_previews": {
+                target_id: dict(current_attack_previews[target_id])
+                for target_id in sorted(current_attack_previews)
+            },
             "move_destinations": move_destination_keys,
             "legal_move_destinations": legal_move_destinations,
             "move_requires_attack": self._requires_surface_move_attack_lock(unit),
@@ -996,6 +1010,14 @@ class GameState:
                 key: sorted(targets)
                 for key, targets in sorted(move_attack_targets.items())
                 if targets
+            },
+            "move_attack_previews": {
+                key: {
+                    target_id: dict(target_preview)
+                    for target_id, target_preview in sorted(target_previews.items())
+                }
+                for key, target_previews in sorted(move_attack_previews.items())
+                if target_previews
             },
             "can_bury": self._can_bury(unit),
             "can_resurface": self._can_resurface(unit),
@@ -1618,7 +1640,7 @@ class GameState:
                 targets.append(target.instance_id)
         return sorted(targets)
 
-    def get_buyable_units_for_tile(self, tile_coord: HexCoord) -> list[str]:
+    def get_production_options_for_tile(self, tile_coord: HexCoord) -> list[dict[str, Any]]:
         tile = self.game_map.get_tile(tile_coord)
         if tile is None:
             return []
@@ -1633,9 +1655,10 @@ class GameState:
         player = self.players.get(self.active_player_id)
         if player is None:
             return []
-        buyable: list[str] = []
+        options: list[dict[str, Any]] = []
         for unit_id, unit_data in _cached_game_dictionary()["units"].items():
-            if int(unit_data.get("cost", 0)) <= 0:
+            cost = int(unit_data.get("cost", 0))
+            if cost <= 0:
                 continue
             if str(unit_data.get("faction", "")) != player.faction:
                 continue
@@ -1654,9 +1677,22 @@ class GameState:
                 and (surface_effects[tile.terrain_id] or {}).get("mobility_cost") is None
             ):
                 continue
-            buyable.append(str(unit_id))
-        buyable.sort()
-        return buyable
+            options.append(
+                {
+                    "unit_id": str(unit_id),
+                    "cost": cost,
+                    "can_afford": player.credits >= cost,
+                }
+            )
+        options.sort(key=lambda item: str(item["unit_id"]))
+        return options
+
+    def get_buyable_units_for_tile(self, tile_coord: HexCoord) -> list[str]:
+        return [
+            str(option["unit_id"])
+            for option in self.get_production_options_for_tile(tile_coord)
+            if bool(option.get("can_afford", False))
+        ]
 
     def get_current_special_options(self, instance_id: str) -> dict[str, Any]:
         unit = self.get_unit(instance_id)
@@ -2131,6 +2167,20 @@ class GameState:
             for coord in destinations
         }
 
+    def _move_attack_previews_for_destinations(
+        self,
+        unit: UnitState,
+        destinations: list[HexCoord],
+    ) -> dict[str, dict[str, dict[str, int]]]:
+        return {
+            coord.key: self._attack_previews_from_position(
+                unit,
+                position=coord,
+                hidden_mode_override=unit.status.hidden_mode,
+            )
+            for coord in destinations
+        }
+
     def _current_attack_targets(self, unit: UnitState) -> list[str]:
         if not self._can_query_unit_attack(unit):
             return []
@@ -2142,6 +2192,40 @@ class GameState:
                 hidden_mode_override=unit.status.hidden_mode,
             )
         ]
+
+    def _current_attack_previews(self, unit: UnitState) -> dict[str, dict[str, int]]:
+        if not self._can_query_unit_attack(unit):
+            return {}
+        return self._attack_previews_from_position(
+            unit,
+            position=unit.position,
+            hidden_mode_override=unit.status.hidden_mode,
+        )
+
+    def _attack_previews_from_position(
+        self,
+        unit: UnitState,
+        *,
+        position: HexCoord,
+        hidden_mode_override: HiddenMode | None,
+    ) -> dict[str, dict[str, int]]:
+        previews: dict[str, dict[str, int]] = {}
+        for target in self._attackable_targets_from_position(
+            unit,
+            position=position,
+            hidden_mode_override=hidden_mode_override,
+        ):
+            direct_damage, retaliation_damage = self._preview_attack_damage_pair(
+                attacker=unit,
+                defender=target,
+                attacker_position_override=position,
+                attacker_hidden_mode_override=hidden_mode_override,
+            )
+            previews[target.instance_id] = {
+                "direct_damage": int(direct_damage),
+                "retaliation_damage": int(retaliation_damage),
+            }
+        return previews
 
     def _attackable_targets_from_position(
         self,
@@ -2559,6 +2643,61 @@ class GameState:
             attack_bonus=int(attack_bonus),
             armor_piercing_percent=armor_piercing,
         )
+
+    def _preview_attack_damage_pair(
+        self,
+        *,
+        attacker: UnitState,
+        defender: UnitState,
+        attack_bonus: int | None = None,
+        retaliation_bonus: int = 0,
+        attacker_position_override: HexCoord | None = None,
+        attacker_hidden_mode_override: HiddenMode | None | object = _UNSET,
+    ) -> tuple[int, int]:
+        preview_attacker = attacker
+        if (
+            attacker_position_override is not None
+            or attacker_hidden_mode_override is not _UNSET
+        ):
+            preview_status = attacker.status
+            if attacker_hidden_mode_override is not _UNSET:
+                preview_status = replace(
+                    attacker.status,
+                    hidden_mode=attacker_hidden_mode_override,
+                )
+            preview_attacker = replace(
+                attacker,
+                position=attacker_position_override or attacker.position,
+                status=preview_status,
+            )
+        defender_can_retaliate = (
+            not defender.status.retaliation_blocked
+            and self._can_unit_attack_target(defender, preview_attacker)
+        )
+        resolved_attack_bonus = (
+            self._calculate_gang_up_bonus(preview_attacker, defender)
+            if attack_bonus is None
+            else int(attack_bonus)
+        )
+        resolved_attack_bonus += int(preview_attacker.status.buried_resurface_bonus)
+        formula = LegalFormula(self.current_rseed)
+        defender_damage = self._calculate_combat_damage(
+            formula,
+            attacker=preview_attacker,
+            defender=defender,
+            attacker_hp_override=preview_attacker.hp,
+            attack_bonus=resolved_attack_bonus,
+        )
+        retaliation_damage = 0
+        if defender_can_retaliate:
+            retaliation_damage = self._calculate_combat_damage(
+                formula,
+                attacker=defender,
+                defender=preview_attacker,
+                attacker_hp_override=defender.hp,
+                attack_bonus=int(retaliation_bonus),
+            )
+        return int(defender_damage), int(retaliation_damage)
 
     def _unit_cost(self, unit: UnitState) -> int:
         return int(self._unit_dictionary_entry(unit).get("cost", 0))

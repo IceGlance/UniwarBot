@@ -938,12 +938,19 @@ def _play_options_for_selection(
         "possible_moves": None,
         "special_options": None,
         "buyable_units": [],
+        "production_options": [],
     }
     if selected_unit_id:
         options["possible_moves"] = state.get_possible_moves(selected_unit_id)
         options["special_options"] = state.get_current_special_options(selected_unit_id)
     if selected_tile is not None:
-        options["buyable_units"] = state.get_buyable_units_for_tile(selected_tile)
+        production_options = state.get_production_options_for_tile(selected_tile)
+        options["production_options"] = production_options
+        options["buyable_units"] = [
+            str(option["unit_id"])
+            for option in production_options
+            if bool(option.get("can_afford", False))
+        ]
     return options
 
 

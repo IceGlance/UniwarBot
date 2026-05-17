@@ -1102,6 +1102,131 @@ class GameStartFromMapTestCase(unittest.TestCase):
         self.assertIsNone(state.get_unit("u_marine"))
         self.assertEqual(10, state.get_unit("u_tank").experience_points)
 
+    def test_attack_preview_uses_current_seed_for_direct_and_retaliation_damage(self) -> None:
+        payload = json.loads(
+            (FIXTURES / "states" / "damage-indication-ready.json").read_text(encoding="utf-8")
+        )
+        state = GameState.from_dict(dict(payload))
+
+        previews = state.get_possible_moves("u_swarmer_p2")["current_attack_previews"]
+
+        self.assertEqual(
+            {"direct_damage": 5, "retaliation_damage": 0},
+            previews["u_marine_p1_2"],
+        )
+        self.assertEqual(
+            {"direct_damage": 6, "retaliation_damage": 0},
+            previews["u_marine_p1"],
+        )
+
+    def test_move_attack_preview_matches_post_move_preview_for_underling_against_marine(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="move-attack-preview-marine", name="Move Attack Preview Marine")
+        )
+        for q in range(8):
+            for r in range(8):
+                game_map.add_tile(TileState(coord=HexCoord(q, r), terrain_id="plain"))
+        state = GameState(
+            ruleset_version="test.preview.v1",
+            active_player_id="p2",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+            players={
+                "p1": PlayerState(player_id="p1", faction="sapiens", credits=0),
+                "p2": PlayerState(player_id="p2", faction="khraleans", credits=0),
+            },
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_underling",
+                unit_id="underling",
+                owner_id="p2",
+                position=HexCoord(6, 3),
+                hp=10,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("underling"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine",
+                unit_id="marine",
+                owner_id="p1",
+                position=HexCoord(4, 4),
+                hp=10,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+
+        move_options = state.get_possible_moves("u_underling")
+
+        self.assertIn("u_marine", move_options["move_attack_targets"]["5:4"])
+        preview_before_move = move_options["move_attack_previews"]["5:4"]["u_marine"]
+
+        moved_state = GameState.from_dict(state.to_dict())
+        moved_state.move_unit("u_underling", HexCoord(5, 4), continue_as_atomic_attack=True)
+        preview_after_move = moved_state.get_possible_moves("u_underling")["current_attack_previews"]["u_marine"]
+
+        self.assertEqual(preview_after_move, preview_before_move)
+
+    def test_move_attack_preview_matches_post_move_preview_for_underling_against_battery(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(map_id="move-attack-preview-battery", name="Move Attack Preview Battery")
+        )
+        for q in range(8):
+            for r in range(8):
+                game_map.add_tile(TileState(coord=HexCoord(q, r), terrain_id="plain"))
+        state = GameState(
+            ruleset_version="test.preview.v1",
+            active_player_id="p2",
+            player_order=["p1", "p2"],
+            turn_number=1,
+            round_number=1,
+            current_rseed=12345,
+            game_map=game_map,
+            players={
+                "p1": PlayerState(player_id="p1", faction="sapiens", credits=0),
+                "p2": PlayerState(player_id="p2", faction="khraleans", credits=0),
+            },
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_underling",
+                unit_id="underling",
+                owner_id="p2",
+                position=HexCoord(4, 3),
+                hp=10,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("underling"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_battery",
+                unit_id="battery",
+                owner_id="p1",
+                position=HexCoord(2, 1),
+                hp=10,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("battery"),
+            )
+        )
+
+        move_options = state.get_possible_moves("u_underling")
+
+        self.assertIn("u_battery", move_options["move_attack_targets"]["3:1"])
+        preview_before_move = move_options["move_attack_previews"]["3:1"]["u_battery"]
+
+        moved_state = GameState.from_dict(state.to_dict())
+        moved_state.move_unit("u_underling", HexCoord(3, 1), continue_as_atomic_attack=True)
+        preview_after_move = moved_state.get_possible_moves("u_underling")["current_attack_previews"]["u_battery"]
+
+        self.assertEqual(preview_after_move, preview_before_move)
+
 
 def _safe_test_name(name: str) -> str:
     normalized = "".join(ch if ch.isalnum() else "_" for ch in name.lower())

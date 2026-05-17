@@ -299,7 +299,9 @@ select {
 .hidden-flag-text,
 .move-overlay-count,
 .action-badge-text,
-.status-badge-text {
+.status-badge-text,
+.attack-preview-direct,
+.attack-preview-retaliation {
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: none;
@@ -391,6 +393,24 @@ select {
   font-size: 8px;
   font-weight: 800;
   fill: #fffef5;
+}
+
+.attack-preview-direct,
+.attack-preview-retaliation {
+  font-size: 10px;
+  font-weight: 900;
+  paint-order: stroke;
+  stroke: rgba(15, 23, 42, 0.92);
+  stroke-width: 1.8px;
+  stroke-linejoin: round;
+}
+
+.attack-preview-direct {
+  fill: #86efac;
+}
+
+.attack-preview-retaliation {
+  fill: #f87171;
 }
 
 .action-badges {
@@ -953,6 +973,79 @@ select {
 .playgame-history-label {
   font-size: 12px;
   white-space: nowrap;
+}
+
+.production-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.production-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(241, 245, 249, 0.72);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.production-group.blocked {
+  background: rgba(248, 250, 252, 0.68);
+}
+
+.production-group-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #334155;
+}
+
+.production-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
+  gap: 8px;
+}
+
+.production-unit-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 72px;
+  padding: 6px 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(22, 163, 74, 0.28);
+  background: linear-gradient(180deg, rgba(240, 253, 244, 0.96), rgba(220, 252, 231, 0.88));
+  cursor: pointer;
+}
+
+.production-unit-button.disabled {
+  border-color: rgba(148, 163, 184, 0.26);
+  background: linear-gradient(180deg, rgba(241, 245, 249, 0.92), rgba(226, 232, 240, 0.82));
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+.production-unit-sprite {
+  width: 42px;
+  height: 34px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 2px rgba(15, 23, 42, 0.22));
+  pointer-events: none;
+}
+
+.production-unit-button.disabled .production-unit-sprite {
+  filter: grayscale(0.9) opacity(0.9);
+}
+
+.production-unit-cost {
+  font-size: 11px;
+  font-weight: 800;
+  color: #0f172a;
+  pointer-events: none;
 }
 
 .editor-section {
