@@ -1277,6 +1277,232 @@ class GameStartFromMapTestCase(unittest.TestCase):
 
         self.assertIsNone(state.get_unit("u_marine"))
 
+    def test_helicopter_post_attack_move_is_forfeited_when_another_unit_acts(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(
+                map_id="helicopter-post-attack-lock",
+                name="Helicopter Post-Attack Lock",
+            )
+        )
+        for q in range(6):
+            for r in range(6):
+                game_map.add_tile(
+                    TileState(coord=HexCoord(q, r), terrain_id="plain", owner_id=None)
+                )
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1", "p2"],
+            turn_number=5,
+            round_number=3,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="sapiens", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="sapiens", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_helicopter",
+                unit_id="helicopter",
+                owner_id="p1",
+                position=HexCoord(2, 2),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("helicopter"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine_friend",
+                unit_id="marine",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine_enemy",
+                unit_id="marine",
+                owner_id="p2",
+                position=HexCoord(3, 2),
+                hp=4,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+
+        state.attack_unit("u_helicopter", "u_marine_enemy", defender_damage=4, attacker_damage=0)
+
+        helicopter = state.get_unit("u_helicopter")
+        assert helicopter is not None
+        self.assertEqual("post_attack_move", helicopter.action.atomic_action_label)
+        self.assertTrue(helicopter.action.atomic_action_locked)
+        self.assertGreater(helicopter.action.move_points_remaining or 0, 0)
+
+        state.move_unit("u_marine_friend", HexCoord(1, 0))
+
+        helicopter = state.get_unit("u_helicopter")
+        assert helicopter is not None
+        self.assertFalse(helicopter.action.atomic_action_locked)
+        self.assertIsNone(helicopter.action.atomic_action_label)
+        self.assertEqual(0, helicopter.action.move_points_remaining)
+
+    def test_post_attack_move_is_forfeited_for_speeder_when_another_unit_acts(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(
+                map_id="speeder-post-attack-forfeit",
+                name="Speeder Post-Attack Forfeit",
+            )
+        )
+        for q in range(6):
+            for r in range(6):
+                game_map.add_tile(
+                    TileState(coord=HexCoord(q, r), terrain_id="plain", owner_id=None)
+                )
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1", "p2"],
+            turn_number=5,
+            round_number=3,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="titans", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="sapiens", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_speeder",
+                unit_id="speeder",
+                owner_id="p1",
+                position=HexCoord(2, 2),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("speeder"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine_friend",
+                unit_id="marine",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine_enemy",
+                unit_id="marine",
+                owner_id="p2",
+                position=HexCoord(3, 2),
+                hp=4,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+
+        state.attack_unit("u_speeder", "u_marine_enemy", defender_damage=4, attacker_damage=0)
+        state.move_unit("u_marine_friend", HexCoord(1, 0))
+
+        speeder = state.get_unit("u_speeder")
+        assert speeder is not None
+        self.assertFalse(speeder.action.atomic_action_locked)
+        self.assertIsNone(speeder.action.atomic_action_label)
+        self.assertEqual(0, speeder.action.move_points_remaining)
+
+    def test_post_attack_move_is_forfeited_for_wyrm_when_another_unit_acts(self) -> None:
+        game_map = GameMap(
+            metadata=MapMetadata(
+                map_id="wyrm-post-attack-forfeit",
+                name="Wyrm Post-Attack Forfeit",
+            )
+        )
+        for q in range(6):
+            for r in range(6):
+                game_map.add_tile(
+                    TileState(coord=HexCoord(q, r), terrain_id="plain", owner_id=None)
+                )
+        state = GameState(
+            ruleset_version="test-v1",
+            active_player_id="p1",
+            player_order=["p1", "p2"],
+            turn_number=5,
+            round_number=3,
+            current_rseed=12345,
+            game_map=game_map,
+            metadata={"income_per_base": 100, "income_per_city": 50},
+        )
+        state.add_player(PlayerState(player_id="p1", faction="khraleans", credits=0))
+        state.add_player(PlayerState(player_id="p2", faction="sapiens", credits=0))
+        state.add_unit(
+            UnitState(
+                instance_id="u_wyrm",
+                unit_id="wyrm",
+                owner_id="p1",
+                position=HexCoord(2, 2),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("wyrm"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_garuda_friend",
+                unit_id="garuda",
+                owner_id="p1",
+                position=HexCoord(0, 0),
+                hp=10,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("garuda"),
+            )
+        )
+        state.add_unit(
+            UnitState(
+                instance_id="u_marine_enemy",
+                unit_id="marine",
+                owner_id="p2",
+                position=HexCoord(3, 2),
+                hp=4,
+                veterancy_level=0,
+                experience_points=0,
+                status=UnitStatusState(),
+                action=build_default_unit_action_state("marine"),
+            )
+        )
+
+        state.attack_unit("u_wyrm", "u_marine_enemy", defender_damage=4, attacker_damage=0)
+        state.move_unit("u_garuda_friend", HexCoord(1, 0))
+
+        wyrm = state.get_unit("u_wyrm")
+        assert wyrm is not None
+        self.assertFalse(wyrm.action.atomic_action_locked)
+        self.assertIsNone(wyrm.action.atomic_action_label)
+        self.assertEqual(0, wyrm.action.move_points_remaining)
+
     def test_partial_damage_without_kill_grants_no_experience(self) -> None:
         game_map = GameMap(
             metadata=MapMetadata(map_id="xp-no-kill", name="XP No Kill")

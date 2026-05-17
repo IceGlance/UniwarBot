@@ -1054,6 +1054,12 @@ class GameState:
     ) -> None:
         if (
             acting_unit.action.atomic_action_locked
+            and acting_unit.action.atomic_action_label == "post_attack_move"
+            and action_kind != "move"
+        ):
+            self._clear_post_attack_move(acting_unit)
+        if (
+            acting_unit.action.atomic_action_locked
             and acting_unit.action.atomic_action_label
             in {"resurface_attack", "surface_move_attack"}
             and action_kind != "attack"
@@ -1063,6 +1069,9 @@ class GameState:
             if other_unit.owner_id != self.active_player_id:
                 continue
             if other_unit.instance_id == acting_unit.instance_id:
+                continue
+            if other_unit.action.atomic_action_label == "post_attack_move":
+                self._clear_post_attack_move(other_unit)
                 continue
             if not other_unit.action.has_atomic_window_lock:
                 continue
@@ -1102,6 +1111,9 @@ class GameState:
         if continue_as_atomic_attack and self._can_surface_move_continue_as_atomic_attack(unit):
             unit.action.atomic_action_locked = True
             unit.action.atomic_action_label = "surface_move_attack"
+        elif unit.action.atomic_action_label == "post_attack_move":
+            unit.action.atomic_action_locked = False
+            unit.action.atomic_action_label = None
         elif self._is_underling_family(unit) and unit.status.hidden_mode is None:
             unit.action.attacks_remaining = 0
         if unit.action.move_points_remaining not in {None, 0}:
@@ -1282,6 +1294,8 @@ class GameState:
             after_attack_mobility = self._after_attack_mobility(attacker)
             if after_attack_mobility > 0:
                 attacker.action.move_points_remaining = after_attack_mobility
+                attacker.action.atomic_action_locked = True
+                attacker.action.atomic_action_label = "post_attack_move"
         if attacker.action.atomic_action_label in {
             "resurface_attack",
             "surface_move_attack",
@@ -2020,6 +2034,14 @@ class GameState:
     def _after_attack_mobility(self, unit: UnitState) -> int:
         movement = self._unit_dictionary_entry(unit).get("movement") or {}
         return int(movement.get("after_attack", 0))
+
+    def _clear_post_attack_move(self, unit: UnitState) -> None:
+        if unit.action.atomic_action_label != "post_attack_move":
+            return
+        unit.action.atomic_action_locked = False
+        unit.action.atomic_action_label = None
+        if unit.action.move_points_remaining not in {None, 0}:
+            unit.action.move_points_remaining = 0
 
     def _ability_config(
         self,

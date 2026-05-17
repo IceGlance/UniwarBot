@@ -830,7 +830,7 @@ select {
 
 .playgame-status-panel {
   display: grid;
-  grid-template-columns: minmax(280px, auto) minmax(180px, auto) minmax(0, 1fr);
+  grid-template-columns: minmax(280px, auto) minmax(180px, auto) minmax(260px, 320px) minmax(0, 1fr);
   gap: 12px;
   padding: 10px 18px 0;
   align-items: start;
@@ -838,7 +838,8 @@ select {
 
 .playgame-state-card,
 .playgame-player-card,
-.playgame-history-panel {
+.playgame-history-panel,
+.playgame-edit-panel {
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.82);
@@ -971,6 +972,14 @@ select {
   padding: 12px;
 }
 
+.playgame-edit-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 260px;
+  padding: 12px;
+}
+
 .playgame-history-head {
   display: flex;
   align-items: baseline;
@@ -1000,7 +1009,7 @@ select {
 
 .playgame-inline-editor {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 8px;
   align-items: center;
 }
@@ -1012,12 +1021,83 @@ select {
   width: 100%;
 }
 
+.playgame-edit-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.playgame-edit-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.playgame-edit-top-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 52px 38px;
+  gap: 8px;
+  align-items: end;
+  width: 100%;
+}
+
+.playgame-edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.playgame-edit-field-small {
+  max-width: none;
+}
+
+.playgame-edit-field-seed input {
+  min-width: 0;
+  width: 100%;
+}
+
+.playgame-balance-editor-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+}
+
+.playgame-balance-editor-row {
+  display: grid;
+  grid-template-columns: 24px 78px;
+  gap: 6px;
+  align-items: center;
+  min-width: 108px;
+}
+
+.playgame-balance-editor-head {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+}
+
+.playgame-balance-inline-editor {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.playgame-balance-inline-editor input {
+  width: 78px;
+}
+
+.playgame-edit-inline-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  white-space: nowrap;
+}
+
 .playgame-unit-editor {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(88px, 96px) auto;
-  gap: 10px;
+  grid-template-columns: 52px 38px;
+  gap: 8px;
   align-items: end;
-  margin: 10px 0 12px;
+  margin: 4px 0 0;
 }
 
 .production-groups {

@@ -717,58 +717,92 @@ function App() {
       });
   }
 
-  function handleManualSeedApply() {
+  async function handleManualStateApply() {
     if (!currentStateValue) {
       return;
     }
+    const actions = [];
     const parsedSeed = nullableInt(seedDraft);
     if (parsedSeed == null || Number.isNaN(parsedSeed)) {
       setError("Seed must be a number.");
       return;
     }
-    applyAction({ type: "manual_set_seed", seed: parsedSeed }, {}, { clearCompoundMove: true });
-  }
+    if (parsedSeed !== Number(currentStateValue.current_rseed)) {
+      actions.push({ type: "manual_set_seed", seed: parsedSeed });
+    }
 
-  function handleManualCreditsApply(playerId) {
-    if (!currentStateValue) {
-      return;
+    for (const player of playerSummaries) {
+      const parsedCredits = nullableInt(creditsDrafts[player.playerId] ?? "");
+      if (parsedCredits == null || Number.isNaN(parsedCredits) || parsedCredits < 0) {
+        setError("Credits must be a non-negative number.");
+        return;
+      }
+      if (parsedCredits !== Number(player.credits)) {
+        actions.push({
+          type: "manual_set_player_credits",
+          player_id: player.playerId,
+          credits: parsedCredits,
+        });
+      }
     }
-    const parsedCredits = nullableInt(creditsDrafts[playerId] ?? "");
-    if (parsedCredits == null || Number.isNaN(parsedCredits) || parsedCredits < 0) {
-      setError("Credits must be a non-negative number.");
-      return;
-    }
-    applyAction(
-      { type: "manual_set_player_credits", player_id: playerId, credits: parsedCredits },
-      {},
-      { clearCompoundMove: true },
-    );
-  }
 
-  function handleManualUnitApply() {
-    if (!selectedUnitId || !selectedTileKey) {
+    if (selectedUnitId && selectedUnit) {
+      const parsedHp = nullableInt(unitHpDraft);
+      const parsedVeterancy = nullableInt(unitVeterancyDraft);
+      if (parsedHp == null || Number.isNaN(parsedHp) || parsedHp < 0) {
+        setError("HP must be a non-negative number.");
+        return;
+      }
+      if (parsedVeterancy == null || Number.isNaN(parsedVeterancy) || parsedVeterancy < 0 || parsedVeterancy > 2) {
+        setError("Veterancy must be 0, 1, or 2.");
+        return;
+      }
+      if (
+        parsedHp !== Number(selectedUnit.hp)
+        || parsedVeterancy !== Number(selectedUnit.veterancy_level ?? 0)
+      ) {
+        actions.push({
+          type: "manual_set_unit_state",
+          unit_id: selectedUnitId,
+          hp: parsedHp,
+          veterancy_level: parsedVeterancy,
+        });
+      }
+    }
+
+    if (actions.length === 0) {
       return;
     }
-    const parsedHp = nullableInt(unitHpDraft);
-    const parsedVeterancy = nullableInt(unitVeterancyDraft);
-    if (parsedHp == null || Number.isNaN(parsedHp) || parsedHp < 0) {
-      setError("HP must be a non-negative number.");
-      return;
+
+    setError("");
+    try {
+      let transientState = currentStateValue;
+      for (const action of actions) {
+        const response = await fetch(`${API_BASE}/play-game/apply`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            state: transientState,
+            action,
+          }),
+        });
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          throw new Error(payload.detail ?? `Failed to apply manual change: ${response.status}`);
+        }
+        const payload = await response.json();
+        transientState = payload.state;
+      }
+      setCompoundMoveCandidate(null);
+      pushHistory(transientState, "manual_edit");
+      resetInteraction(transientState, {
+        nextSelectedUnitId: selectedUnitIdRef.current,
+        nextSelectedTileKey: selectedTileKeyRef.current,
+        nextMode: null,
+      });
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : String(reason));
     }
-    if (parsedVeterancy == null || Number.isNaN(parsedVeterancy) || parsedVeterancy < 0 || parsedVeterancy > 2) {
-      setError("Veterancy must be 0, 1, or 2.");
-      return;
-    }
-    applyAction(
-      {
-        type: "manual_set_unit_state",
-        unit_id: selectedUnitId,
-        hp: parsedHp,
-        veterancy_level: parsedVeterancy,
-      },
-      { nextSelectedUnitId: selectedUnitId, nextSelectedTileKey: selectedTileKey },
-      { clearCompoundMove: true },
-    );
   }
 
   function applyAction(action, options = {}, behavior = {}) {
@@ -1391,21 +1425,11 @@ function occupantUnitIdsForTile(tile, unitsById) {
                     <div className="playgame-state-seed">
                       <span>{`Seed ${currentStateValue.current_rseed}`}</span>
                     </div>
-                    <div className="playgame-inline-editor">
-                      <input
-                        type="number"
-                        value={seedDraft}
-                        onChange={(event) => setSeedDraft(event.target.value)}
-                      />
-                      <button className="step-chip" type="button" onClick={handleManualSeedApply}>
-                        Set Seed
-                      </button>
-                    </div>
                   </>
                 ) : (
                   <strong>No game started</strong>
                 )}
-            </div>
+              </div>
             <div className="playgame-history-panel">
               <div className="playgame-history-head">
                 <span className="summary-label">History</span>
@@ -1413,9 +1437,9 @@ function occupantUnitIdsForTile(tile, unitsById) {
                   {historyIndex >= 0 ? `${historyIndex + 1} / ${history.length}` : "No history"}
                 </span>
               </div>
-              <div className="playgame-history-buttons">
-                <button className="step-chip" type="button" title="Undo" onClick={handleHistoryUndo}>
-                  {"<"}
+                <div className="playgame-history-buttons">
+                  <button className="step-chip" type="button" title="Undo" onClick={handleHistoryUndo}>
+                    {"<"}
                 </button>
                 <button className="step-chip" type="button" title="Undo Turn" onClick={handleTurnUndo}>
                   {"<<"}
@@ -1425,10 +1449,102 @@ function occupantUnitIdsForTile(tile, unitsById) {
                 </button>
                 <button className="step-chip" type="button" title="Redo Turn" onClick={handleTurnRedo}>
                   {">>"}
-                </button>
+                  </button>
+                </div>
               </div>
-            </div>
-            <div className="playgame-player-row">
+              <div className="playgame-edit-panel">
+                <div className="playgame-edit-sections">
+                  <div className="playgame-edit-top-row">
+                    <label className="playgame-edit-field playgame-edit-field-seed">
+                      <div className="field-label">Seed</div>
+                      <input
+                        type="number"
+                        value={seedDraft}
+                        onChange={(event) => setSeedDraft(event.target.value)}
+                      />
+                    </label>
+                    <label className="playgame-edit-field">
+                      <div className="field-label">HP</div>
+                      <input
+                        type="number"
+                        value={unitHpDraft}
+                        disabled={!selectedUnit}
+                        onChange={(event) => setUnitHpDraft(event.target.value)}
+                      />
+                    </label>
+                    <label className="playgame-edit-field playgame-edit-field-small">
+                      <div className="field-label">Vet</div>
+                      <select
+                        value={unitVeterancyDraft}
+                        disabled={!selectedUnit}
+                        onChange={(event) => setUnitVeterancyDraft(event.target.value)}
+                      >
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div className="playgame-edit-block">
+                    {playerSummaries.length > 0 ? (
+                      <>
+                        <div className="playgame-balance-editor-head">
+                          <div className="playgame-balance-editor-row">
+                            <svg className="playgame-owner-badge playgame-owner-badge-small" viewBox="-10 -10 20 20" aria-hidden="true">
+                              <circle r="8" className={`owner-disc owner-${playerSummaries[0].playerId}`} />
+                              <text className="owner-text playgame-owner-text" x="0" y="1">
+                                {playerSummaries[0].playerId.toUpperCase()}
+                              </text>
+                            </svg>
+                            <div className="playgame-inline-editor playgame-balance-inline-editor">
+                              <input
+                                type="number"
+                                value={creditsDrafts[playerSummaries[0].playerId] ?? ""}
+                                onChange={(event) =>
+                                  setCreditsDrafts((previous) => ({
+                                    ...previous,
+                                    [playerSummaries[0].playerId]: event.target.value,
+                                  }))
+                                }
+                              />
+                            </div>
+                          </div>
+                          <button className="step-chip" type="button" onClick={handleManualStateApply}>
+                            Apply
+                          </button>
+                        </div>
+                        {playerSummaries.length > 1 ? (
+                          <div className="playgame-balance-editor-list">
+                            {playerSummaries.slice(1).map((player) => (
+                              <div key={`edit-${player.playerId}`} className="playgame-balance-editor-row">
+                                <svg className="playgame-owner-badge playgame-owner-badge-small" viewBox="-10 -10 20 20" aria-hidden="true">
+                                  <circle r="8" className={`owner-disc owner-${player.playerId}`} />
+                                  <text className="owner-text playgame-owner-text" x="0" y="1">
+                                    {player.playerId.toUpperCase()}
+                                  </text>
+                                </svg>
+                                <div className="playgame-inline-editor playgame-balance-inline-editor">
+                                  <input
+                                    type="number"
+                                    value={creditsDrafts[player.playerId] ?? ""}
+                                    onChange={(event) =>
+                                      setCreditsDrafts((previous) => ({
+                                        ...previous,
+                                        [player.playerId]: event.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : null}
+                      </>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+              <div className="playgame-player-row">
                 {playerSummaries.map((player) => (
                   <div key={player.playerId} className={`playgame-player-card ${player.isActive ? "active" : ""}`}>
                     <div className="playgame-player-head">
@@ -1443,21 +1559,6 @@ function occupantUnitIdsForTile(tile, unitsById) {
                     <div className="playgame-player-stats">
                       <span>{player.credits}</span>
                       <span>{`(+${player.income})`}</span>
-                    </div>
-                    <div className="playgame-inline-editor">
-                      <input
-                        type="number"
-                        value={creditsDrafts[player.playerId] ?? ""}
-                        onChange={(event) =>
-                          setCreditsDrafts((previous) => ({
-                            ...previous,
-                            [player.playerId]: event.target.value,
-                          }))
-                        }
-                      />
-                      <button className="step-chip" type="button" onClick={() => handleManualCreditsApply(player.playerId)}>
-                        Set
-                      </button>
                     </div>
                   </div>
                 ))}
@@ -1941,37 +2042,13 @@ function occupantUnitIdsForTile(tile, unitsById) {
                 {selectedUnit ? (
                   <>
                     <div className="visual-inspector">
-                    <img className="unit-inspector-icon" src={unitAsset(selectedUnit.unit_id, selectedUnit.owner_id)} alt={selectedUnit.unit_id} />
-                    <div className="visual-copy">
-                      <strong>{config?.units?.[selectedUnit.unit_id]?.display_name ?? selectedUnit.unit_id}</strong>
-                      <span>Owner: {selectedUnit.owner_id}</span>
+                      <img className="unit-inspector-icon" src={unitAsset(selectedUnit.unit_id, selectedUnit.owner_id)} alt={selectedUnit.unit_id} />
+                      <div className="visual-copy">
+                        <strong>{config?.units?.[selectedUnit.unit_id]?.display_name ?? selectedUnit.unit_id}</strong>
+                        <span>Owner: {selectedUnit.owner_id}</span>
                         <span>HP: {selectedUnit.hp}</span>
                         <span>Layer: {selectedUnit.status?.hidden_mode ?? "surface"}</span>
                       </div>
-                    </div>
-                    <div className="playgame-unit-editor">
-                      <label>
-                        <div className="field-label">HP</div>
-                        <input
-                          type="number"
-                          value={unitHpDraft}
-                          onChange={(event) => setUnitHpDraft(event.target.value)}
-                        />
-                      </label>
-                      <label>
-                        <div className="field-label">Vet</div>
-                        <select
-                          value={unitVeterancyDraft}
-                          onChange={(event) => setUnitVeterancyDraft(event.target.value)}
-                        >
-                          <option value="0">0</option>
-                          <option value="1">1</option>
-                          <option value="2">2</option>
-                        </select>
-                      </label>
-                      <button className="step-chip" type="button" onClick={handleManualUnitApply}>
-                        Apply
-                      </button>
                     </div>
                     <pre>{pretty(selectedUnit)}</pre>
                   </>
